@@ -2,11 +2,12 @@ const User = require('../models/User')
 const cloudinary = require("../config/cloudinary");
 
 exports.uploadAvatar = async (req, res) => {
+  let {userId} = req.body
     if (req.file) {
       const uploadResult = await cloudinary.uploader.upload(req.file.path);
       const uploadedImageUrl = uploadResult.url;
     
-      User.findOne({ "_id": "660d29d3e4041f661b1deb02" })
+      User.findOne({ "_id": userId })
           .then(async data => {
             data.avatarUrl = uploadedImageUrl
             await data.save();

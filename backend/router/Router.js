@@ -21,7 +21,6 @@ router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
 
 
-
 router.post("/user/signup", UserController.signup);
 router.post("/user/verify", UserController.verifyOTP);
 router.post("/user/resendVerificationCode", UserController.resendVerificationCode);
