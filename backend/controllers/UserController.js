@@ -1,8 +1,7 @@
-const express = require('express')
-const router = express.Router()
 require("dotenv").config()
 //mongodb user model
 const User = require('../models/User')
+const Admin = require('../models/Admin')
 //Password handler
 const bcrypt = require('bcrypt')
 
@@ -18,7 +17,7 @@ let transporter = nodemailer.createTransport({
 })
 
 //signup
-router.post('/signup', (req, res) => {
+exports.signup = (req, res) => {
     let {name, email, password, dateOfBirth} = req.body
     name = name.trim()
     email = email.trim()
@@ -52,61 +51,70 @@ router.post('/signup', (req, res) => {
         })
     } else {
         //checking if user already exists
-        User.find({email}).then(result => {
+        Admin.find({email}).then(result => {
             if(result.length){
                 res.json({
                     status:"FAILED",
-                    message:"user with the provided email already exists"
+                    message:" email already exists"
                 })
             }else{
-                //create new user
-
-                //password handling
-                const saltRounds = 10;
-                bcrypt.hash(password, saltRounds).then(hashedPassword => {
-                    const newUser = new User({
-                        name,
-                        email,
-                        password: hashedPassword,
-                        dateOfBirth,
-                        verified: false,
-                    })
-
-                    newUser.save().then((result) => {
-                        // res.json({
-                        //     status:"SUCCESS",
-                        //     message:"Signup successfully!",
-                        //     data: result,
-                        // })
-                        sendOTPVerificationEmail(result, res)
-                    }).catch(err => {
+                User.find({email}).then(result => {
+                    if(result.length){
                         res.json({
                             status:"FAILED",
-                            message: "An error occurred while saving user account!"
+                            message:"user with the provided email already exists"
                         })
-                    })
+                    }else{
+                        //create new user
+        
+                        //password handling
+                        const saltRounds = 10;
+                        bcrypt.hash(password, saltRounds).then(hashedPassword => {
+                            const newUser = new User({
+                                name,
+                                email,
+                                password: hashedPassword,
+                                dateOfBirth,
+                                verified: false,
+                            })
+        
+                            newUser.save().then((result) => {
+                                // res.json({
+                                //     status:"SUCCESS",
+                                //     message:"Signup successfully!",
+                                //     data: result,
+                                // })
+                                sendOTPVerificationEmail(result, res)
+                            }).catch(err => {
+                                res.json({
+                                    status:"FAILED",
+                                    message: "An error occurred while saving user account!"
+                                })
+                            })
+                        }).catch(err => {
+                            res.json({
+                                status:"FAILED",
+                                message: "An error occurred while hashing the password!"
+                            })  
+        
+                        })
+                        
+                    }
                 }).catch(err => {
+                    console.log(err)
                     res.json({
                         status:"FAILED",
-                        message: "An error occurred while hashing the password!"
-                    })  
-
-                })
-                
-            }
-        }).catch(err => {
-            console.log(err)
-            res.json({
-                status:"FAILED",
-                message: "An error occurred while checking for existing user!"
-            })
-        })
+                        message: "An error occurred while checking for existing user!"
+                    })
+                })   
+        }})
+        
     }
-})
+}
 
 //signin
-router.post('/signin', (req, res) => {
-    let {email, password, } = req.body
+exports.signin = (req, res) => {
+    let {email, password} = req.body
     email = email.trim(),
     password = password.trim()
 
@@ -156,7 +164,7 @@ router.post('/signin', (req, res) => {
             })
         })
     }
-})
+}
 
 //mongodb user otp verification model
 const UserOTPVerification = require('./../models/UserOTPVerification')
@@ -205,7 +213,7 @@ const sendOTPVerificationEmail = async ({ _id, email}, res) => {
 }
 
 //Verify otp email
-router.post("/verifyOTP", async (req, res) => {
+exports.verifyOTP =  async (req, res) => {
     try{
         let{userId, otp} = req.body;
         if(!userId || !otp) { 
@@ -255,10 +263,10 @@ router.post("/verifyOTP", async (req, res) => {
             message: err.message
         })
     }  
-})
+}
 
 //resend verification
-router.post('/resendVerificationCode', async (req, res) => { 
+exports.resendVerificationCode = async (req, res) => { 
     try {
         let {userId, email} = req.params
         if(!userId || !email) {
@@ -273,6 +281,115 @@ router.post('/resendVerificationCode', async (req, res) => {
             message: error.message
         })
     }
-})
+}
 
-module.exports = router;
+
+//forgot password
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            throw Error("Email is required.");
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw Error("User with this email does not exist.");
+        }
+
+        // Generate a new random password
+        const newPassword = Math.random().toString(36).slice(-8);
+
+        // Hash the new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user's password
+        user.password = hashedNewPassword;
+        await user.save();
+
+        // Send the new password to user's email
+        const mailOptions = {
+            from: process.env.AUTH_EMAIL,
+            to: email,
+            subject: 'New Password',
+            html: `<p>Your new password is: <b>${newPassword}</b></p>`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({
+            status: "SUCCESS",
+            message: "New password has been sent to your email."
+        });
+    } catch (error) {
+        res.json({
+            status: "FAILED",
+            message: error.message
+        });
+    }
+};
+
+//Sales registration
+exports.saleRegister = async (req, res) => {
+    try {
+        const { shopDescript,shopAddress, shopName, userid } = req.body;
+        if(!shopDescript || !shopAddress || !shopName || !userid) {
+            res.json({
+                status:"FAILED",
+                message:"Empty credentials supplied"
+            })
+        }else {
+            User.findOne({ "_id": userid }).then((user) => {
+                console.log(user)
+                if(user){
+                    user.shopDescript = shopDescript;
+                    user.shopAddress = shopAddress;
+                    user.shopName = shopName;
+                    user.sellerRequestStatus = 'pending';
+
+                    user.save();
+                    res.json({
+                        status: "SUCCESS",
+                        message: "Sale registration request submitted successfully"
+                    });
+                }else{
+                    res.json({
+                        status:"FAILED",
+                        message:"User does not exist "
+                    })
+                }
+            }).catch(err => {
+                res.json({
+                    status:"FAILED",
+                    message: `${err}`
+                })
+            }) }
+            
+        
+    } catch (error) {
+        res.json({
+            status: "FAILED",
+            message: error.message
+        });
+    }
+ }
+
+// Displays the request to register as a seller
+exports.showSaleRegister = async (req, res) => { 
+    try {
+        const result = await User.find({ sellerRequestStatus: "pending"})
+        res.json({
+            status: 'SUCCESS',
+            message: 'Registration list become a seller',
+            data: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch registered user',
+            error: error.message
+        });
+        
+    }
+}
