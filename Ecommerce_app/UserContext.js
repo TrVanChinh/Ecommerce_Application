@@ -8,7 +8,7 @@ export const UserProvider = ({ children }) => {
   const [address, setAddress] = useState(null)
   const [shippingUnit, setShippingUnit] = useState(null)
 
-  const updateUser = (newUser) => {
+  const updateUser = (newUser) => { 
     setUser(newUser);
   };
   const updateProduct = (newProduct) => {

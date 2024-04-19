@@ -17,22 +17,21 @@ import  axios  from "axios";
 
 
 const LoginScreen = ({navigation}) => {
-  // const { updateUser } = useUser();
+  const { updateUser, user } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleLogin = () => {
-    const user = {
+    const userInfo = {
       email: email,
       password: password,
     }
-    axios.post(`${API_BASE_URL}/user/signin`,user).then((response) => {
-      console.log(response)
-      console.log(response.data.data); 
-      // const token = response.data.token
-      // AsyncStorage.setItem("authToken",token)
-      // navigation.navigate("Main")
+    axios.post(`${API_BASE_URL}/user/signin`,userInfo).then((response) => {
+      // console.log(response)
+      // console.log(response.data.data); 
+      updateUser(response.data.data)
+      navigation.navigate("Main")
     })
     .catch((error) => {
       alert("Login Error")
@@ -46,26 +45,28 @@ const LoginScreen = ({navigation}) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
   return (
-    <SafeAreaView style={{ width: "100%", alignItems: "center" }}>
+    <SafeAreaView style={{ width: "100%", paddingTop:50, alignItems: "center" }}>
       <View> 
         <Image
           style={{ width: 60, height: 80, top: 20 }}
           source={require("../assets/shopLogo.png")}
         />
       </View>
-      <View style={{ width: "90%", top: 30 }}>
+      <View style={{ width: "90%", top: 50 }}>
+      <Text style={{  paddingBottom: 40, fontSize:30, fontWeight:'bold' , alignSelf:'center' }}>Đăng Nhập</Text>
         <KeyboardAvoidingView behavior="padding">
           <Input
-            placeholder="Số điện thoại"
+            placeholder="example@gmail.com"
+            keyboardType="email-address"
             onChangeText={(text) => setEmail(text)}
             value={email}
-            leftIcon={<SimpleLineIcons name="user" size={24} color="#857E7C" />}
+            leftIcon={<Feather name="mail" size={24} color="#857E7C"/>}
             rightIcon={
               email ? (
                 <AntDesign
                   name="close"
                   size={24}
-                  color="black"
+                  color="#857E7C"
                   onPress={clearInput}
                 />
               ) : null
@@ -106,11 +107,11 @@ const LoginScreen = ({navigation}) => {
           <View style={{ flex: 1, height: 1, backgroundColor: "#D5DBCD"}}></View>
         </View>
         <View style={{flexDirection:'row', justifyContent:'center', alignItems:"center", paddingTop:20}}>
-          <Text>Bạn chưa có tài khoản?</Text>
+          <Text>Bạn chưa có tài khoản? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text style={{ color:'blue'}}>Đăng ký</Text>
           </TouchableOpacity>
-        </View>
+        </View> 
           
       </View>
     </SafeAreaView>

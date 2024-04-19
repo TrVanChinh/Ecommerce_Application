@@ -148,6 +148,24 @@ exports.addAdmin = (req, res) => {
     }
 }
 
+// Show category
+exports.ShowListAdmin = async (req, res) => { 
+    try {
+        const admins = await Admin.find();
+        res.json({
+            status: 'SUCCESS',
+            message: 'List of categories',
+            data: admins
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch categories',
+            error: error.message
+        });
+    }
+}
+
 //Approve your request to become a seller
 exports.approveSaleRequest = async (req, res) => {
     let {userId} = req.body

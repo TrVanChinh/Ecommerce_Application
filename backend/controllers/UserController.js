@@ -18,13 +18,12 @@ let transporter = nodemailer.createTransport({
 
 //signup
 exports.signup = (req, res) => {
-    let {name, email, password, dateOfBirth} = req.body
+    let {name, email, password} = req.body
     name = name.trim()
     email = email.trim()
     password = password.trim()
-    dateOfBirth = dateOfBirth.trim()
 
-    if(name === '' || email === '' || password === '' || dateOfBirth === ''){
+    if(name === '' || email === '' || password === '' ){
         res.json({
             status:"FAILED",
             message:"Empty input fields!"
@@ -38,11 +37,6 @@ exports.signup = (req, res) => {
         res.json({
             status:"FAILED",
             message:"Invalid email entered!"
-        })
-    }else if(!new Date(dateOfBirth).getTime()){
-        res.json({
-            status:"FAILED",
-            message:"Invalid date of birth entered"
         })
     }else if(password.length < 8) {
         res.json({
@@ -74,7 +68,6 @@ exports.signup = (req, res) => {
                                 name,
                                 email,
                                 password: hashedPassword,
-                                dateOfBirth,
                                 verified: false,
                             })
         
@@ -248,11 +241,17 @@ exports.verifyOTP =  async (req, res) => {
                     } else {
                        await User.updateOne({_id: userId}, {verified: true})
                        await UserOTPVerification.deleteMany({ userId})
-                       res.json({
-                        status:"VERIFIED",
-                        message:"User email verified successfully!",
+                       const user = await User.findById(userId);
+                        if (!user) {
+                            throw new Error("User not found after verification.");
+                        }
                         
-                       })
+
+                        res.json({
+                            status: "VERIFIED",
+                            message: "User email verified successfully!",
+                            user: user
+                        });
                     }
                 }
             }
@@ -268,7 +267,7 @@ exports.verifyOTP =  async (req, res) => {
 //resend verification
 exports.resendVerificationCode = async (req, res) => { 
     try {
-        let {userId, email} = req.params
+        let {userId, email} = req.body
         if(!userId || !email) {
             throw Error("Empty otp details are not allowed")
         } else {

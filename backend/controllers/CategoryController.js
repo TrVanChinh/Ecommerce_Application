@@ -144,3 +144,46 @@ exports.ShowCategory = async (req, res) => {
         });
     }
 }
+
+// Show one category
+// exports.ShowOneCategory = async (req, res) => {
+//     const { categoryId } = req.body 
+//     try {
+//         const categories = await Category.findOne({ "_id": categoryId });
+//         res.json({
+//             status: 'SUCCESS',
+//             message: 'get categories',
+//             data: categories
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             status: 'FAILED',
+//             message: 'Failed to fetch categories',
+//             error: error.message
+//         });
+//     }
+// }
+
+exports.ShowOneCategory = async (req, res) => {
+    const { id } = req.params; // Sử dụng req.params thay vì req.body
+    try {
+        const category = await Category.findOne({ "_id": id }); // Sử dụng findById thay vì findOne
+        if (!category) {
+            return res.status(404).json({
+                status: 'FAILED',
+                message: 'Category not found'
+            });
+        }
+        res.json({
+            status: 'SUCCESS',
+            message: 'Category found',
+            data: category
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch category',
+            error: error.message
+        });
+    }
+}

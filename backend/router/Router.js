@@ -16,6 +16,7 @@ router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
 //Admin
 router.post("/admin/signin", AdminController.signin);
 router.post("/admin/addAdmin", AdminController.addAdmin);
+router.get("/admin/showAdmin", AdminController.ShowListAdmin);
 router.get("/admin/showSaleRegister", UserController.showSaleRegister);
 router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
@@ -36,5 +37,6 @@ router.delete("/admin/deleteCategory", CategoryController.DeleteCategory)
 router.put("/admin/updateSubCategory", CategoryController.UpdateSubCategory)
 router.delete("/admin/deleteSubCategory", CategoryController.DeleteSubCategory)
 router.get("/admin/showCategory", CategoryController.ShowCategory)
+router.get("/admin/Category/:id", CategoryController.ShowOneCategory)
 
 module.exports = router;
