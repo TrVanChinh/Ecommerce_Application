@@ -1,0 +1,5 @@
+a.mat-list-item.active {
+    background-color: #007bff; /* Màu nền khi được kích hoạt */
+    color: #ffffff; /* Màu văn bản khi được kích hoạt */
+  }
+  

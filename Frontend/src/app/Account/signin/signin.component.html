@@ -1,0 +1,39 @@
+<div class="flex justify-center flex-col items-center mt-20 text-primary-color">
+
+    <h1>User Sign up</h1>
+    <form class="flex flex-col justify-center w-60" [formGroup]="signInForm" (ngSubmit)="onSubmit()" >
+        <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input  matInput  type="text" name="username" id="" placeholder="Enter user name" 
+            formControlName ="username"
+            >
+ 
+        </mat-form-field>
+ 
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+                <input type="text" matInput placeholder="email"  name="Email" 
+                formControlName ="email"
+                />  
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input type="password" matInput placeholder="Password" 
+            formControlName ="password"
+            />
+          
+        </mat-form-field>
+ 
+        <mat-form-field appearance="outline">
+         <mat-label>dateOfBirth</mat-label>
+         <input type="dateOfBirth" matInput placeholder="dateOfBirth"
+         
+         formControlName ="dateOfBirth"
+         />
+       
+         </mat-form-field>
+        <button class="form-btn" >SignUp</button>
+ 
+    </form>
+    <span href="">Do you have an account yet?</span>
+ </div>
