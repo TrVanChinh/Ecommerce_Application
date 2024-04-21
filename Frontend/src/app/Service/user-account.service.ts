@@ -18,4 +18,9 @@ export class UserAccountService {
     console.log(data)
     return this.http.post<any>(`${environment.appUrl}/user/signin`,data);
   }
+
+  verifyEmail(data:any) {
+    console.log(data)
+    return this.http.post<any>(`${environment.appUrl}/user/verify`,data);
+  }
 }

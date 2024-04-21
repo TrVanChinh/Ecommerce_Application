@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { verify } from 'crypto';
 import { UserAccountService } from 'src/app/Service/user-account.service';
 
 @Component({
@@ -9,15 +10,16 @@ import { UserAccountService } from 'src/app/Service/user-account.service';
 })
 export class SigninComponent implements OnInit {
   signInForm! : FormGroup;
-  userid!: string;
-  constructor(private userLogin:UserAccountService, private fb:FormBuilder) { }
+  userid: string = "";
+  Verify: boolean = false;
+  inputVerify:string ="";
+  constructor(private userService:UserAccountService, private fb:FormBuilder) { }
 
   ngOnInit(): void {
     this.signInForm = this.fb.group({
       username: '',
       password: '',
       email: '',
-      dateOfBirth:'',
     });
   }
 
@@ -25,14 +27,22 @@ export class SigninComponent implements OnInit {
     const data = {
       name: this.signInForm.value.username,
       email:this.signInForm.value.email,
-      password:this.signInForm.value.password,
-      dateOfBirth:this.signInForm.value.dateOfBirth
-
+      password:this.signInForm.value.password
     }
-    this.userLogin.signUp(data).subscribe(data=>{
+    this.userService.signUp(data).subscribe(data=>{
       this.userid = data.data.userId;
-      console.log('User ID:', this.userid);
+      this.Verify = true;
     })
+  }
+
+  VerifyEmail(){
+      const data = {
+        userId: this.userid,
+        otp:this.inputVerify
+      }
+      this.userService.verifyEmail(data).subscribe(res =>{
+        console.log(res)
+      })
   }
 
 }
