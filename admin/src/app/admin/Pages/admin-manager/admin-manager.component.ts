@@ -8,6 +8,7 @@ import { AdminManagerService } from 'src/app/Core/Services/admin-manager.service
 })
 export class AdminManagerComponent implements OnInit {
   addAdminForm! : FormGroup;
+  ListAdmin: any;
   constructor(private adminservice:AdminManagerService,private fb:FormBuilder) { }
 
   ngOnInit(): void {
@@ -16,6 +17,14 @@ export class AdminManagerComponent implements OnInit {
       email:'',
       password: '',
     });
+    this.addAdmin();
+   
+  }
+  addAdmin (){
+    this.adminservice.getAdmin().subscribe(res=>{
+      this.ListAdmin = res.data
+      console.log(this.ListAdmin)
+    })
   }
   onSubmit(): void {
     const data = {
@@ -26,6 +35,7 @@ export class AdminManagerComponent implements OnInit {
 
     }
     this.adminservice.addAdmin(data).subscribe(data=>{
+      this.addAdmin();
         console.log(data)
     })
   }

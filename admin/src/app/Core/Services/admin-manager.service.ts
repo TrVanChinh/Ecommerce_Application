@@ -31,6 +31,8 @@ export class AdminManagerService {
     )
   }
 
-
+  getAdmin() {
+    return this.http.get<any>(`${environment.appUrl}/admin/showAdmin`);
+  }
 
 }

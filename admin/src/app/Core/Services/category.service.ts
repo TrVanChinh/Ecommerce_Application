@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Category } from '../model/Category';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,6 +12,9 @@ export class CategoryService {
 
   getCategory() {
     return this.http.get<any>(`${environment.appUrl}/admin/showCategory`);
+  }
+  getCategorybyID(id:string) {
+    return this.http.get<any>(`${environment.appUrl}/admin/Category/${id}`);
   }
 
   addCategory(name: string): Observable<any> {   
@@ -26,8 +28,22 @@ export class CategoryService {
   }
   
 
-  UpdateCategory(data:any) {
-    return this.http.put<any>(`${environment.appUrl}/admin/updateCategory`,data);
+  UpdateCategory(categoryId:string, name:string ) {
+    return this.http.put<any>(`${environment.appUrl}/admin/updateCategory`,{categoryId , name});
   }
 
+ 
+
+
+  addSubCategory(name: string, categoryId:string|null): Observable<any> {   
+    return this.http.post<any>(`${environment.appUrl}/admin/newSubCategory`, { name , categoryId});
+  }
+
+  DeleteSubCategory(subCategoryId:string,categoryId: string|null): Observable<any> {
+    return this.http.delete<any>(`${environment.appUrl}/admin/deleteSubCategory`, { body: {subCategoryId, categoryId } });
+  }
+
+  UpdateSubCategory(categoryId:string|null,subCategoryId:string, newName:string ) {
+    return this.http.put<any>(`${environment.appUrl}/admin/UpdateSubCategory`,{categoryId ,subCategoryId, newName});
+  }
 }

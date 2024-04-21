@@ -14,6 +14,8 @@ const routes: Routes = [
   { path:'dashboard',component:DashboardComponent},
   { path:'user',component:UserComponent},
   { path:'Category',component:CategoryComponent},
+  { path:'Category/:id',component:CategoryComponent},
+
   { path:'addAdmin',component:AdminManagerComponent},
   { path:'a',component:AComponent}
 

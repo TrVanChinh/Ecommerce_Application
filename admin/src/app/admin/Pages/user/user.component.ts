@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { race } from 'rxjs';
+import { SellerService } from 'src/app/Core/Services/seller.service';
 
 @Component({
   selector: 'app-user',
@@ -6,10 +8,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./user.component.css']
 })
 export class UserComponent implements OnInit {
-
-  constructor() { }
+  ListSellerPending:any;
+  constructor(private sellerService:SellerService) { }
 
   ngOnInit(): void {
+  this.sellerService.getSellerPending().subscribe(res => {
+    this.ListSellerPending = res;
+    console.log(this.ListSellerPending)
+  })
   }
 
 }
