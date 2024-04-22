@@ -164,9 +164,9 @@ exports.ShowCategory = async (req, res) => {
 // }
 
 exports.ShowOneCategory = async (req, res) => {
-    const { id } = req.params; // Sử dụng req.params thay vì req.body
+    const { id } = req.params; 
     try {
-        const category = await Category.findOne({ "_id": id }); // Sử dụng findById thay vì findOne
+        const category = await Category.findOne({ "_id": id });
         if (!category) {
             return res.status(404).json({
                 status: 'FAILED',
@@ -187,3 +187,21 @@ exports.ShowOneCategory = async (req, res) => {
     }
 }
 
+//show subCategory
+exports.showSubCategory = async (req, res) => {
+    const { categoryId } = req.body 
+    try {
+        const categories = await Category.findOne({ "_id": categoryId });
+        res.json({
+            status: 'SUCCESS',
+            message: 'get categories',
+            data: categories.subCategory
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch categories',
+            error: error.message
+        });
+    }
+}

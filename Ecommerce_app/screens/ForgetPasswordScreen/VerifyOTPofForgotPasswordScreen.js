@@ -9,29 +9,26 @@ import {
   SafeAreaView,
 } from "react-native";
 import React from "react";
-import { Input, Icon } from "react-native-elements";
-import { useState, useRef } from "react";
-import { useUser } from '../UserContext';
+import { Input } from "react-native-elements";
+import { useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  axios  from "axios";
-import { API_BASE_URL } from "../Localhost";
+import { API_BASE_URL } from "../../Localhost";
 
-const VerifyScreen = ({ navigation}) => {
+const VerifyOTPofForgotPasswordScreen = ({ navigation}) => {
   const [code, setCode] = useState("");
-  const { updateUser} = useUser();
   const handledVerify = async () => {
-    const userId = await AsyncStorage.getItem("userId")
+    const userId = await AsyncStorage.getItem("userIdOfForgotPassword")
     const verifyInfo = {
       userId: userId,
       otp: code, 
     }
-    axios.post(`${API_BASE_URL}/user/verify`, verifyInfo).then((response) => {
+    axios.post(`${API_BASE_URL}/user/verifyOTPofForgotPassword`, verifyInfo).then((response) => {
       if (response.data.status === "FAILED") {
         Alert.alert(response.data.message); 
         console.log(response.data.message);
       } else {
-        updateUser(response.data.user);
-        navigation.navigate('Main');
+        navigation.navigate('SetupPassword');
       }
     }).catch((error) => {
         Alert.alert("Registration error")
@@ -40,8 +37,8 @@ const VerifyScreen = ({ navigation}) => {
   }
 
   const handledResendOTP = async () => { 
-    const userId = await AsyncStorage.getItem("userId")
-    const email = await AsyncStorage.getItem("email")
+    const userId = await AsyncStorage.getItem("userIdOfForgotPassword")
+    const email = await AsyncStorage.getItem("emailOfForgotPassword")
     const reSendOTPInfo = {
       userId: userId,
       email: email,
@@ -92,6 +89,6 @@ const VerifyScreen = ({ navigation}) => {
   );
 };
 
-export default VerifyScreen;
+export default VerifyOTPofForgotPasswordScreen;
 
 const styles = StyleSheet.create({});

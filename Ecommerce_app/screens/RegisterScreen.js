@@ -48,10 +48,14 @@ const RegisterScreen = ({navigation}) => {
         }
         AsyncStorage.setItem("email",email)
         axios.post(`${API_BASE_URL}/user/signup`, userInfo).then((response) => {
-          // console.log(response.data.data.userId);
-          const userId = response.data.data.userId
-          AsyncStorage.setItem("userId",userId)
-          navigation.navigate('Verify')
+          if (response.data.status === "FAILED") {
+            Alert.alert(response.data.message); 
+            console.log(response.data.message);
+          } else {
+            const userId = response.data.data.userId
+            AsyncStorage.setItem("userId",userId)
+            navigation.navigate('Verify')
+          }
         }).catch((error) => {
             Alert.alert("Registration error")
             console.log(error)
