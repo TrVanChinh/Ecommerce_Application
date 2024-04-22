@@ -28,10 +28,14 @@ const LoginScreen = ({navigation}) => {
       password: password,
     }
     axios.post(`${API_BASE_URL}/user/signin`,userInfo).then((response) => {
-      // console.log(response)
-      // console.log(response.data.data); 
-      updateUser(response.data.data)
-      navigation.navigate("Main")
+      if (response.data.status === "FAILED") {
+        alert(response.data.message); 
+        console.log(response.data.message);
+      } else {
+        console.log("Login successful")
+        updateUser(response.data.data)
+        navigation.navigate("Main")
+      }
     })
     .catch((error) => {
       alert("Login Error")
@@ -100,6 +104,12 @@ const LoginScreen = ({navigation}) => {
           <Text style={{ color: email.length > 0 ? "white" : "#857E7C" }}>
             Đăng nhập
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{paddingTop:20}}
+          onPress={() => navigation.navigate("EmailAuthentication")}
+        >
+          <Text style={{ color:'blue'}}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: 'center', marginVertical: 20 }}>
           <View style={{ flex: 1, height: 1, backgroundColor: "#D5DBCD" }}></View>

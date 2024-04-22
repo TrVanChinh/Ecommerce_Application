@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const UserOTPVerificationSchema = new Schema({
     userId: String,
     otp:String,
+    email:String,
     createdAt:Date,
     expiresAt:Date,
 })
