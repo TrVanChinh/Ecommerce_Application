@@ -3,6 +3,7 @@ const UserController = require("../controllers/UserController");
 const CategoryController = require("../controllers/CategoryController");
 const AdminController = require("../controllers/AdminController");
 const Images = require("../controllers/Images");
+const SellerController = require("../controllers/SellerController");
 
 const router = Router();
 
@@ -42,5 +43,13 @@ router.delete("/admin/deleteSubCategory", CategoryController.DeleteSubCategory)
 router.get("/admin/showCategory", CategoryController.ShowCategory)
 router.get("/admin/Category/:id", CategoryController.ShowOneCategory)
 router.get("/admin/subCategory", CategoryController.showSubCategory)
+
+//seller add product
+router.post("/seller/addProduct", SellerController.addProduct)
+router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
+router.put("/seller/updateProduct", SellerController.updateProduct)
+router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
+
+
 
 module.exports = router;
