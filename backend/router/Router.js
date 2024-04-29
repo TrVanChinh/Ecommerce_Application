@@ -11,7 +11,12 @@ const multer = require("multer");
 const upload = multer({ dest: '../uploads/' });
 
 //upload images
+// router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
+// router.post('/upload/productImage', upload.single('image'), Images.uploadProductImage);
+// router.post('/upload/productImages', upload.array('images', 20), Images.uploadProductImages);
 router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
+router.post('/upload/productImage', upload.array('images', 10), Images.uploadProductImages);
+
 
 
 //Admin

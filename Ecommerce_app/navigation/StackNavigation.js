@@ -16,6 +16,9 @@ import VerifyScreen from '../screens/VerifyScreen';
 import EmailAuthenticationScreen from '../screens/ForgetPasswordScreen/EmailAuthenticationScreen';
 import VerifyOTPofForgotPasswordScreen from '../screens/ForgetPasswordScreen/VerifyOTPofForgotPasswordScreen'
 import SetupPasswordScreen from '../screens/ForgetPasswordScreen/SetupPasswordScreen';
+import AddProductScreen from '../screens/Seller/AddProductScreen';
+import CategoryScreen from "../screens/Seller/Categories/CategoryScreen";
+import SubcategoryScreen from "../screens/Seller/Categories/SubcategoryScreen";
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -144,6 +147,15 @@ const StackNavigation = () => {
         <Stack.Screen name="VerifyOTPofForgotPassword" component={VerifyOTPofForgotPasswordScreen} options={{headerTitle: 'Xác thực OTP'}}/>
         <Stack.Screen name="SetupPassword" component={SetupPasswordScreen} options={{headerTitle: 'Thiết lập mật khẩu'}}/>
 
+        <Stack.Screen name="AddProduct" component={AddProductScreen} options={{headerTitle: 'Thêm sản phẩm'}}/>
+        <Stack.Screen name="SelectCategory" component={CategoryScreen} options={{
+            headerTitle: "Chọn danh mục",
+          }} 
+        />
+        <Stack.Screen name="SelectSubcategory" component={SubcategoryScreen}options={{
+            headerTitle: "Chọn danh mục con",
+          }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   )

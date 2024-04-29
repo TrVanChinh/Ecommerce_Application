@@ -189,19 +189,23 @@ exports.ShowOneCategory = async (req, res) => {
 
 //show subCategory
 exports.showSubCategory = async (req, res) => {
-    const { categoryId } = req.body 
+    let { categoryId, subCategoryId } = req.body;
     try {
-        const categories = await Category.findOne({ "_id": categoryId });
+        const category = await Category.findOne({ "_id": categoryId });
+        if (!category) {
+            return res.status(404).json({ message: "sscategory not found" });
+        }
+        const subCategory = category.subCategory.id(subCategoryId);
+        if (!subCategory) {
+            return res.status(404).json({ message: "Subcategory not found" });
+        }
         res.json({
             status: 'SUCCESS',
-            message: 'get categories',
-            data: categories.subCategory
-        });
+            message: 'Category found',
+            data: subCategory
+        });    
     } catch (error) {
-        res.status(500).json({
-            status: 'FAILED',
-            message: 'Failed to fetch categories',
-            error: error.message
-        });
+        console.error("Error updating subcategory:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 }

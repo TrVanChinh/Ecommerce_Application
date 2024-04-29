@@ -10,7 +10,6 @@ import {
   Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Feather,
   SimpleLineIcons,
@@ -211,7 +210,10 @@ const ProfileScreen = ({ navigation }) => {
       >
       <Text>Đăng nhập</Text>
       </Pressable>
-      
+      <TouchableOpacity 
+      onPress={() => navigation.navigate("AddProduct") }>
+        <Text>Thêm sản phẩm</Text>
+      </TouchableOpacity>
     </View>
   );
 };
