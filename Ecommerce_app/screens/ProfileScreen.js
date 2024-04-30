@@ -211,6 +211,10 @@ const ProfileScreen = ({ navigation }) => {
       <Text>Đăng nhập</Text>
       </Pressable>
       <TouchableOpacity 
+      onPress={() => navigation.navigate("RegisterSeller") }>
+        <Text>Đăng ký bán hàng</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
       onPress={() => navigation.navigate("AddProduct") }>
         <Text>Thêm sản phẩm</Text>
       </TouchableOpacity>

@@ -37,6 +37,10 @@ router.post("/user/emailAuthentication", UserController.emailAuthentication);
 router.post("/user/verifyOTPofForgotPassword", UserController.verifyOTPofForgotPassword);
 router.post("/user/setupPassword", UserController.setupPassword);
 router.post("/user/SaleRegister", UserController.saleRegister);
+// sendOTPVerificationEmailSeller
+router.post("/user/sendOTPVerificationEmailSeller", UserController.sendOTPVerificationEmailSeller);
+//verifyOTPVerificationEmailSeller
+router.post("/user/verifyOTPSeller", UserController.verifyOTPSeller);
 
 //category
 router.post("/admin/newCategory", CategoryController.NewCategory)
