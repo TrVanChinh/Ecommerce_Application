@@ -5,6 +5,7 @@ const AdminController = require("../controllers/AdminController");
 const ProductController = require("../controllers/ProductController");
 
 const Images = require("../controllers/Images");
+const SellerController = require("../controllers/SellerController");
 
 const router = Router();
 
@@ -12,8 +13,11 @@ const multer = require("multer");
 const upload = multer({ dest: '../uploads/' });
 
 //upload images
+// router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
+// router.post('/upload/productImage', upload.single('image'), Images.uploadProductImage);
+// router.post('/upload/productImages', upload.array('images', 20), Images.uploadProductImages);
 router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
-router.post('/upload/productImage', upload.array('images', 10), Images.uploadProductImage);
+router.post('/upload/productImage', upload.array('images', 10), Images.uploadProductImages);
 
 
 //Admin
@@ -35,6 +39,10 @@ router.post("/user/emailAuthentication", UserController.emailAuthentication);
 router.post("/user/verifyOTPofForgotPassword", UserController.verifyOTPofForgotPassword);
 router.post("/user/setupPassword", UserController.setupPassword);
 router.post("/user/SaleRegister", UserController.saleRegister);
+// sendOTPVerificationEmailSeller
+router.post("/user/sendOTPVerificationEmailSeller", UserController.sendOTPVerificationEmailSeller);
+//verifyOTPVerificationEmailSeller
+router.post("/user/verifyOTPSeller", UserController.verifyOTPSeller);
 
 //category
 router.post("/admin/newCategory", CategoryController.NewCategory)
@@ -51,6 +59,14 @@ router.get("/admin/:id/:subCategoryId", CategoryController.getSubCategory)
 //products
 router.get("/product/detail/:id", ProductController.getOneProduct)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
+
+
+//seller add product
+router.post("/seller/addProduct", SellerController.addProduct)
+router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
+router.put("/seller/updateProduct", SellerController.updateProduct)
+router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
+
 
 
 module.exports = router;
