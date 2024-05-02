@@ -1,0 +1,15 @@
+/* styles.css (global styles file) */
+.mat-menu {
+    background-color: #fff; /* Default background color */
+    border: 1px solid #ccc; /* Default border */
+    border-radius: 4px; /* Default border radius */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Default box shadow */
+    padding: 8px 0; /* Default padding */
+  }
+  
+  .mat-menu:hover {
+    background-color: #f0f0f0; /* Change background color on hover */
+    border-color: #999; /* Change border color on hover */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Change box shadow on hover */
+  }
+  

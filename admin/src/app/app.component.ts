@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   LoginForm!: FormGroup;
   loggedIn: boolean = false;
   opened: boolean = false;
+  isExpanded: boolean = false;
   constructor(
     private adminSerive: AdminManagerService,
     private fb: FormBuilder,
