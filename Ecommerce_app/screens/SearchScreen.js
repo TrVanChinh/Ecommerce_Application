@@ -14,15 +14,7 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
-import {
-  collection,
-  doc,
-  query,
-  onSnapshot,
-  getDocs,
-  where,
-} from "firebase/firestore";
-import { db } from "../firebase";
+
 import {
   AntDesign,
   MaterialCommunityIcons,
@@ -65,205 +57,104 @@ const SearchScreen = ({ navigation, route }) => {
       .replace(/[\u0300-\u036f]/g, ""); // Loại bỏ dấu
   }
 
-  const fetchData = async () => {
-    const normalizedSearchText = normalizeString(searchText);
-    const q = query(collection(db, "product"));
-    const querySnapshot = await getDocs(q);
-    const productsData = [];
-    const ProductDataSuggests = [];
-
-    for (const doc of querySnapshot.docs) {
-      const normalizedProductName = normalizeString(doc.data().name);
-
-      if (normalizedProductName.includes(normalizedSearchText)) {
-        const productId = doc.id;
-        const productData = doc.data();
-
-        const imageSnapshot = await getDocs(
-          collection(db, "product", productId, "image")
-        );
-
-        if (imageSnapshot.docs.length > 0) {
-          const imageUrl = imageSnapshot.docs[0].data().url;
-          productsData.push({
-            id: productId,
-            data: { ...productData, imageUrl },
-          });
-        }
-      } else {
-        // kiểm tra normalizedSearchText có chứa dấu cách không
-        const hasSpace = normalizedSearchText.includes(" ");
-        if (hasSpace) {
-          const searchParts = normalizedSearchText.split(" ");
-          if (normalizedProductName.includes(searchParts[0])) {
-            const productId = doc.id;
-            const productData = doc.data();
-
-            const imageSnapshot = await getDocs(
-              collection(db, "product", productId, "image")
-            );
-
-            if (imageSnapshot.docs.length > 0) {
-              const imageUrl = imageSnapshot.docs[0].data().url;
-              ProductDataSuggests.push({
-                id: productId,
-                data: { ...productData, imageUrl },
-              });
-            }
-          }
-        } else {
-          const firstLetter = normalizedSearchText[0];
-          if (normalizedProductName.includes(firstLetter)) {
-            const productId = doc.id;
-            const productData = doc.data();
-
-            const imageSnapshot = await getDocs(
-              collection(db, "product", productId, "image")
-            );
-
-            if (imageSnapshot.docs.length > 0) {
-              const imageUrl = imageSnapshot.docs[0].data().url;
-              ProductDataSuggests.push({
-                id: productId,
-                data: { ...productData, imageUrl },
-              });
-            }
-          }
-        }
-      }
-    }
-    // productsData.map(product => {
-    //   console.log("sort:",product.data.atCreate)
-    // })
-    
-    if (productsData.length !== 0) {
-      setSearchStatus(true);
-      setProduct(productsData);
-      getUniqueYears(productsData)
-      // console.log(productsData)
-    } else {
-      setSearchStatus(false);
-      setProduct(ProductDataSuggests);
-    }
-  };
-
-  // Sắp xếp sản phẩm từ thấp đến cao
-  const sortProductsByLowToHigh = (products) => {
-    setArrange(!arrange);
-    return products.sort((a, b) => {
-      const priceA = parseInt(a.data.price, 10);
-      const priceB = parseInt(b.data.price, 10);
-      return priceA - priceB;
-    });
-  };
-
-  // Sắp xếp sản phẩm từ cao đến thấp
-  const sortProductsByHighToLow = (products) => {
-    setArrange(!arrange);
-    return products.sort((a, b) => {
-      const priceA = parseInt(a.data.price, 10);
-      const priceB = parseInt(b.data.price, 10);
-      return priceB - priceA;
-    });
-  };
-
-    const sortProductsBySold = (products) => {
-      const sortProductsBySold = products.sort((a, b) => {
-        const soldA = parseInt(a.data.sold, 10);
-        const soldB = parseInt(b.data.sold, 10);
-        return soldB - soldA;
-      });
-      // In ra mảng đã sắp xếp
-    setProduct(sortProductsBySold);
-    setUpdateTrigger(prevState => !prevState);
-    };
-
-  // Sắp xếp sản phẩm bán chạy nhất
-  // const sortProductsBySold = (products) => {
+  // // Sắp xếp sản phẩm từ thấp đến cao
+  // const sortProductsByLowToHigh = (products) => {
+  //   setArrange(!arrange);
   //   return products.sort((a, b) => {
-  //     const soldA = parseInt(a.data.slod, 10);
-  //     const soldB = parseInt(b.data.slod, 10);
-  
-  //     // Sử dụng điều kiện kiểm tra để xử lý trường hợp 'sold' bằng 0 hoặc giá trị bằng nhau
-  //     if (soldA === soldB) {
-  //       // Nếu giá trị 'sold' bằng nhau, sử dụng thuộc tính 'name' để sắp xếp
-  //       const nameA = a.data.name || '';
-  //       const nameB = b.data.name || '';
-  //       return nameA.localeCompare(nameB);
-  //     } else {
-  //       // Sắp xếp theo giá trị 'sold' giảm dần
-  //       return soldB - soldA;
-  //     }
+  //     const priceA = parseInt(a.data.price, 10);
+  //     const priceB = parseInt(b.data.price, 10);
+  //     return priceA - priceB;
   //   });
   // };
 
+  // // Sắp xếp sản phẩm từ cao đến thấp
+  // const sortProductsByHighToLow = (products) => {
+  //   setArrange(!arrange);
+  //   return products.sort((a, b) => {
+  //     const priceA = parseInt(a.data.price, 10);
+  //     const priceB = parseInt(b.data.price, 10);
+  //     return priceB - priceA;
+  //   });
+  // };
+
+  //   const sortProductsBySold = (products) => {
+  //     const sortProductsBySold = products.sort((a, b) => {
+  //       const soldA = parseInt(a.data.sold, 10);
+  //       const soldB = parseInt(b.data.sold, 10);
+  //       return soldB - soldA;
+  //     });
+  //     // In ra mảng đã sắp xếp
+  //   setProduct(sortProductsBySold);
+  //   setUpdateTrigger(prevState => !prevState);
+  //   };
+
   // Sắp xếp mảng theo điều kiện atCreate từ mới nhất đến cũ nhất
-  const sortByCreatedAt = (products) => {
-    const sortbyCreateAtproduct=products.sort((a, b) => {
-      const aTimestamp = a.data.atCreate.seconds * 1000 + a.data.atCreate.nanoseconds / 1e6;
-      const bTimestamp = b.data.atCreate.seconds * 1000 + b.data.atCreate.nanoseconds / 1e6;
-      // So sánh theo timestamp
-      return bTimestamp - aTimestamp;
-    });
-    // In ra mảng đã sắp xếp
-    setProduct(sortbyCreateAtproduct);
-    setUpdateTrigger(prevState => !prevState);
-    product.map(product => {
-      console.log("ssss:",product.data.atCreate)
-    })
+  // const sortByCreatedAt = (products) => {
+  //   const sortbyCreateAtproduct=products.sort((a, b) => {
+  //     const aTimestamp = a.data.atCreate.seconds * 1000 + a.data.atCreate.nanoseconds / 1e6;
+  //     const bTimestamp = b.data.atCreate.seconds * 1000 + b.data.atCreate.nanoseconds / 1e6;
+  //     // So sánh theo timestamp
+  //     return bTimestamp - aTimestamp;
+  //   });
+  //   // In ra mảng đã sắp xếp
+  //   setProduct(sortbyCreateAtproduct);
+  //   setUpdateTrigger(prevState => !prevState);
+  //   product.map(product => {
+  //     console.log("ssss:",product.data.atCreate)
+  //   })
     
-  };
+  // };
 
-  const getYearFromAtCreate = (atCreate) => {
-    const atCreateTimestamp = new Date(atCreate.seconds * 1000 + atCreate.nanoseconds / 1e6);
-    return atCreateTimestamp.getFullYear();
-  };
+  // const getYearFromAtCreate = (atCreate) => {
+  //   const atCreateTimestamp = new Date(atCreate.seconds * 1000 + atCreate.nanoseconds / 1e6);
+  //   return atCreateTimestamp.getFullYear();
+  // };
 
-  const getUniqueYears = (product) => {
-    const uniqueYears = [];
+  // const getUniqueYears = (product) => {
+  //   const uniqueYears = [];
   
-    product.forEach((product) => {
-      const atCreate = product.data.atCreate;
-      const year = getYearFromAtCreate(atCreate)
+  //   product.forEach((product) => {
+  //     const atCreate = product.data.atCreate;
+  //     const year = getYearFromAtCreate(atCreate)
   
-      // Kiểm tra xem năm đã tồn tại trong mảng chưa
-      if (!uniqueYears.includes(year)) {
-        uniqueYears.push(year);
-      }
-    });
-    setYear(uniqueYears);
-    setItemYear()
-    console.log("nam",year)
-  };
+  //     // Kiểm tra xem năm đã tồn tại trong mảng chưa
+  //     if (!uniqueYears.includes(year)) {
+  //       uniqueYears.push(year);
+  //     }
+  //   });
+  //   setYear(uniqueYears);
+  //   setItemYear()
+  //   console.log("nam",year)
+  // };
   
 
-  const filterProduct = (products, minPrice, maxPrice) => {
-    if(searchStatus === true) {
-      const filteredProducts = products.filter(product => {
-        const price = product.data.price;
-        const atCreate = product.data.atCreate;
-        const year = getYearFromAtCreate(atCreate)
-        if(itemYear && maxPrice && minPrice) {
-          return year === itemYear && price >= minPrice && price <= maxPrice;
-        } else if (itemYear && maxPrice) {
-          return year === itemYear && price <= maxPrice
-        } else if (itemYear && minPrice) {
-          return year === itemYear && price >= minPrice
-        } else if (itemYear) {
-          return year === itemYear
-        } else if(maxPrice && minPrice) {
-          return price >= minPrice && price <= maxPrice;
-        } else if (maxPrice) {
-          return price <= maxPrice
-        } else if (minPrice) {
-          return price >= minPrice
-        } 
-      });
-      setProduct(filteredProducts);
-      setModalVisible(!isModalVisible);
+  // const filterProduct = (products, minPrice, maxPrice) => {
+  //   if(searchStatus === true) {
+  //     const filteredProducts = products.filter(product => {
+  //       const price = product.data.price;
+  //       const atCreate = product.data.atCreate;
+  //       const year = getYearFromAtCreate(atCreate)
+  //       if(itemYear && maxPrice && minPrice) {
+  //         return year === itemYear && price >= minPrice && price <= maxPrice;
+  //       } else if (itemYear && maxPrice) {
+  //         return year === itemYear && price <= maxPrice
+  //       } else if (itemYear && minPrice) {
+  //         return year === itemYear && price >= minPrice
+  //       } else if (itemYear) {
+  //         return year === itemYear
+  //       } else if(maxPrice && minPrice) {
+  //         return price >= minPrice && price <= maxPrice;
+  //       } else if (maxPrice) {
+  //         return price <= maxPrice
+  //       } else if (minPrice) {
+  //         return price >= minPrice
+  //       } 
+  //     });
+  //     setProduct(filteredProducts);
+  //     setModalVisible(!isModalVisible);
 
-    }
-  }
+  //   }
+  // }
 
   // Điều hướng sang màn hình chi tiết và gửi ID của sản phẩm
   const handleItem = (product) => {

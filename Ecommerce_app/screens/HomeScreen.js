@@ -18,7 +18,7 @@ import SlideShow from "../slide/OnBoading";
 import { useUser } from '../UserContext';
 import { API_BASE_URL } from "../Localhost";
 import  axios  from "axios";
-
+import ProductItem from "./ProductItem";
 const HomeScreen = ({navigation}) => {
   const { user } = useUser();
   const [products, setProducts] = useState([]);
@@ -137,6 +137,47 @@ const HomeScreen = ({navigation}) => {
       console.log(error)
     })
   }
+
+  const showSubcategory = () => {
+    const categoryInfo = {
+      categoryId:"661c0bcf5fddd37bdf84f83e",
+      subCategoryId: "66235653ce23e38ed32ad59d"
+    }
+    axios.post(`${API_BASE_URL}/admin/subCategory`,categoryInfo)
+    .then((response) => {
+      if (response.data.status === "FAILED") {
+        alert(response.data.message); 
+        console.log(response.data.message);
+      } else {
+        console.log(response.data)
+      }
+    })
+    .catch((error) => {
+      alert(" Error")
+      console.log(error)
+    })
+  }
+
+  
+
+  // const getSubcategory = () => {
+  //   const id = "661c0bcf5fddd37bdf84f83e"
+  //   const subCategoryId = "66235653ce23e38ed32ad59d"
+  //   axios.get(`${API_BASE_URL}/admin/${id}/${subCategoryId}`)
+  //   .then((response) => {
+  //     if (response.data.status === "FAILED") {
+  //       alert(response.data.message); 
+  //       console.log(response.data.message);
+  //     } else {
+  //       console.log(response.data)
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     alert(" Error")
+  //     console.log(error)
+  //   })
+  // }
+
   return (
     <SafeAreaView
       style={{
@@ -256,7 +297,7 @@ const HomeScreen = ({navigation}) => {
           </Text>
         </View>
         <View style={{ height: 250 }}>
-          <FlatList
+          {/* <FlatList
             horizontal
             style={{ flex: 1 }}
             keyExtractor={(item) => item.url}
@@ -317,9 +358,21 @@ const HomeScreen = ({navigation}) => {
                 </TouchableOpacity>
               );
             }}
+          /> */}
+          <FlatList
+            horizontal
+            style={{ flex: 1 }}
+            keyExtractor={(item) => item.url}
+            data={product}
+            renderItem={({ item }) => <ProductItem item={item} />}
           />
         </View>
       </ScrollView>
+      <TouchableOpacity
+        onPress={() => getSubcategory()}
+      >
+        <Text>SubCategory</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   )
 }

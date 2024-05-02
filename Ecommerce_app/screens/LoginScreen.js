@@ -48,6 +48,9 @@ const LoginScreen = ({navigation}) => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+
+
+  
   return (
     <SafeAreaView style={{ width: "100%", paddingTop:50, alignItems: "center" }}>
       <View> 

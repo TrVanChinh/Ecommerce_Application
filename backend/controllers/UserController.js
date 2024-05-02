@@ -1,4 +1,6 @@
 require("dotenv").config()
+const mongoose = require('mongoose');
+
 //mongodb user model
 const User = require('../models/User')
 const Admin = require('../models/Admin')
@@ -33,7 +35,7 @@ exports.signup = (req, res) => {
             status:"FAILED",
             message:"Invalid name entered!"
         })
-    }else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
+    }else if(!/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
         res.json({
             status:"FAILED",
             message:"Invalid email entered!"
@@ -526,5 +528,29 @@ exports.showSaleRegister = async (req, res) => {
             error: error.message
         });
         
+    }
+}
+
+exports.getUser = (req, res) => { 
+    const { id } = req.params; 
+    if(!id){
+        res.json({
+            status: "FAILED",
+            message: "id null"
+        })
+    } else {
+        User.findById(id)
+        .then(data => {
+             res.json({
+                 status: "SUCCESS",
+                 data: data
+             })
+         })
+        .catch(err => {
+             res.json({
+                 status: "FAILED",
+                 message: err.message
+             })
+         })
     }
 }

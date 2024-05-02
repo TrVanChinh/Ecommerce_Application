@@ -19,18 +19,6 @@ import {
     Feather,
   } from "@expo/vector-icons";
   import slides from "../slide/slides";
-  import {
-    collection,
-    doc,
-    query,
-    onSnapshot,
-    getDoc,
-    setDoc,
-    getDocs,
-    updateDoc,
-    addDoc
-  } from "firebase/firestore";
-  import { db } from "../firebase";
   import { useRoute } from "@react-navigation/native";
   import { BottomModal, SlideAnimation, ModalContent } from "react-native-modals";
   import { useUser } from '../UserContext';
@@ -49,7 +37,7 @@ import {
     const productId = product.id;
     const ShopId = product.data.idShop;
     const { user } = useUser();
-    console.log(product)
+    
     // console.log("infoUser",user.user.uid)
     // useLayoutEffect(() => {
     //   const GetImage = onSnapshot(
@@ -67,94 +55,94 @@ import {
     //   };
     // }, [productId]);
   
-    useEffect(() => {
-      const GetImage = async () => {
-        try {
-          const imageQuery = query(
-            collection(doc(collection(db, "product"), productId), "image")
-          );
-          const snapshot = await getDocs(imageQuery);
-          const images = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }));
-          setListImage(images);
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu ảnh:", error);
-        }
-      };
+    // useEffect(() => {
+    //   const GetImage = async () => {
+    //     try {
+    //       const imageQuery = query(
+    //         collection(doc(collection(db, "product"), productId), "image")
+    //       );
+    //       const snapshot = await getDocs(imageQuery);
+    //       const images = snapshot.docs.map((doc) => ({
+    //         id: doc.id,
+    //         data: doc.data(),
+    //       }));
+    //       setListImage(images);
+    //     } catch (error) {
+    //       console.error("Lỗi khi lấy dữ liệu ảnh:", error);
+    //     }
+    //   };
   
-      const GetOption = async () => {
-        try {
-          const optionQuery = query(
-            collection(doc(collection(db, "product"), productId), "option")
-          );
-          const snapshot = await getDocs(optionQuery);
-          const options = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }));
-          setOption(options);
-          console.log(options)
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu ảnh:", error);
-        }
-      };
+    //   const GetOption = async () => {
+    //     try {
+    //       const optionQuery = query(
+    //         collection(doc(collection(db, "product"), productId), "option")
+    //       );
+    //       const snapshot = await getDocs(optionQuery);
+    //       const options = snapshot.docs.map((doc) => ({
+    //         id: doc.id,
+    //         data: doc.data(),
+    //       }));
+    //       setOption(options);
+    //       console.log(options)
+    //     } catch (error) {
+    //       console.error("Lỗi khi lấy dữ liệu ảnh:", error);
+    //     }
+    //   };
   
-      const fetchShopData = async () => {
-        try {
-          const userDocRef = doc(db, "user", ShopId);
-          const docSnapshot = await getDoc(userDocRef);
+      // const fetchShopData = async () => {
+      //   try {
+      //     const userDocRef = doc(db, "user", ShopId);
+      //     const docSnapshot = await getDoc(userDocRef);
   
-          if (docSnapshot.exists()) {
-            const userData = { id: docSnapshot.id, data: docSnapshot.data() };
-            setShop(userData);
-          } else {
-            console.log("Document không tồn tại cho ShopId:", ShopId);
-          }
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu:", error);
-        }
-      };
+      //     if (docSnapshot.exists()) {
+      //       const userData = { id: docSnapshot.id, data: docSnapshot.data() };
+      //       setShop(userData);
+      //     } else {
+      //       console.log("Document không tồn tại cho ShopId:", ShopId);
+      //     }
+      //   } catch (error) {
+      //     console.error("Lỗi khi lấy dữ liệu:", error);
+      //   }
+      // };
    
-      fetchShopData();
-      GetImage();
-      GetOption();
-    }, [productId, ShopId]);
+    //   fetchShopData();
+    //   GetImage();
+    //   GetOption();
+    // }, [productId, ShopId]);
   
-    const addToCart = async (userId, productId, optionProductId, quantity) => {
-        try {
-          // Kiểm tra xem người dùng đã có giỏ hàng chưa
-          const userDocRef = doc(db, 'user', userId);
-          const userDocSnapshot = await getDoc(userDocRef);
-          if (userDocSnapshot.exists()) {
-            // Nếu người dùng đã có giỏ hàng, thêm sản phẩm vào giỏ hàng
-            const cartCollectionRef = collection(userDocRef, 'cart');
-            const productDocRef = doc(cartCollectionRef, optionProductId);
+    // const addToCart = async (userId, productId, optionProductId, quantity) => {
+    //     try {
+    //       // Kiểm tra xem người dùng đã có giỏ hàng chưa
+    //       const userDocRef = doc(db, 'user', userId);
+    //       const userDocSnapshot = await getDoc(userDocRef);
+    //       if (userDocSnapshot.exists()) {
+    //         // Nếu người dùng đã có giỏ hàng, thêm sản phẩm vào giỏ hàng
+    //         const cartCollectionRef = collection(userDocRef, 'cart');
+    //         const productDocRef = doc(cartCollectionRef, optionProductId);
   
-            const productDocSnapshot = await getDoc(productDocRef);
-            if (productDocSnapshot.exists()) {
-              // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
-              await updateDoc(productDocRef, {
-                quantity: productDocSnapshot.data().quantity + quantity,
-              });
-            } else {
-              // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới vào giỏ hàng
-              await setDoc(productDocRef, {
-                productId,
-                optionProductId,
-                quantity,
-              });
-            }
+    //         const productDocSnapshot = await getDoc(productDocRef);
+    //         if (productDocSnapshot.exists()) {
+    //           // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
+    //           await updateDoc(productDocRef, {
+    //             quantity: productDocSnapshot.data().quantity + quantity,
+    //           });
+    //         } else {
+    //           // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới vào giỏ hàng
+    //           await setDoc(productDocRef, {
+    //             productId,
+    //             optionProductId,
+    //             quantity,
+    //           });
+    //         }
       
-            console.log('Sản phẩm đã được thêm vào giỏ hàng thành công.');
-          } else {
-            console.log('Người dùng không tồn tại.');
-          }
-        } catch (error) {
-          console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
-      }
-    };
+    //         console.log('Sản phẩm đã được thêm vào giỏ hàng thành công.');
+    //       } else {
+    //         console.log('Người dùng không tồn tại.');
+    //       }
+    //     } catch (error) {
+    //       console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+    //   }
+    // };
   
     const handleShop = () => {
       navigation.navigate("Shop", {shop});
