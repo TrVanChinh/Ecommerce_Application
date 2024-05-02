@@ -23,12 +23,16 @@ const VerifyScreen = ({ navigation}) => {
     const userId = await AsyncStorage.getItem("userId")
     const verifyInfo = {
       userId: userId,
-      otp: code,
+      otp: code, 
     }
     axios.post(`${API_BASE_URL}/user/verify`, verifyInfo).then((response) => {
-      console.log(response.data);
-      updateUser(response.data.user)
-      navigation.navigate('Main')
+      if (response.data.status === "FAILED") {
+        Alert.alert(response.data.message); 
+        console.log(response.data.message);
+      } else {
+        updateUser(response.data.user);
+        navigation.navigate('Main');
+      }
     }).catch((error) => {
         Alert.alert("Registration error")
         console.log(error)

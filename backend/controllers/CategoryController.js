@@ -63,7 +63,6 @@ exports.DeleteCategory = async (req, res) => {
 
 
 
-
 //creact SubCategory
 exports.CreateSubCategory= async(req, res) => {
     let {name, categoryId} = req.body
@@ -165,9 +164,9 @@ exports.ShowCategory = async (req, res) => {
 // }
 
 exports.ShowOneCategory = async (req, res) => {
-    const { id } = req.params; // Sử dụng req.params thay vì req.body
+    const { id } = req.params; 
     try {
-        const category = await Category.findOne({ "_id": id }); // Sử dụng findById thay vì findOne
+        const category = await Category.findOne({ "_id": id });
         if (!category) {
             return res.status(404).json({
                 status: 'FAILED',
@@ -185,5 +184,50 @@ exports.ShowOneCategory = async (req, res) => {
             message: 'Failed to fetch category',
             error: error.message
         });
+    }
+}
+
+//show subCategory
+exports.showSubCategory = async (req, res) => {
+    let { categoryId, subCategoryId } = req.body;
+    try {
+        const category = await Category.findOne({ "_id": categoryId });
+        if (!category) {
+            return res.status(404).json({ message: "sscategory not found" });
+        }
+        const subCategory = category.subCategory.id(subCategoryId);
+        if (!subCategory) {
+            return res.status(404).json({ message: "Subcategory not found" });
+        }
+        res.json({
+            status: 'SUCCESS',
+            message: 'Category found',
+            data: subCategory
+        });    
+    } catch (error) {
+        console.error("Error updating subcategory:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getSubCategory = async (req, res) => {
+    let { id, subCategoryId } = req.params;
+    try {
+        const category = await Category.findOne({ "_id": id });
+        if (!category) {
+            return res.status(404).json({ message: "sscategory not found" });
+        }
+        const subCategory = category.subCategory.id(subCategoryId);
+        if (!subCategory) {
+            return res.status(404).json({ message: "Subcategory not found" });
+        }
+        res.json({
+            status: 'SUCCESS',
+            message: 'Category found',
+            data: subCategory
+        });    
+    } catch (error) {
+        console.error("Error updating subcategory:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 }

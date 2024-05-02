@@ -13,6 +13,11 @@ import RegisterScreen from '../screens/RegisterScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import NotificationScreen from '../screens/NotificationScreen';
 import VerifyScreen from '../screens/VerifyScreen';
+import EmailAuthenticationScreen from '../screens/ForgetPasswordScreen/EmailAuthenticationScreen';
+import VerifyOTPofForgotPasswordScreen from '../screens/ForgetPasswordScreen/VerifyOTPofForgotPasswordScreen'
+import SetupPasswordScreen from '../screens/ForgetPasswordScreen/SetupPasswordScreen';
+import SearchScreen from '../screens/SearchScreen';
+import DetailScreen from '../screens/DetailScreen';
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -136,6 +141,13 @@ const StackNavigation = () => {
         <Stack.Screen name="Verify" component={VerifyScreen} options={{headerTitle: 'Xác thực OTP'}}/>
         <Stack.Screen name="Register" component={RegisterScreen} options={{headerTitle: 'Đăng ký'}}/>
         <Stack.Screen name="Notification" component={NotificationScreen} options={{headerTitle: 'Thông báo'}}/>
+
+        <Stack.Screen name="EmailAuthentication" component={EmailAuthenticationScreen} options={{headerTitle: 'Xác minh Email'}}/>
+        <Stack.Screen name="VerifyOTPofForgotPassword" component={VerifyOTPofForgotPasswordScreen} options={{headerTitle: 'Xác thực OTP'}}/>
+        <Stack.Screen name="SetupPassword" component={SetupPasswordScreen} options={{headerTitle: 'Thiết lập mật khẩu'}}/>
+
+        <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
+        {/* <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/> */}
 
       </Stack.Navigator>
     </NavigationContainer>

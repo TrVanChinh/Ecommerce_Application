@@ -1,0 +1,37 @@
+<div *ngIf="!loggedIn" class="flex justify-center flex-col items-center mt-20 text-primary-color">
+
+    <h1>Admin Sign up</h1>
+    <form class="flex flex-col justify-center w-60" action="" [formGroup]="LoginForm" (ngSubmit)="onSubmit()" >
+ 
+ 
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+             <input type="text" matInput placeholder="email"  name="email" formControlName="email"/>  
+        </mat-form-field>
+ 
+        <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input type="password" matInput placeholder="password" formControlName="password"/>
+        </mat-form-field>
+ 
+        <button class="form-btn" >Login</button>
+ 
+    </form>
+ </div>
+
+<div *ngIf="loggedIn">   
+    <mat-toolbar class="mat-elevation-z3 relative z-10">
+        <button mat-icon-button>
+            <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+        </button>
+    </mat-toolbar>
+    <mat-sidenav-container class="h-[calc(100vh-4rem)]" >
+        <mat-sidenav  #sidenav opened mode="side" class="w-64">
+            <app-app-custom-sidenav (myEvent)="handleEvent($event)"></app-app-custom-sidenav>
+        </mat-sidenav>
+        <mat-sidenav-content class="p-6">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>
+

@@ -1,4 +1,6 @@
 require("dotenv").config()
+const mongoose = require('mongoose');
+
 //mongodb user model
 const User = require('../models/User')
 const Admin = require('../models/Admin')
@@ -33,7 +35,7 @@ exports.signup = (req, res) => {
             status:"FAILED",
             message:"Invalid name entered!"
         })
-    }else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
+    }else if(!/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
         res.json({
             status:"FAILED",
             message:"Invalid email entered!"
@@ -52,15 +54,13 @@ exports.signup = (req, res) => {
                     message:" email already exists"
                 })
             }else{
-                User.find({email}).then(result => {
+                User.find({ email: email, verified: true }).then(result => {
                     if(result.length){
                         res.json({
                             status:"FAILED",
                             message:"user with the provided email already exists"
                         })
                     }else{
-                        //create new user
-        
                         //password handling
                         const saltRounds = 10;
                         bcrypt.hash(password, saltRounds).then(hashedPassword => {
@@ -198,10 +198,10 @@ const sendOTPVerificationEmail = async ({ _id, email}, res) => {
 
 
     } catch (error) {
-        res.json({
+        res.status(500).json({ // Trả về mã lỗi 500 Internal Server Error
             status:"FAILED",
-            message: error.message
-        })
+            message: "An error occurred while sending OTP verification email"
+        });
     }
 }
 
@@ -234,10 +234,10 @@ exports.verifyOTP =  async (req, res) => {
                     const validOTP = await bcrypt.compare(otp, hashedOTP);
 
                     if(!validOTP) { 
-                        throw new Error(
-                            "Invalid OTP passed. Check your inbox"
-                        )
-
+                        res.json({
+                            status: "FAILED",
+                            message: "Invalid OTP passed. Check your inbox!"
+                        });
                     } else {
                        await User.updateOne({_id: userId}, {verified: true})
                        await UserOTPVerification.deleteMany({ userId})
@@ -245,8 +245,7 @@ exports.verifyOTP =  async (req, res) => {
                         if (!user) {
                             throw new Error("User not found after verification.");
                         }
-                        
-
+                    
                         res.json({
                             status: "VERIFIED",
                             message: "User email verified successfully!",
@@ -282,6 +281,145 @@ exports.resendVerificationCode = async (req, res) => {
     }
 }
 
+//Email Authentication of Forgot password function
+exports.emailAuthentication = async (req, res) => { 
+    try {
+        let {email} = req.body
+        if(!email) {
+            throw Error("Empty email are not allowed")
+        } else {
+            User.findOne({ email: email, verified: true }).then(result => {
+                if(!result){
+                    res.json({
+                        status:"FAILED",
+                        message:"The user with the provided email does not exist. "
+                    })
+                }else{    
+                    sendOTPVerificationEmail(result, res)
+                }
+            }).catch(err => {
+                console.log(err)
+                res.json({
+                    status:"FAILED",
+                    message: "An error occurred while checking for existing user!"
+                })
+            }) 
+        }
+    } catch (error) {
+        res.json({
+            status:"FAILED",
+            message: error.message
+        })
+    }
+}
+
+//Verify otp of Forgot password function
+exports.verifyOTPofForgotPassword =  async (req, res) => {
+    try{
+        let{userId, otp} = req.body;
+        if(!userId || !otp) { 
+            throw Error("Empty otp details are not allowed")
+        } else {
+            const UserOTPVerificationRecords = await UserOTPVerification.find({
+                userId,
+            })
+            if(UserOTPVerificationRecords.length <= 0) {
+                throw new Error(
+                    "Account record doesn't exist or has been verified already. Please sign up or log in."
+                )
+            } else {
+                //user otp record exists
+                const {expiresAt} = UserOTPVerificationRecords[0]
+                const hashedOTP = UserOTPVerificationRecords[0].otp
+                
+                if(expiresAt < Date.now()) {
+                    //user otp record has expired
+                    await UserOTPVerification.deleteMany({userId})
+                    throw new Error(
+                        "Your OTP has expired. Please sign up or log in."
+                    )
+                } else {
+                    const validOTP = await bcrypt.compare(otp, hashedOTP);
+
+                    if(!validOTP) { 
+                        res.json({
+                            status: "FAILED",
+                            message: "Invalid OTP passed. Check your inbox!"
+                        });
+                    } else {
+                        await UserOTPVerification.deleteMany({userId})
+                        res.json({
+                            status: "SUCCESS",
+                            message: "Verified successfully!",
+                        });
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        res.json({
+            status:"FAILED",
+            message: err.message
+        })
+    }  
+}
+
+//update new password of Forgot password function
+exports.setupPassword =  async (req, res) => {
+    try{
+        let{userId, password} = req.body;
+        if(!userId || !password) { 
+            throw Error("Empty are not allowed")
+        } else if(password.length < 8) {
+            res.json({
+                status:"FAILED",
+                message:"Password must be at least 8 characters long!"
+            })
+        }else {
+            User.findById(userId).then(result => {
+                if(!result){
+                    res.json({
+                        status:"FAILED",
+                        message:"User does not exist. "
+                    })
+                }else{    
+                    //password handling
+                    const saltRounds = 10;
+                    bcrypt.hash(password, saltRounds).then(hashedPassword => {
+                        result.password = hashedPassword    
+                        result.save().then(() => {
+                            res.json({
+                                status:"SUCCESS",
+                                message:"Password updated successfully!"
+                            })
+                        }).catch(err => {
+                            res.json({
+                                status:"FAILED",
+                                message: "An error occurred while updating the password!"
+                            })
+                        })
+                    }).catch(err => {
+                        res.json({
+                            status:"FAILED",
+                            message: "An error occurred while encrypting the password!"
+                        })
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+                res.json({
+                    status:"FAILED",
+                    message: "An error occurred while checking for existing user!"
+                })
+            }) 
+        }
+    } catch (err) {
+        res.json({
+            status:"FAILED",
+            message: err.message
+        })
+    }  
+}
 
 //forgot password
 exports.forgotPassword = async (req, res) => {
@@ -390,5 +528,29 @@ exports.showSaleRegister = async (req, res) => {
             error: error.message
         });
         
+    }
+}
+
+exports.getUser = (req, res) => { 
+    const { id } = req.params; 
+    if(!id){
+        res.json({
+            status: "FAILED",
+            message: "id null"
+        })
+    } else {
+        User.findById(id)
+        .then(data => {
+             res.json({
+                 status: "SUCCESS",
+                 data: data
+             })
+         })
+        .catch(err => {
+             res.json({
+                 status: "FAILED",
+                 message: err.message
+             })
+         })
     }
 }

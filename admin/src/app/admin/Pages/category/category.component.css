@@ -1,0 +1,25 @@
+.mat-table {
+    width: 800px; 
+    border-collapse: collapse; 
+  }
+  
+  .mat-header-cell,
+  .mat-cell {
+    padding: 12px; 
+    border-right: 1px solid #ccc;
+  }
+  
+  .mat-header-row,
+  .mat-row {
+    height: 48px;
+  }
+
+  .mat-column-action {
+    width: 200px; 
+  }
+  
+  .mat-header-cell.mat-column-action,
+  .mat-cell.mat-column-action {
+    text-align: center;
+  }
+  
