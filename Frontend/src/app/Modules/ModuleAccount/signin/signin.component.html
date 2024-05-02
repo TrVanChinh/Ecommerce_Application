@@ -1,0 +1,66 @@
+<div *ngIf="!Verify" class="container mx-auto mt-10 flex flex-col justify-center items-center">
+  <h1 class="register">Register</h1>
+
+  <div class="border-b border-gray-300 w-full mb-10 mt-5">
+  </div>
+  <h2>
+    Your Personal Details
+  </h2>
+  <form
+  
+    class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
+    [formGroup]="signInForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      <input
+        matInput
+        type="text"
+        name="username"
+        id=""
+        placeholder="Enter user name"
+        formControlName="username"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input
+        type="text"
+        matInput
+        placeholder="email"
+        name="Email"
+        formControlName="email"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input
+        type="password"
+        matInput
+        placeholder="Password"
+        formControlName="password"
+      />
+    </mat-form-field>
+    <button mat-flat-button class="bg-green-300">Register</button>
+    <span class="mt-5" href="">Do you have an account <a routerLink="/login" 
+      class="text-cyan-500 underline">yet</a>?
+    </span>
+  </form>
+
+ 
+</div>
+
+<div *ngIf="Verify" class="flex flex-col justify-center items-center mt-10">
+  <mat-form-field appearance="outline">
+    <mat-label>Nhập mã code</mat-label>
+    <input
+      type="Verify"
+      matInput
+      placeholder="Nhập mã code"
+      [(ngModel)]="inputVerify"
+    />
+  </mat-form-field>
+  <button mat-flat-button class="bg-green-300 "  (click)="VerifyEmail()">Verify</button>
+</div>
