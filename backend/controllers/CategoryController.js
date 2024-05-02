@@ -4,19 +4,19 @@ const Category = require('../models/Category')
 
 //creact category
 exports.NewCategory = async (req, res) => {
-    let {name} = req.body
-    if(name === ''){
+    let { name } = req.body
+    if (name === '') {
         res.json({
-            status:"FAILED",
-            message:"Empty input fields!"
+            status: "FAILED",
+            message: "Empty input fields!"
         })
     } else {
         try {
             const newCategory = new Category({
                 name: name,
-                subCategory: [] 
+                subCategory: []
             });
-    
+
             await newCategory.save();
             res.status(200).json({ message: "Category created Successfully" });
         } catch (error) {
@@ -43,7 +43,7 @@ exports.UpdateCategory = async (req, res) => {
     }
 };
 
-//detect category
+//delete category
 exports.DeleteCategory = async (req, res) => {
     const { categoryId } = req.body;
     try {
@@ -64,12 +64,12 @@ exports.DeleteCategory = async (req, res) => {
 
 
 //creact SubCategory
-exports.CreateSubCategory= async(req, res) => {
-    let {name, categoryId} = req.body
-    if(name === '' || categoryId === ''){
+exports.CreateSubCategory = async (req, res) => {
+    let { name, categoryId } = req.body
+    if (name === '' || categoryId === '') {
         res.json({
-            status:"FAILED",
-            message:"Empty input fields!"
+            status: "FAILED",
+            message: "Empty input fields!"
         })
     } else {
         try {
@@ -127,7 +127,7 @@ exports.DeleteSubCategory = async (req, res) => {
 
 
 // Show category
-exports.ShowCategory = async (req, res) => { 
+exports.ShowCategory = async (req, res) => {
     try {
         const categories = await Category.find();
         res.json({
@@ -164,7 +164,7 @@ exports.ShowCategory = async (req, res) => {
 // }
 
 exports.ShowOneCategory = async (req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params;
     try {
         const category = await Category.findOne({ "_id": id });
         if (!category) {
@@ -203,7 +203,7 @@ exports.showSubCategory = async (req, res) => {
             status: 'SUCCESS',
             message: 'Category found',
             data: subCategory
-        });    
+        });
     } catch (error) {
         console.error("Error updating subcategory:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -225,7 +225,7 @@ exports.getSubCategory = async (req, res) => {
             status: 'SUCCESS',
             message: 'Category found',
             data: subCategory
-        });    
+        });
     } catch (error) {
         console.error("Error updating subcategory:", error);
         res.status(500).json({ message: "Internal server error" });
