@@ -59,7 +59,9 @@ router.get("/admin/:id/:subCategoryId", CategoryController.getSubCategory)
 //products
 router.get("/product/detail/:id", ProductController.getOneProduct)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
-
+router.post("/product/newProduct", ProductController.NewProduct)
+router.put("/product/updateProduct", ProductController.UpdateProduct)
+router.delete("/product/deleteProduct", ProductController.DeleteProduct)
 
 //seller add product
 router.post("/seller/addProduct", SellerController.addProduct)
