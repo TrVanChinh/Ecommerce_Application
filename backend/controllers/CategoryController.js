@@ -58,11 +58,6 @@ exports.DeleteCategory = async (req, res) => {
     }
 };
 
-
-
-
-
-
 //creact SubCategory
 exports.CreateSubCategory = async (req, res) => {
     let { name, categoryId } = req.body

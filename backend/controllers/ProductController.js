@@ -28,8 +28,6 @@ exports.getOneProduct = (req, res) => {
 
 }
 
-
-
 exports.getInfoShop = async (req, res) => {
     const { id } = req.params;
     if (!id) {
@@ -104,7 +102,7 @@ exports.UpdateProduct = async (req, res) => {
     }
 };
 
-//delete category
+//delete product
 exports.DeleteProduct = async (req, res) => {
     const { id } = req.body;
     try {
