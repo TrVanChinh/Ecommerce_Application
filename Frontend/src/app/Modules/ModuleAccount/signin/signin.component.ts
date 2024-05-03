@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { verify } from 'crypto';
-import { UserAccountService } from 'src/app/Service/user-account.service';
+import { UserAccountService } from 'src/app/Core/Service/user-account.service';
+
 
 @Component({
   selector: 'app-signin',
@@ -10,10 +12,10 @@ import { UserAccountService } from 'src/app/Service/user-account.service';
 })
 export class SigninComponent implements OnInit {
   signInForm! : FormGroup;
-  userid: string = "";
+  userid: string|null = "";
   Verify: boolean = false;
   inputVerify:string ="";
-  constructor(private userService:UserAccountService, private fb:FormBuilder) { }
+  constructor(private userService:UserAccountService, private fb:FormBuilder, private router:Router) { }
 
   ngOnInit(): void {
     this.signInForm = this.fb.group({
@@ -21,6 +23,10 @@ export class SigninComponent implements OnInit {
       password: '',
       email: '',
     });
+    this.userid = localStorage.getItem('userId');
+    if(this.userid){
+      this.Verify = true;
+    }
   }
 
   onSubmit(): void {
@@ -41,6 +47,7 @@ export class SigninComponent implements OnInit {
         otp:this.inputVerify
       }
       this.userService.verifyEmail(data).subscribe(res =>{
+        this.router.navigate(['/login'])
         console.log(res)
       })
   }
