@@ -587,8 +587,9 @@ exports.sendOTPVerificationEmailSeller = async (req, res) => {
       });
     }
   };
+
   //verify otp seller registration response
-  exports.verifyOTPSeller = async (req, res) => {
+exports.verifyOTPSeller = async (req, res) => {
     try {
       let { otp, hashedOTP } = req.body;
       if (!otp) {
