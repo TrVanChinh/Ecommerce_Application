@@ -554,3 +554,65 @@ exports.getUser = (req, res) => {
          })
     }
 }
+
+exports.sendOTPVerificationEmailSeller = async (req, res) => {
+    try {
+      const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+      let {email} = req.body;
+      //mail options
+      const mailOptions = {
+        from: process.env.AUTH_EMAIL,
+        to: email,
+        subject: "OTP Verification",
+        html: `<p>Your OTP verify seller registration request is: <b>${otp}</b></p>`,
+      };
+  
+      //hash the otp
+      const saltRounds = 10;
+      const hashedOTP = await bcrypt.hash(otp, saltRounds);
+      await transporter.sendMail(mailOptions)
+      res.json({
+        status: "SUCCESS",
+        message: "Verification otp email sent!",
+        data: {
+          hashedOTP: hashedOTP,
+          // otp:otp
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        // Trả về mã lỗi 500 Internal Server Error
+        status: "FAILED",
+        message: "An error occurred while sending OTP verification email",
+      });
+    }
+  };
+  //verify otp seller registration response
+  exports.verifyOTPSeller = async (req, res) => {
+    try {
+      let { otp, hashedOTP } = req.body;
+      if (!otp) {
+        throw Error("Empty otp details are not allowed");
+      } else {
+      //   const hashedOTP = otp;
+        const validOTP = await bcrypt.compare(otp, hashedOTP);
+  
+        if (!validOTP) {
+          res.json({
+            status: "FAILED",
+            message: "Invalid OTP passed. Check your inbox!",
+          });
+        } else {
+          res.json({
+            status: "VERIFIED",
+            message: "User email verified successfully!",
+          });
+        }
+      }
+    } catch (err) {
+      res.json({
+        status: "FAILED",
+        message: err.message,
+      });
+    }
+  };
