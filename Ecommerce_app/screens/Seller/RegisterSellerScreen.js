@@ -54,7 +54,7 @@ const RegisterSellerScreen = ({ navigation, route }) => {
     // Gửi lại mã xác nhận
     // Bắt đầu đếm ngược
     setIsCountdownActive(true);
-    setCountdown(6);
+    setCountdown(60);
     sendOTPVerificationEmailSeller();
   };
 
@@ -100,7 +100,7 @@ const RegisterSellerScreen = ({ navigation, route }) => {
       const res = await axios.post(
         `${API_BASE_URL}/user/sendOTPVerificationEmailSeller`,
         {
-          email: "tuongdang297@gmail.com",
+            email: "tuongdang297@gmail.com",
         }
       );
       setHashedOTP(res.data.data.hashedOTP);
