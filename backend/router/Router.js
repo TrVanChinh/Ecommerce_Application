@@ -77,6 +77,8 @@ router.get("/order/showOrdersByShop/:shopId", OrderController.showOrdersByShop);
 router.get("/order/showOrdersByBuyer/:userId", OrderController.showOrdersByBuyer);
 //show order by id
 router.get("/order/showOrderById/:id", OrderController.showOrderById);
+//show order by status: processing, shipping, delivered
+router.get("/order/showOrdersByStatus", OrderController.showOrdersByStatus);
 //create order
 router.post("/order/createOrder", OrderController.createOrder);
 //change status order

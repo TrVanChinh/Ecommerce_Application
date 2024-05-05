@@ -32,7 +32,20 @@ exports.showOrdersByBuyer = async (req, res) => {
     }
 }
 
-
+//show order by status
+exports.showOrdersByStatus = async (req, res) => {
+    const { status } = req.body;
+    try {
+        const orders = await Order.find({ status: status});
+        if (!orders) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error("Error showing order by status:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 //show order by id
 exports.showOrderById = async (req, res) => {
