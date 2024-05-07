@@ -30,11 +30,6 @@ exports.signup = (req, res) => {
             status:"FAILED",
             message:"Empty input fields!"
         })
-    }else if(!/^[a-zA-Z ]*$/.test(name)){
-        res.json({
-            status:"FAILED",
-            message:"Invalid name entered!"
-        })
     }else if(!/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
         res.json({
             status:"FAILED",

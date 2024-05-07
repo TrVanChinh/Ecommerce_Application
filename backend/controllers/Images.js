@@ -69,6 +69,7 @@ exports.uploadProductImages = async (req, res) => {
       
       // fs.unlinkSync(file.path);
       uploadedImageUrls.push(uploadResult.url);
+      fs.unlinkSync(file.path);
     }
 
     res.json({ message: 'Product images uploaded successfully', imageUrls: uploadedImageUrls });

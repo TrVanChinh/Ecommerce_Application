@@ -19,7 +19,7 @@ exports.addProduct = async (req, res) => {
             name: name,
             description: description,
             idCategory: idCategory,
-            idCategoryShop: idCategoryShop,
+            idCategoryShop: idCategoryShop || null,
             idSubCategory: idSubCategory,
             idShop: idShop,
             image: image,

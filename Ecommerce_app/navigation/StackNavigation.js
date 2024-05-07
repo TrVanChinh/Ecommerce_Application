@@ -20,9 +20,12 @@ import RegisterSellerScreen from '../screens/Seller/RegisterSellerScreen';
 import AddProductScreen from '../screens/Seller/AddProductScreen';
 import CategoryScreen from "../screens/Seller/Categories/CategoryScreen";
 import SubcategoryScreen from "../screens/Seller/Categories/SubcategoryScreen";
-
 import SearchScreen from '../screens/SearchScreen';
 import DetailScreen from '../screens/DetailScreen';
+import CartScreen from '../screens/CartScreen';
+import OrderScreen from '../screens/OrderScreen';
+import ShippingUnitScreen from '../screens/ShippingUnitScreen';
+
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -161,7 +164,10 @@ const StackNavigation = () => {
           }} 
         />
          <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
-        {/* <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/> */}
+        <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="Cart" component={CartScreen} options={{headerTitle: 'Giỏ hàng'}}/>
+        <Stack.Screen name="Order" component={OrderScreen} options={{headerTitle: 'Đặt hàng'}}/>
+        <Stack.Screen name="ShippingUnit" component={ShippingUnitScreen} options={{headerTitle: 'Đơn vị vận chuyển'}}/>
 
       </Stack.Navigator>
     </NavigationContainer>

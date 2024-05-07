@@ -2,6 +2,7 @@ require("dotenv").config()
 //mongodb user model
 const Admin = require('../models/Admin')
 const User = require('../models/User')
+const ShippingUnit = require('../models/ShippingUnit')
 
 const bcrypt = require('bcrypt')
 //email handler
@@ -79,11 +80,6 @@ exports.addAdmin = (req, res) => {
         res.json({
             status:"FAILED",
             message:"Empty input fields!"
-        })
-    }else if(!/^[a-zA-Z ]*$/.test(name)){
-        res.json({
-            status:"FAILED",
-            message:"Invalid name entered!"
         })
     }else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
         res.json({
@@ -253,4 +249,80 @@ exports.rejectSaleRequest = async (req, res) => {
     }
 }
 
+//add shippingUnit
+exports.addShippingUnit = (req, res) => {
+    let {deliveryTime, name, price} = req.body
+
+    if(name === '' || deliveryTime === '' || price === ''){
+        res.json({
+            status:"FAILED",
+            message:"Empty input fields!"
+        })
+    }else if(isNaN(price) && typeof price !== 'number'){
+        res.json({
+            status:"FAILED",
+            message:"The value of price time must be numeric!"
+        })
+    }else if(isNaN(deliveryTime) && typeof deliveryTime !== 'number'){
+        res.json({
+            status:"FAILED",
+            message:"The value of delivery time must be numeric!"
+        })
+    } else {
+        //checking if user already exists
+        ShippingUnit.find({name}).then(result => {
+            if(result.length){
+                res.json({
+                    status:"FAILED",
+                    message:"The shipping Unit whose name is provided already exists"
+                })
+            }else{
+                const shippingUnit = new ShippingUnit({
+                    name,
+                    price,
+                    deliveryTime
+                })
+                shippingUnit.save()
+                .then((result) => {
+                    res.json({
+                        status:"SUCCESS",
+                        message:"Add shipping Unit successfully!",
+                        data: result,
+                    })
+                }).catch(err => {
+                    res.json({
+                        status:"FAILED",
+                        message: err
+                    })
+                }) 
+                
+            }
+        }).catch(err => {
+            console.log(err)
+            res.json({
+                status:"FAILED",
+                message: err
+            })
+        })   
+        
+    }
+}
+
+// Show shippingUnit
+exports.ShowShippingUnit = async (req, res) => { 
+    try {
+        const shippingUnit = await ShippingUnit.find();
+        res.json({
+            status: 'SUCCESS',
+            message: 'List of shippingUnit',
+            data: shippingUnit
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch categories',
+            error: error.message
+        });
+    }
+}
 
