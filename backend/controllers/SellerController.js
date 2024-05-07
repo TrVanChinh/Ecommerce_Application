@@ -78,10 +78,11 @@ exports.deleteProduct = async (req, res) => {
     }
 }
 
+//show shop products
 exports.showShopProduct = async (req, res) => {
-    const { idShop } = req.params; 
+    const { idShop } = req.params;
     try {
-        const product = await Product.findOne({ "idShop": idShop });
+        const product = await Product.find({ "idShop": idShop });
         if (!product) {
             return res.status(404).json({
                 status: 'FAILED',
@@ -101,7 +102,6 @@ exports.showShopProduct = async (req, res) => {
         });
     }
 }
-
 // exports.editSellerProfile = async (req, res) => {
 //     const { userId, shopDescript, shopAddress, shopName } = req.body;
 //     try {

@@ -483,7 +483,7 @@ exports.saleRegister = async (req, res) => {
                     user.shopDescript = shopDescript;
                     user.shopAddress = shopAddress;
                     user.shopName = shopName;
-                    user.sellerRequestStatus = 'pending';
+                    user.sellerRequestStatus = 'PENDING';
 
                     user.save();
                     res.json({
