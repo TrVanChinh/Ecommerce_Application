@@ -33,7 +33,7 @@ const LoginScreen = ({navigation}) => {
         console.log(response.data.message);
       } else {
         console.log("Login successful")
-        updateUser(response.data.data)
+        updateUser(response.data.data[0])
         navigation.navigate("Main")
       }
     })

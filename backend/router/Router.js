@@ -7,6 +7,7 @@ const CartController = require("../controllers/CartController");
 
 const Images = require("../controllers/Images");
 const SellerController = require("../controllers/SellerController");
+const OrderController = require("../controllers/OrderController");
 
 const router = Router();
 
@@ -74,6 +75,23 @@ router.post("/seller/addProduct", SellerController.addProduct)
 router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
 router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
+
+//orders
+//show order by shop
+router.get("/order/showOrdersByShop/:shopId", OrderController.showOrdersByShop);
+//show order by buyer
+router.get("/order/showOrdersByBuyer/:userId", OrderController.showOrdersByBuyer);
+//show order by id
+router.get("/order/showOrderById/:id", OrderController.showOrderById);
+//show order by status: processing, shipping, delivered
+router.get("/order/showOrdersByStatus", OrderController.showOrdersByStatus);
+//create order
+router.post("/order/createOrder", OrderController.createOrder);
+//change status order
+router.put("/order/changeStatusOrder", OrderController.changeStatusOrder);
+//show order detail
+router.get("/order/showOrderDetail/:id",OrderController.showOrderDetail)
+
 
 //Cart
 router.post("/product/addCart", CartController.addProductToCart)

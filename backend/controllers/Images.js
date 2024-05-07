@@ -67,7 +67,7 @@ exports.uploadProductImages = async (req, res) => {
         public_id: 'products/' + file.filename,
       });
       
-      // fs.unlinkSync(file.path);
+      fs.unlinkSync(file.path);
       uploadedImageUrls.push(uploadResult.url);
       fs.unlinkSync(file.path);
     }

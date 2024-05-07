@@ -20,6 +20,12 @@ import RegisterSellerScreen from '../screens/Seller/RegisterSellerScreen';
 import AddProductScreen from '../screens/Seller/AddProductScreen';
 import CategoryScreen from "../screens/Seller/Categories/CategoryScreen";
 import SubcategoryScreen from "../screens/Seller/Categories/SubcategoryScreen";
+import MyShopScreen from '../screens/Seller/MyShopScreen';
+import ListProductsScreen from '../screens/Seller/ListProducts';
+import EditProductScreen from '../screens/Seller/EditProductScreen';
+import ShopInfoScreen from '../screens/Seller/ShopInfoScreen';
+import ShopOrdersScreen from '../screens/Seller/ShopOrdersScreen';
+
 import SearchScreen from '../screens/SearchScreen';
 import DetailScreen from '../screens/DetailScreen';
 import CartScreen from '../screens/CartScreen';
@@ -164,10 +170,18 @@ const StackNavigation = () => {
           }} 
         />
          <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
+         <Stack.Screen name="MyShop" component={MyShopScreen} options={{headerTitle: 'Quản lý cửa hàng'}}/>
+        <Stack.Screen name="ListProducts" component={ListProductsScreen} options={{headerTitle: 'Danh sách sản phẩm'}}/>
+        <Stack.Screen name="EditProduct" component={EditProductScreen} options={{headerTitle: 'Chỉnh sửa sản phẩm'}}/>
+        <Stack.Screen name="ShopInfo" component={ShopInfoScreen} options={{headerTitle: 'Thông tin cửa hàng'}}/>
+        <Stack.Screen name="ShopOrders" component={ShopOrdersScreen} options={{headerTitle: 'Quản lý đơn hàng'}}/>
+        <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
+        
         <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Cart" component={CartScreen} options={{headerTitle: 'Giỏ hàng'}}/>
         <Stack.Screen name="Order" component={OrderScreen} options={{headerTitle: 'Đặt hàng'}}/>
         <Stack.Screen name="ShippingUnit" component={ShippingUnitScreen} options={{headerTitle: 'Đơn vị vận chuyển'}}/>
+
 
       </Stack.Navigator>
     </NavigationContainer>
