@@ -1,5 +1,21 @@
-<app-header></app-header>
-<router-outlet >
-    
-</router-outlet>
-<app-footer></app-footer>
+<div *ngIf="!hideHeaderFooter; else sellerContent">   
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+    <app-footer></app-footer>
+</div>
+
+<ng-template #sellerContent>
+    <mat-toolbar class="mat-elevation-z3 relative z-10">
+        <button mat-icon-button>
+            <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+        </button>
+    </mat-toolbar>
+    <mat-sidenav-container class="h-[calc(100vh-4rem)]" >
+        <mat-sidenav  #sidenav opened mode="side" class="w-64">
+            <app-appcustomsidenav (myEvent)="handleEvent($event)"></app-appcustomsidenav>
+        </mat-sidenav>
+        <mat-sidenav-content class="p-6">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</ng-template>

@@ -1,1 +1,45 @@
-<p>user works!</p>
+<div class="container mx-auto">
+    <table mat-table [dataSource]="ListSellerPending" class="mat-elevation-z8 demo-table w-[1200px]">
+    
+        <!-- Name Column -->
+        <ng-container matColumnDef="name" class="border-r-2">
+            <th mat-header-cell *matHeaderCellDef class="text-black text-xl">Name</th>
+            <td mat-cell *matCellDef="let data">
+                {{ data.name }}
+            </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="email" class="border-r-2">
+            <th mat-header-cell *matHeaderCellDef class="text-black text-xl">Email</th>
+            <td mat-cell *matCellDef="let data">
+                {{ data.email }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="shopAddress" class="border-r-2">
+            <th mat-header-cell *matHeaderCellDef class="text-black text-xl">Address</th>
+            <td mat-cell *matCellDef="let data">
+                {{ data.shopAddress }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="sellerRequestStatus" class="border-r-2">
+            <th mat-header-cell *matHeaderCellDef class="text-black text-xl">Status</th>
+            <td mat-cell *matCellDef="let data">
+                {{ data.sellerRequestStatus }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Action" class="border-r-2">
+            <th mat-header-cell *matHeaderCellDef class="text-black text-xl">Action</th>
+            <td mat-cell *matCellDef="let data">
+                <button mat-icon-button (click)="approveSaleRequest(data._id)">
+                    <mat-icon>Approve </mat-icon>
+                </button>
+            </td>
+        </ng-container>
+       
+    
+        <tr mat-header-row *matHeaderRowDef="['name', 'email','shopAddress','sellerRequestStatus','Action']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'email','shopAddress','sellerRequestStatus','Action'];"></tr>
+    </table>
+    
+</div>

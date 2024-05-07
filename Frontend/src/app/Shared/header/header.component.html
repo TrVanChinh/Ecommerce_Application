@@ -2,20 +2,33 @@
   <div class="flex flex-row justify-between mt-5">
     <div>
       <mat-form-field>
-        <mat-select [formControl]="panelColor">
-          <mat-option value="Việt Nam">Việt Nam</mat-option>
-          <mat-option value="EngLish">EngLish</mat-option>
+        <mat-select [formControl]="panelColor" (selectionChange)="switchLanguage($event)">
+          <mat-option value="vn">Việt Nam</mat-option>
+          <mat-option value="en">EngLish</mat-option>
         </mat-select>
       </mat-form-field>
+      
     </div>
-    <div class="horizontal-list-container">
-      <ul class="flex flex-row gap-6 pt-2 text-sm cursor-pointer">
-        <li *ngIf="!userId" routerLink="/signin" class="hover:text-cyan-500">Register</li>
-        <li *ngIf="!userId" routerLink="/login" class="hover:text-cyan-500">Login</li>
+    <div class="horizontal-list-container" [ngSwitch]="menuType">
+      <ul *ngSwitchCase="'default'" class="flex flex-row gap-6 pt-2 text-sm cursor-pointer">
+        <li  routerLink="/signin" class="hover:text-cyan-500">{{ 'data.register' | translate }}</li>
+        <li  routerLink="/login" class="hover:text-cyan-500">{{ 'data.login' | translate }}</li>
+        <li class="hover:text-cyan-500">{{ 'data.wishlist' | translate }}</li>
+        <li class="hover:text-cyan-500">{{ 'data.shopping_cart' | translate }}</li>
+      </ul>
 
-        <li class="hover:text-cyan-500">Seller</li>
-        <li class="hover:text-cyan-500">Shopping Cart</li>
-        <li  *ngIf="userId" class="hover:text-cyan-500">{{nameUser}}</li>
+      <ul *ngSwitchCase="'user'" class="flex flex-row gap-6 pt-2 text-sm cursor-pointer">
+        <li class="hover:text-cyan-500" (click)="sellerAccount()">{{ 'data.seller' | translate }}</li>
+        <li class="hover:text-cyan-500">{{ 'data.shopping_cart' | translate }}</li>
+        <li  mat-button [matMenuTriggerFor]="menu">
+          {{nameUser}}
+        </li>
+        
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>Profile</button>
+            <button mat-menu-item (click)="logout()">Logout</button>
+          </mat-menu>
+
       </ul>
       
     </div>
@@ -39,33 +52,5 @@
   </div>
   <div class="border-b border-gray-300"></div>
 
-  <div class="flex flex-wrap justify-center gap-20 mt-10">
-    <div
-      *ngFor="let category of dataCategory"
-      (mouseenter)="openMenu(category)"
-      (mouseleave)="closeMenu()"
-    >
-      <div class="relative">
-        <div class="cursor-pointer text-2xl pr-20 border-r border-black">
-          <a href="" routerLink="/category/category._id">{{ category.name }}</a>
-        </div>
-
-        <div
-          *ngIf="category === activeCategory"
-          class="absolute top-full left-0 bg-white p-4 border border-gray-300 shadow-md"
-        >
-          <div>
-            <div
-              *ngFor="let subcat of category.subCategory"
-              class="cursor-pointer w-32 mb-1 hover:bg-slate-400"
-            >
-              <mat-icon class="text-gray-400 ">minimize</mat-icon>
-              <a href="" >{{ subcat.name }}</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="border-b border-gray-300 mt-10"></div>
+  
 </header>

@@ -12,4 +12,10 @@ export class SellerService {
   getSellerPending() {
     return this.http.get<any>(`${environment.appUrl}/admin/showSaleRegister`);
   }
+
+  approveSaleRequest(userId:string){
+    return this.http.post<any>(`${environment.appUrl}/admin/approveSaleRequest`,{userId})
+  }
+
+
 }

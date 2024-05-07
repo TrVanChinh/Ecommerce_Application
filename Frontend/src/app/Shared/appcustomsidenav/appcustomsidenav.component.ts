@@ -1,13 +1,12 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MenuItem } from 'src/app/Core/model/menu-item';
 
 @Component({
-  selector: 'app-app-custom-sidenav',
-  templateUrl: './app-custom-sidenav.component.html',
-  styleUrls: ['./app-custom-sidenav.component.css']
+  selector: 'app-appcustomsidenav',
+  templateUrl: './appcustomsidenav.component.html',
+  styleUrls: ['./appcustomsidenav.component.css']
 })
-export class AppCustomSidenavComponent implements OnInit {
-  menuItem: MenuItem[] = [
+export class AppcustomsidenavComponent implements OnInit {
+  menuItem: any[] = [
     {
       icon: 'dashboard',
       label: 'Dashboard',
@@ -15,9 +14,9 @@ export class AppCustomSidenavComponent implements OnInit {
       isActive: false 
     },
     {
-      icon: 'supervised_user_circle',
-      label: 'Seller',
-      route: '/user',
+      icon: 'Product',
+      label: 'product',
+      route: '/product',
       isActive: false 
     },
     {
@@ -41,11 +40,11 @@ export class AppCustomSidenavComponent implements OnInit {
     }
   ];
 
-  constructor() {}
+  constructor() { }
   @Output() myEvent = new EventEmitter<string>();
   ngOnInit(): void {}
 
-  onItemClick(item: MenuItem): void {
+  onItemClick(item: any): void {
     this.menuItem.forEach(menu => menu.isActive = false);
     item.isActive = true;
     console.log(item.label)
@@ -54,5 +53,4 @@ export class AppCustomSidenavComponent implements OnInit {
     }
   }
 
-  
 }
