@@ -69,6 +69,11 @@ router.post("/seller/addProduct", SellerController.addProduct)
 router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
 router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
+//doanh thu cửa hàng theo tháng
+router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
+//thống kê doanh thu của từng khách hàng theo tháng
+router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
+
 
 //orders
 //show order by shop

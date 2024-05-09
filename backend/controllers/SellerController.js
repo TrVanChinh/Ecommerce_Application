@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 
 const Product = require('../models/Product')
+const Order = require('../models/Order')
 
 
 //add product
@@ -102,6 +103,97 @@ exports.showShopProduct = async (req, res) => {
         });
     }
 }
+
+//thống kê hàng tồn theo tháng
+// exports.inventoryStatsByMonth = async (req, res) => {
+//     const { idShop } = req.params;
+//     try {
+//         const product = await Product.find({ "idShop": idShop });
+//         if (!product) {
+//             return res.status(404).json({
+//                 status: 'FAILED',
+//                 message: 'Product not found'
+//             });
+//         }
+//         let inventoryStats = [];
+//         for (let i = 1; i <= 12; i++) {
+//             let count = 0;
+//             product.forEach(element => {
+//                 if (element.createdAt.getMonth() + 1 == i) {
+//                     count++;
+//                 }
+//             });
+//             inventoryStats.push(count);
+//         }
+//         res.json({
+//             status: 'SUCCESS',
+//             message: 'Product found',
+//             data: inventoryStats
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             status: 'FAILED',
+//             message: 'Failed to fetch product',
+//             error: error.message
+//         });
+//     }
+// }
+// exports.inventoryStatsByMonth = async (req, res) => {
+//     try {
+//         const { shopId, month, year } = req.params;
+
+//         const firstDayOfMonth = new Date(year, month - 1, 1);
+//         const lastDayOfMonth = new Date(year, month, 0);
+
+//         const result = await Product.aggregate([
+//             {
+//                 $match: {
+//                     idShop: shopId,
+//                     createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }
+//                 }
+//             },
+//             {
+//                 $unwind: "$option"
+//             },
+//             {
+//                 $group: {
+//                     _id: {
+//                         day: { $dayOfMonth: "$createAt" },
+//                         month: { $month: "$createAt" },
+//                         year: { $year: "$createAt" },
+//                         productId: "$_id"
+//                     },
+//                     totalQuantity: { $sum: "$option.quantity" }
+//                 }
+//             },
+//             {
+//                 $group: {
+//                     _id: {
+//                         day: "$_id.day",
+//                         month: "$_id.month",
+//                         year: "$_id.year"
+//                     },
+//                     totalInventory: { $sum: "$totalQuantity" }
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     _id: 0,
+//                     day: "$_id.day",
+//                     month: "$_id.month",
+//                     year: "$_id.year",
+//                     totalInventory: 1
+//                 }
+//             }
+//         ]);
+
+//         res.status(200).json(result);
+//     } catch (error) {
+//         console.error("Error calculating inventory by month:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// }
+
 // exports.editSellerProfile = async (req, res) => {
 //     const { userId, shopDescript, shopAddress, shopName } = req.body;
 //     try {
@@ -120,3 +212,77 @@ exports.showShopProduct = async (req, res) => {
 //         res.status(500).json({ message: "Internal server error" });
 //     }
 // }
+
+
+//Doanh thu theo tháng
+exports.revenueByMonth = async (req, res) => {
+    try {
+        const { shopId, month, year } = req.params;
+
+        // Tính ngày đầu tiên và ngày cuối cùng của tháng
+        const firstDayOfMonth = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed
+        const lastDayOfMonth = new Date(year, month, 0);
+
+        // Sử dụng phương thức aggregate để group theo tháng và tính tổng doanh thu
+        const monthlyRevenue = await Order.aggregate([
+            {
+                $match: {
+                    idShop: shopId,
+                    createAt: {
+                        $gte: firstDayOfMonth,
+                        $lte: lastDayOfMonth
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$totalByShop" }
+                }
+            }
+        ]);
+
+        // Trả về kết quả
+        const revenue = monthlyRevenue.length > 0 ? monthlyRevenue[0].totalRevenue : 0;
+        res.status(200).json({ month, year, revenue });
+    } catch (error) {
+        console.error("Error calculating monthly revenue:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// Thống kê khách hàng và doanh thu của khách hàng theo tháng 
+exports.revenueByCustomer = async (req, res) => {
+    try {
+        const { shopId, month, year } = req.params;
+
+        // Tính ngày đầu tiên và ngày cuối cùng của tháng
+        const firstDayOfMonth = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed
+        const lastDayOfMonth = new Date(year, month, 0);
+
+        // Sử dụng phương thức aggregate để group theo tháng và tính tổng doanh thu
+        const monthlyRevenue = await Order.aggregate([
+            {
+                $match: {
+                    idShop: shopId,
+                    createAt: {
+                        $gte: firstDayOfMonth,
+                        $lte: lastDayOfMonth
+                    }
+                }
+            },
+            {
+                $group: {   
+                    _id: "$idUser",
+                    totalRevenue: { $sum: "$totalByShop" }
+                }
+            }
+        ]);
+
+        // Trả về kết quả
+        res.status(200).json(monthlyRevenue);
+    } catch (error) {
+        console.error("Error calculating monthly revenue by customer:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
