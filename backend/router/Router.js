@@ -71,6 +71,8 @@ router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
 //doanh thu cửa hàng theo tháng
 router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
+//doanh thu theo tháng trong 1 năm
+router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear)
 //thống kê doanh thu của từng khách hàng theo tháng
 router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
 
