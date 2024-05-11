@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const InventorySchema = new Schema({
     idProduct: String,
     idShop: String,
+    stock: Number,
     option: [
         {
             idOption: String,

@@ -69,12 +69,6 @@ router.post("/seller/addProduct", SellerController.addProduct)
 router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
 router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
-//doanh thu cửa hàng theo tháng
-router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
-//doanh thu theo tháng trong 1 năm
-router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear)
-//thống kê doanh thu của từng khách hàng theo tháng
-router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
 
 
 //orders
@@ -84,7 +78,7 @@ router.get("/order/showOrdersByShop/:shopId", OrderController.showOrdersByShop);
 router.get("/order/showOrdersByBuyer/:userId", OrderController.showOrdersByBuyer);
 //show order by id
 router.get("/order/showOrderById/:id", OrderController.showOrderById);
-//show order by status: processing, shipping, delivered
+//show shop order by status: processing, paid , delivered, completed
 router.get("/order/showOrdersByStatus", OrderController.showOrdersByStatus);
 //create order
 router.post("/order/createOrder", OrderController.createOrder);
@@ -92,5 +86,18 @@ router.post("/order/createOrder", OrderController.createOrder);
 router.put("/order/changeStatusOrder", OrderController.changeStatusOrder);
 //show order detail
 router.get("/order/showOrderDetail/:id",OrderController.showOrderDetail)
+
+//Thống kê
+
+//doanh thu cửa hàng theo tháng
+router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
+//Tiền lời của từng tháng trong năm
+router.get("/seller/profitByYear/:shopId/:year", SellerController.profitByYear)
+//Hàng tồn theo tháng
+router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
+//doanh thu theo tháng trong 1 năm
+router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear)
+//thống kê doanh thu của từng khách hàng theo tháng
+router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
 
 module.exports = router;

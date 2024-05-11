@@ -5,8 +5,20 @@ const OrderSchema = new Schema({
     idShop: String,
     idUser:String,
     status:String,
+    address: [
+        {
+            name: String,
+            street:String,
+            Ward: String,
+            District: String,
+            city:String,
+            mobileNo:String,
+        }
+    ],
     totalByShop:Number,
     idShippingUnit:String,
+    nameShippingUnit:String,
+    shippingCost: Number,
     createAt: { 
         type:Date,
         default:Date.now
@@ -17,6 +29,7 @@ const OrderSchema = new Schema({
             idProduct: String,
             price: Number,
             quantity: Number,
+            stock: Number
         }
     ]
 })

@@ -35,7 +35,14 @@ exports.addProduct = async (req, res) => {
       image: image,
       option: option,
     });
+    let stock = 0;
+    for (const opt of option) {
+      stock = stock + opt.quantity;
+    }
+
     await newProduct.save();
+    // Tạo inventory cho product
+    await createInventory(newProduct, stock, option);
 
     res.status(200).json({ message: "Product created Successfully" });
   } catch (error) {
@@ -45,47 +52,6 @@ exports.addProduct = async (req, res) => {
   }
 };
 
-// const ProductSchema = new Schema({
-//     name: String,
-//     description: String,
-//     idCategory: String,
-//     idCategoryShop: String,
-//     idSubCategory: String,
-//     idShop: String,
-//     sold: Number,
-//     createAt: {
-//         type: Date,
-//         default: Date.now
-//     },
-//     image: [
-//         {
-//             url: String,
-//         }
-//     ],
-//     option: [
-//         {
-//             imageUrl: String,
-//             name: String,
-//             price: Number,
-//             quantity: Number,
-//         }
-//     ]
-// })
-// const InventorySchema = new Schema({
-//     idProduct: String,
-//     idShop: String,
-//     option: [
-//         {
-//             idOption: String,
-//             price: Number,
-//             quantity: Number,
-//         }
-//     ],
-//     createAt: {
-//         type:Date,
-//         default:Date.now
-//     }
-// })
 //edit product
 exports.updateProduct = async (req, res) => {
   const {
@@ -117,35 +83,57 @@ exports.updateProduct = async (req, res) => {
 
     let newOption = [];
     // Kiểm tra và cập nhật hoặc tạo mới inventory
+    let isEqual = false;
+    let stock = 0;
     for (const opt of option) {
       const existingOption = product.option.find(
-        (opt) => opt._id.toString() === opt._id
+        (opt1) => opt1._id.toString() == opt._id
       );
-      if (!existingOption || existingOption.quantity != opt.quantity) {
-        newOption.push(opt);
+      stock = stock + opt.quantity;
+      // Nếu existingOption.quantity > opt.quantity thì cho update
+      if (existingOption) {
+        if (existingOption.quantity > opt.quantity) {
+          isEqual = true;
+        } else if (existingOption.quantity < opt.quantity) {
+          newOption.push({
+            _id: opt._id,
+            name: opt.name,
+            price: opt.price,
+            quantity: opt.quantity - existingOption.quantity,
+          });
+        }
       }
     }
-    await createInventory(product, newOption);
-    product.option = option;
-
-    await product.save();
-    res.status(200).json({ message: "Product updated successfully" });
+    if (isEqual) {
+      return res.status(400).json({
+        message:
+          "Số lượng sản phẩm cập nhật phải lớn hơn hoặc bằng số lượng sản phẩm trong kho",
+      });
+    } else {
+      if (newOption.length > 0) {
+        await createInventory(product, stock, newOption);
+      }
+      product.option = option;
+      await product.save();
+      res.status(200).json({ message: "Product updated successfully" });
+    }
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-async function createInventory(product, option) {
+async function createInventory(product, stock, option) {
   // Nếu không có, tạo mới inventory
   const inventory = new Inventory({
     idProduct: product._id,
     idShop: product.idShop,
+    stock: stock,
     option: option.map((opt) => ({
-        idOption: opt._id,
-        price: opt.price,
-        quantity: opt.quantity,
-        })),
+      idOption: opt._id,
+      price: opt.price,
+      quantity: opt.quantity,
+    })),
   });
   await inventory.save();
 }
@@ -190,114 +178,20 @@ exports.showShopProduct = async (req, res) => {
   }
 };
 
-//thống kê hàng tồn theo tháng
-// exports.inventoryStatsByMonth = async (req, res) => {
-//     const { idShop } = req.params;
-//     try {
-//         const product = await Product.find({ "idShop": idShop });
-//         if (!product) {
-//             return res.status(404).json({
-//                 status: 'FAILED',
-//                 message: 'Product not found'
-//             });
-//         }
-//         let inventoryStats = [];
-//         for (let i = 1; i <= 12; i++) {
-//             let count = 0;
-//             product.forEach(element => {
-//                 if (element.createdAt.getMonth() + 1 == i) {
-//                     count++;
-//                 }
-//             });
-//             inventoryStats.push(count);
-//         }
-//         res.json({
-//             status: 'SUCCESS',
-//             message: 'Product found',
-//             data: inventoryStats
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: 'FAILED',
-//             message: 'Failed to fetch product',
-//             error: error.message
-//         });
-//     }
-// }
-// exports.inventoryStatsByMonth = async (req, res) => {
-//     try {
-//         const { shopId, month, year } = req.params;
-
-//         const firstDayOfMonth = new Date(year, month - 1, 1);
-//         const lastDayOfMonth = new Date(year, month, 0);
-
-//         const result = await Product.aggregate([
-//             {
-//                 $match: {
-//                     idShop: shopId,
-//                     createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }
-//                 }
-//             },
-//             {
-//                 $unwind: "$option"
-//             },
-//             {
-//                 $group: {
-//                     _id: {
-//                         day: { $dayOfMonth: "$createAt" },
-//                         month: { $month: "$createAt" },
-//                         year: { $year: "$createAt" },
-//                         productId: "$_id"
-//                     },
-//                     totalQuantity: { $sum: "$option.quantity" }
-//                 }
-//             },
-//             {
-//                 $group: {
-//                     _id: {
-//                         day: "$_id.day",
-//                         month: "$_id.month",
-//                         year: "$_id.year"
-//                     },
-//                     totalInventory: { $sum: "$totalQuantity" }
-//                 }
-//             },
-//             {
-//                 $project: {
-//                     _id: 0,
-//                     day: "$_id.day",
-//                     month: "$_id.month",
-//                     year: "$_id.year",
-//                     totalInventory: 1
-//                 }
-//             }
-//         ]);
-
-//         res.status(200).json(result);
-//     } catch (error) {
-//         console.error("Error calculating inventory by month:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// }
-
-// exports.editSellerProfile = async (req, res) => {
-//     const { userId, shopDescript, shopAddress, shopName } = req.body;
-//     try {
-//         const user = await User.findById (userId);
-//         if (!user) {
-//             return res.status(404).json({ message: "User not found" });
-//         }
-//         user.shopDescript = shopDescript;
-//         user.shopAddress = shopAddress;
-//         user.shopName = shopName;
-//         await user.save();
-//         res.status(200).json({ message: "User updated successfully" });
-//     }
-//     catch (error) {
-//         console.error("Error updating user:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// }
+//show product detail
+exports.getOneProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findById;
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ product });
+  } catch (error) {
+    console.error("Error showing product by id:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 //Doanh thu theo tháng
 exports.revenueByMonth = async (req, res) => {
@@ -341,7 +235,7 @@ exports.revenueByMonth = async (req, res) => {
 //Doanh thu theo tháng trong 1 năm
 exports.revenueByYear = async (req, res) => {
   try {
-    const { shopId, year } = req.params;    
+    const { shopId, year } = req.params;
     // Sử dụng phương thức aggregate để group theo tháng và tính tổng doanh thu
     // chỉ tính doanh thu của đơn hàng đã hoàn thành
     const yearlyRevenue = await Order.aggregate([
@@ -381,6 +275,39 @@ exports.revenueByYear = async (req, res) => {
   }
 };
 
+//Tiền lời theo tháng trong 1 năm
+exports.profitByYear = async (req, res) => {
+  //tiền lời của 1 đơn hàng bằng totalByShop - shippingCost
+  try {
+    const { shopId, year } = req.params;
+    let result = [];
+    for (let i = 1; i <= 12; i++) {
+      const firstDayOfMonth = new Date(year, i - 1, 1);
+      const lastDayOfMonth = new Date(year, i, 0);
+      const orders = await Order.find({
+        idShop: shopId,
+        status: "completed",
+        createAt: {
+          $gte: firstDayOfMonth,
+          $lte: lastDayOfMonth,
+        },
+      });
+      let profit = 0;
+      orders.forEach((order) => {
+        profit += order.totalByShop - order.shippingCost;
+      });
+      result.push({
+        month: i,
+        profit: profit,
+      });
+    }
+    res.status(200).json({ result });
+  } catch (error) {
+    console.error("Error calculating yearly profit:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Thống kê khách hàng và doanh thu của khách hàng theo tháng
 exports.revenueByCustomer = async (req, res) => {
   try {
@@ -414,6 +341,208 @@ exports.revenueByCustomer = async (req, res) => {
     res.status(200).json(monthlyRevenue);
   } catch (error) {
     console.error("Error calculating monthly revenue by customer:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//thống kê hàng tồn theo tháng
+exports.inventoryStatsByMonth = async (req, res) => {
+  try {
+    const { productId, year } = req.params;
+    if (isNaN(year)) {
+      return res.status(400).json({ error: "Năm phải là số." });
+    }
+    let result = [];
+    //lấy các id option product
+    let product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: product });
+    }
+    //tính số lượng hiện có của tất của sản phẩm trong shop
+    for (let i = 1; i <= 12; i++) {
+      //kiểm tra tháng i năm year có vượt quá thời gian hiện tại không
+      if (year == new Date().getFullYear() && i > new Date().getMonth() + 1) {
+        result.push({
+          month: i,
+          stock: null,
+          totalSoldInMonth: null,
+          totalImportInMonth: null,
+        });
+      } else {
+        const firstDayOfMonth = new Date(year, i - 1, 1);
+        const lastDayOfMonth = new Date(year, i, 0);
+
+        // Sử dụng aggregate để tính tổng số lượng sản phẩm đã bán trong tháng
+        const totalSoldInMonthResult = await Order.aggregate([
+          {
+            $match: {
+              status: "completed", // Chỉ lấy đơn hàng đã hoàn thành
+              createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }, // Trong khoảng thời gian từ ngày đầu tiên đến ngày cuối của tháng
+            },
+          },
+          {
+            $unwind: "$option", // Mở rộng mảng option thành các tài liệu riêng lẻ
+          },
+          {
+            $match: {
+              "option.idProduct": productId, // Chỉ lấy option có idProduct phù hợp với productId đã cho
+            },
+          },
+          {
+            $group: {
+              _id: null, // Nhóm tất cả các tài liệu lại với nhau
+              totalQuantity: { $sum: "$option.quantity" }, // Tính tổng số lượng từ các tài liệu đã nhóm lại
+            },
+          },
+        ]);
+
+        // Lấy kết quả tổng số lượng sản phẩm đã bán trong tháng
+        const totalSoldInMonth = totalSoldInMonthResult.length > 0 ? totalSoldInMonthResult[0].totalQuantity : 0;
+
+        const totalImportInMonthResult = await Inventory.aggregate([
+          {
+              $match: {
+                  idProduct: productId, // Chỉ lấy hàng hóa có idProduct phù hợp
+                  createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth } // Trong khoảng thời gian từ ngày đầu tiên đến ngày cuối của tháng
+              }
+          },
+          {
+              $group: {
+                  _id: null, // Nhóm tất cả các tài liệu lại với nhau
+                  totalQuantity: { $sum: "$quantity" } // Tính tổng số lượng từ các tài liệu đã nhóm lại
+              }
+          }
+      ]);
+      
+      // Lấy kết quả tổng số lượng hàng đã nhập trong tháng
+      const totalImportInMonth = totalImportInMonthResult.length > 0 ? totalImportInMonthResult[0].totalQuantity : 0;
+      
+      let totalSold = 0;
+      const orders = await Order.find({
+        status: "completed",
+        "option.idProduct": productId,
+        createAt: {
+          $gte: new Date(product.createAt),
+          $lte: new Date(year, i, 0),
+        },
+      });
+      orders.forEach((order) => {
+        order.option.forEach((opt) => {
+          if (opt.idProduct == productId) {
+            totalSold += opt.quantity;
+          }
+        });
+      });
+      let totalImport = 0;
+      const inventory = await Inventory.find({
+        idProduct: productId,
+        createAt: {
+          $gte: new Date(product.createAt),
+          $lte: new Date(year, i, 0),
+        },
+      });
+      inventory.forEach((inv) => {
+        inv.option.forEach((opt) => {
+          totalImport += opt.quantity;
+        });
+      });
+
+      if (inventory) {
+        result.push({
+          month: i,
+          stock: totalImport - totalSold,
+          totalSoldInMonth: totalSoldInMonth,
+          totalImportInMonth: totalImportInMonth,
+        });
+      }
+
+        // if (i == 1) {
+        //   const firstDayOfMonth = new Date(year, i - 1, 1);
+        //   const lastDayOfMonth = new Date(year, month, 0);
+        //   //Tìm đơn hàng và xử lý nếu không tìm thấy
+        //   const order = await Order.findOne({
+        //     "option.idProduct": productId,
+        //     status: "completed",
+        //     createAt: { $gte: firstDayOfMonth },
+        //   })
+        //     .sort({ createAt: -1 })
+        //     .limit(1);
+        //   const inventory = await Inventory.findOne({
+        //     idProduct: productId,
+        //     createAt: { $gte: firstDayOfMonth },
+        //   })
+        //     .sort({ createAt: -1 })
+        //     .limit(1);
+        //   let stock = 0;
+        //   //so sánh thời gian của order và inventory đơn nào gần nhất
+        //   if (order && inventory) {
+        //     if (order.createAt > inventory.createAt) {
+        //       stock = order.option.stock;
+        //     }
+        //     if (order.createAt < inventory.createAt) {
+        //       stock = inventory.stock;
+        //     }
+        //   }
+        //   result.push({
+        //     month: i,
+        //     stock: stock,
+        //   });
+        // }
+        // const firstDayOfMonth = new Date(year, i - 1, 1); // Month in JavaScript is 0-indexed
+        // const lastDayOfMonth = new Date(year, i, 0);
+        // totalSold = 0;
+        // const orders = await Order.findOne({
+        //   status: "completed",
+        //   "option.idProduct": productId,
+        //   createAt: {
+        //     $gte: firstDayOfMonth,
+        //     $lte: lastDayOfMonth,
+        //   },
+        // }).sort({ createAt: -1 });
+        // //Tính số lượng sản phẩm nhập vào trong tháng
+        // const inventory = await Inventory.findOne({
+        //   idProduct: productId,
+        //   createAt: {
+        //     $gte: firstDayOfMonth,
+        //     $lte: lastDayOfMonth,
+        //   },
+        // }).sort({ createAt: -1 });
+        // if (orders && inventory) {
+        //   if (orders.createAt > inventory.createAt) {
+        //     result.push({
+        //       month: i,
+        //       stock: orders.option[option.length - 1].stock,
+        //     });
+        //   }
+        //   if (orders.createAt < inventory.createAt) {
+        //     result.push({
+        //       month: i,
+        //       stock: inventory.stock,
+        //     });
+        //   }
+        // }
+        // if (orders && !inventory) {
+        //   result.push({
+        //     month: i,
+        //     stock: orders.option.stock,
+        //   });
+        // }
+        // if (!orders && inventory) {
+        //   result.push({
+        //     month: i,
+        //     stock: inventory.stock,
+        //   });
+        // }
+      }
+    }
+
+    // const currentMonth = new Date().getMonth() + 1;
+
+    res.status(200).json({
+      result: result,
+    });
+  } catch (error) {
+    console.error("Error calculating inventory by month:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
