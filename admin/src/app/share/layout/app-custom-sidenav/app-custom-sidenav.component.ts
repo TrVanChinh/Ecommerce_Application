@@ -16,7 +16,7 @@ export class AppCustomSidenavComponent implements OnInit {
     },
     {
       icon: 'supervised_user_circle',
-      label: 'User',
+      label: 'Seller',
       route: '/user',
       isActive: false 
     },

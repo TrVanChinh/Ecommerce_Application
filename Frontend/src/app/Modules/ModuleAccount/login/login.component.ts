@@ -27,7 +27,14 @@ export class LoginComponent implements OnInit {
 
     }
     this.userLogin.Login(data).subscribe(data=>{
-      this.router.navigate(['/'])
+      console.log(data.data[0].role)
+
+      if(data.data[0].role === 'seller'){
+        this.router.navigate(['/homeseller'])
+      }else{
+        this.router.navigate(['/'])
+      }
+      
     })
   }
 }

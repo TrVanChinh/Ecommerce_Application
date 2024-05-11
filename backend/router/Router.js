@@ -3,6 +3,7 @@ const UserController = require("../controllers/UserController");
 const CategoryController = require("../controllers/CategoryController");
 const AdminController = require("../controllers/AdminController");
 const ProductController = require("../controllers/ProductController");
+const CartController = require("../controllers/CartController");
 
 const Images = require("../controllers/Images");
 const SellerController = require("../controllers/SellerController");
@@ -28,6 +29,9 @@ router.get("/admin/showAdmin", AdminController.ShowListAdmin);
 router.get("/admin/showSaleRegister", UserController.showSaleRegister);
 router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
+router.post("/admin/addShippingUnit", AdminController.addShippingUnit);
+router.get("/shippingUnit", AdminController.ShowShippingUnit);
+ 
 
 //User
 router.get("/shop/user/:id", UserController.getUser);
@@ -59,10 +63,13 @@ router.get("/admin/:id/:subCategoryId", CategoryController.getSubCategory)
 
 //products
 router.get("/product/detail/:id", ProductController.getOneProduct)
+router.get("/products", ProductController.getAllProduct)
+router.get("/product/:productId/option/:optionId", ProductController.getProductOption)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
-router.post("/product/newProduct", ProductController.NewProduct)
-router.put("/product/updateProduct", ProductController.UpdateProduct)
-router.delete("/product/deleteProduct", ProductController.DeleteProduct)
+// router.post("/product/newProduct", ProductController.NewProduct)
+// router.put("/product/updateProduct", ProductController.UpdateProduct)
+// router.delete("/product/deleteProduct", ProductController.DeleteProduct)
+
 
 //seller add product
 router.post("/seller/addProduct", SellerController.addProduct)
@@ -86,6 +93,15 @@ router.post("/order/createOrder", OrderController.createOrder);
 router.put("/order/changeStatusOrder", OrderController.changeStatusOrder);
 //show order detail
 router.get("/order/showOrderDetail/:id",OrderController.showOrderDetail)
+
+
+//Cart
+router.post("/product/addCart", CartController.addProductToCart)
+router.get("/Cart/:userId", CartController.showCart)
+router.post("/cart/removeFromCart", CartController.removeFromCart)
+router.post("/cart/increaseQuantity", CartController.increaseQuantity)
+router.post("/cart/decrementQuantity", CartController.decrementQuantity)
+
 
 //Thống kê
 

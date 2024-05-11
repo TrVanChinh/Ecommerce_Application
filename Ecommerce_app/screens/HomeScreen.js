@@ -117,6 +117,22 @@ const HomeScreen = ({navigation}) => {
     },
   ]);
 
+  useEffect(() => {
+    fetchDataProduct()
+  }, []);
+
+  const fetchDataProduct = () => {
+    axios.get(`${API_BASE_URL}/products`).then((response) => {
+      // console.log(response.data.data);
+      setProducts(response.data.data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+
+
  // Navigate to the details screen 
   const handleItemPress = (product) => {
     navigation.navigate("Detail", { product });
@@ -240,7 +256,7 @@ const HomeScreen = ({navigation}) => {
             <AntDesign
               name="shoppingcart"
               size={24}
-              color="white"
+              color="#857E7C"
               padding={10}
             />
           </Pressable>
@@ -290,6 +306,17 @@ const HomeScreen = ({navigation}) => {
             FLASH SALE
           </Text>
         </View>
+        <View style={{ height: 250 }}> 
+          <FlatList
+              horizontal
+              style={{ flex: 1 }}
+              keyExtractor={(item) => item._id}
+              data={products}
+              renderItem={({ item }) => 
+              
+              <ProductItem item={item} onPress={() => handleItemPress(item)}/>}
+            />
+        </View>
          
         <View>
           <Text style={{ color: "red", fontWeight: "bold", padding: 20 }}>
@@ -297,7 +324,7 @@ const HomeScreen = ({navigation}) => {
           </Text>
         </View>
         <View style={{ height: 250 }}>
-          {/* <FlatList
+          <FlatList
             horizontal
             style={{ flex: 1 }}
             keyExtractor={(item) => item.url}
@@ -358,14 +385,14 @@ const HomeScreen = ({navigation}) => {
                 </TouchableOpacity>
               );
             }}
-          /> */}
-          <FlatList
+          />
+          {/* <FlatList
             horizontal
             style={{ flex: 1 }}
             keyExtractor={(item) => item.url}
             data={product}
             renderItem={({ item }) => <ProductItem item={item} />}
-          />
+          /> */}
         </View>
       </ScrollView>
       <TouchableOpacity

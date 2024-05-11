@@ -10,6 +10,6 @@ export class CategoryService {
   constructor(private http:HttpClient) { }
 
   getCategory() {
-    return this.http.get<any>(`${environment.appUrl}/admin/showCategory`);
+    return this.http.get<any>(`${environment.appUrl}/admin/showCategory`, );
   }
 }

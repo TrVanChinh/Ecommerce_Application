@@ -12,10 +12,19 @@ export class UserComponent implements OnInit {
   constructor(private sellerService:SellerService) { }
 
   ngOnInit(): void {
-  this.sellerService.getSellerPending().subscribe(res => {
-    this.ListSellerPending = res;
-    console.log(this.ListSellerPending)
-  })
+    this.getSellerPendding();
+  }
+  getSellerPendding(){
+    this.sellerService.getSellerPending().subscribe(res => {
+      this.ListSellerPending = res.data;
+      console.log(this.ListSellerPending)
+    })
+  }
+  approveSaleRequest(_id:string){
+    this.sellerService.approveSaleRequest(_id).subscribe(res => {
+      console.log(res)
+      this.getSellerPendding();
+    })
   }
 
 }
