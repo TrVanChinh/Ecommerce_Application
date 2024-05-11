@@ -94,7 +94,15 @@ async function updateProductOptionQuantity(prdOptId, quantity) {
 
 //create order
 exports.createOrder = async (req, res) => {
-  const { idShop, idUser, option, address,nameShippingUnit,shippingCost,  idShippingUnit } = req.body;
+  const {
+    idShop,
+    idUser,
+    option,
+    address,
+    nameShippingUnit,
+    shippingCost,
+    idShippingUnit,
+  } = req.body;
 
   try {
     let totalByShop = shippingCost;
@@ -103,7 +111,7 @@ exports.createOrder = async (req, res) => {
       const product = await Product.findById(opt.idProduct);
       let stock = 0;
       product.option.forEach((opt1) => {
-          stock += opt1.quantity;
+        stock += opt1.quantity;
       });
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
@@ -114,7 +122,9 @@ exports.createOrder = async (req, res) => {
       if (optionPrd.quantity >= opt.quantity) {
         totalByShop += opt.price * opt.quantity;
         optionPrd.quantity = optionPrd.quantity - opt.quantity;
+        //Cập nhật tồn kho
         opt.stock = stock - opt.quantity;
+        // Cập nhật số lượng sản phẩm đã bán
         product.sold += opt.quantity;
         await product.save();
       }
@@ -168,7 +178,8 @@ exports.showOrderDetail = async (req, res) => {
       return {
         idProduct: opt.idProduct,
         idOption: opt.idOption,
-        name: option.name,
+        productName: product.name,
+        optionName: option.name,
         imageUrl: option.imageUrl,
         price: opt.price,
         quantity: opt.quantity,
@@ -179,12 +190,15 @@ exports.showOrderDetail = async (req, res) => {
       id: id,
       idShop: order.idShop,
       idUser: order.idUser,
+      buyerName: user.name,
       status: order.status,
+      address: order.address,
+      nameShippingUnit: order.nameShippingUnit,
+      shippingCost: order.shippingCost,
       totalByShop: order.totalByShop,
       idShippingUnit: order.idShippingUnit,
       createAt: order.createAt,
       option: productOptionInfo,
-      user: user,
     };
     res.status(200).json({ orderDetail });
   } catch (error) {

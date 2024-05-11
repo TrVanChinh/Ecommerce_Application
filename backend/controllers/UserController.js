@@ -611,4 +611,4 @@ exports.verifyOTPSeller = async (req, res) => {
         message: err.message,
       });
     }
-  };
+  }; 

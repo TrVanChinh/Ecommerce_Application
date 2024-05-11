@@ -25,6 +25,12 @@ import ListProductsScreen from '../screens/Seller/ListProducts';
 import EditProductScreen from '../screens/Seller/EditProductScreen';
 import ShopInfoScreen from '../screens/Seller/ShopInfoScreen';
 import ShopOrdersScreen from '../screens/Seller/ShopOrdersScreen';
+import OrderItemScreen from '../screens/Seller/OrderItemScreen';
+import StatisticScreen from '../screens/Seller/StatisticScreen';
+import RevenueScreen from '../screens/Seller/RevenueScreen';
+import ProfitScreen from '../screens/Seller/ProfitScreen';
+import CustomerScreen from '../screens/Seller/CustomerScreen';
+import InventoryScreen from '../screens/Seller/InventoryScreen';
 
 import SearchScreen from '../screens/SearchScreen';
 import DetailScreen from '../screens/DetailScreen';
@@ -169,12 +175,17 @@ const StackNavigation = () => {
             headerTitle: "Chọn danh mục con",
           }} 
         />
-         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
          <Stack.Screen name="MyShop" component={MyShopScreen} options={{headerTitle: 'Quản lý cửa hàng'}}/>
         <Stack.Screen name="ListProducts" component={ListProductsScreen} options={{headerTitle: 'Danh sách sản phẩm'}}/>
         <Stack.Screen name="EditProduct" component={EditProductScreen} options={{headerTitle: 'Chỉnh sửa sản phẩm'}}/>
         <Stack.Screen name="ShopInfo" component={ShopInfoScreen} options={{headerTitle: 'Thông tin cửa hàng'}}/>
         <Stack.Screen name="ShopOrders" component={ShopOrdersScreen} options={{headerTitle: 'Quản lý đơn hàng'}}/>
+        <Stack.Screen name="OrderItem" component={OrderItemScreen} options={{headerTitle: 'Chi tiết đơn hàng'}}/>
+        <Stack.Screen name="Statistic" component={StatisticScreen} options={{headerTitle: 'Thống kê'}}/>
+        <Stack.Screen name="Revenue" component={RevenueScreen} options={{headerTitle: 'Doanh thu'}}/>
+        <Stack.Screen name="Profit" component={ProfitScreen} options={{headerTitle: 'Lợi nhuận'}}/>
+        <Stack.Screen name="Customer" component={CustomerScreen} options={{headerTitle: 'Khách hàng'}}/>
+        <Stack.Screen name="Inventory" component={InventoryScreen} options={{headerTitle: 'Hàng tồn'}}/>
         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
         
         <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>

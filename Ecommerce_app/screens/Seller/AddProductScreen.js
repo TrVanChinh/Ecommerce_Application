@@ -478,7 +478,7 @@ const AddProductScreen = ({ navigation, route }) => {
           }}
         >
           <Ionicons name="list" size={25} marginLeft={10} color="gray" />
-          <Text style={{ marginLeft: 10 }}> Ngành hàng </Text>
+          <Text style={{ marginLeft: 10 }}> Danh mục</Text>
         </View>
         <View
           style={{

@@ -115,8 +115,8 @@ const MyShopScreen = ({ navigation }) => {
           />
         </View>
       </TouchableOpacity>
-      {/* Quản lý đơn hàng */}
       
+      {/* Quản lý đơn hàng */}
       <TouchableOpacity style={styles.list_items} onPress={() => navigation.navigate("ShopOrders")}>
         <View
           style={{
@@ -132,6 +132,38 @@ const MyShopScreen = ({ navigation }) => {
             color={color.origin}
           />
           <Text style={{ marginLeft: 10 }}>Quản lý đơn hàng</Text>
+        </View>
+        <View
+          style={{
+            alignItems: "flex-end",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <SimpleLineIcons
+            marginLeft={15}
+            name="arrow-right"
+            size={10}
+            color="#60698a"
+          />
+        </View>
+      </TouchableOpacity>
+      {/* Thống kê */}
+      <TouchableOpacity style={styles.list_items} onPress={() => navigation.navigate("Statistic")}>
+        <View
+          style={{
+            alignItems: "flex-start",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <AntDesign
+            name="barschart"
+            size={25}
+            marginLeft={10}
+            color={color.origin}
+          />
+          <Text style={{ marginLeft: 10 }}>Thống kê</Text>
         </View>
         <View
           style={{

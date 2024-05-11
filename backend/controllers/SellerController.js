@@ -34,6 +34,7 @@ exports.addProduct = async (req, res) => {
       idShop: idShop,
       image: image,
       option: option,
+      sold: 0,
     });
     let stock = 0;
     for (const opt of option) {
@@ -316,7 +317,8 @@ exports.revenueByCustomer = async (req, res) => {
     // Tính ngày đầu tiên và ngày cuối cùng của tháng
     const firstDayOfMonth = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed
     const lastDayOfMonth = new Date(year, month, 0);
-
+    
+    let result = [];
     // Sử dụng phương thức aggregate để group theo tháng và tính tổng doanh thu
     const monthlyRevenue = await Order.aggregate([
       {
@@ -337,8 +339,20 @@ exports.revenueByCustomer = async (req, res) => {
       },
     ]);
 
+    // const user = await User.findById(monthlyRevenue[0]._id);
+    for (let i = 0; i < monthlyRevenue.length; i++) {
+      await User.findById(monthlyRevenue[i]._id).then((user) => {
+        result.push({
+          userId : user._id,
+          userName: user.name,
+          totalRevenue: monthlyRevenue[i].totalRevenue,
+        });
+      }
+      );
+    }
+
     // Trả về kết quả
-    res.status(200).json(monthlyRevenue);
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error calculating monthly revenue by customer:", error);
     res.status(500).json({ message: "Internal server error" });
