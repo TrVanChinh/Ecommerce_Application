@@ -13,10 +13,29 @@ exports.getOneProduct = (req, res) => {
     } else {
         Product.findById(id)
             .then(data => {
-                res.json({
-                    status: "SUCCESS",
-                    data: data
-                })
+                if (!data) {
+                    res.json({
+                        status: "FAILED",
+                        message: "Product not found!"
+                    });
+                    return;
+                } else { 
+                    User.findById(data.idShop).then( shop => {
+                        if (!shop) {
+                            res.json({
+                                status: "FAILED",
+                                message: "shop not found!"
+                            });
+                            return;
+                        } else { 
+                            res.json({
+                                status: "SUCCESS",
+                                data: data,
+                                shop: shop
+                            });
+                        }
+                    })
+                }
             })
             .catch(err => {
                 res.json({
@@ -25,8 +44,96 @@ exports.getOneProduct = (req, res) => {
                 })
             })
     }
-
 }
+
+exports.getAllProduct = (req, res) => {
+    Product.find()
+        .then(data => {
+            res.json({
+                status: "SUCCESS",
+                data: data
+            })
+        })
+        .catch(err => {
+            res.json({
+                status: "FAILED",
+                message: err.message
+            })
+        })
+    }
+
+exports.getProductOption = (req, res) => {
+    const { optionId, productId } = req.params;
+    if (optionId === '' || productId === '' ) {
+        res.json({
+            status: "FAILED",
+            message: "Empty input fields!"
+        })
+    } else {
+        Product.findById(productId)
+            .then(product => {
+                if (!product) {
+                    res.json({
+                        status: "FAILED",
+                        message: "Product not found!"
+                    });
+                    return;
+                }
+                const option =product.option.id(optionId);
+                if (!option) {
+                    res.json({
+                        status: "FAILED",
+                        message: "Option not found for this product!"
+                    });
+                    return;
+                }
+                res.json({
+                    status: "SUCCESS",
+                    data: {
+                        nameProduct: product.name,
+                        option
+                    }
+                });
+            })
+            .catch(err => {
+                res.json({
+                    status: "FAILED",
+                    message: err.message
+                })
+            })
+    }
+}
+
+// exports.getProductOption = async (req, res) => {
+//     const { optionId, productId } = req.params;
+//     if (optionId === '' || productId === '' ) {
+//         res.json({
+//             status: "FAILED",
+//             message: "Empty input fields!"
+//         })
+//     } else {
+//     try {
+//         const product = await Product.findOne({ "_id": productId });
+//         if (!product) {
+//             return res.status(404).json({ message: "Product not found" });
+//         }
+//         const option = product.option.find(opt => opt._id.toString() === optionId);
+//         if (!option) {
+//             return res.status(404).json({ message: "Option not found for this product" });
+//         }
+//         res.json({
+//             status: 'SUCCESS',
+//             message: 'Option found',
+//             data: {
+                //     nameProduct: product.name,
+                //     option
+                // }
+//         });
+//     } catch (error) {
+//         console.error("Error updating subcategory:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// }}
 
 exports.getInfoShop = async (req, res) => {
     const { id } = req.params;
@@ -41,7 +148,8 @@ exports.getInfoShop = async (req, res) => {
             .then(data => {
                 res.json({
                     status: "SUCCESS",
-                    data: { data, user }
+                    products: data,
+                    user: user 
                 })
             })
             .catch(err => {

@@ -16,8 +16,22 @@ import VerifyScreen from '../screens/VerifyScreen';
 import EmailAuthenticationScreen from '../screens/ForgetPasswordScreen/EmailAuthenticationScreen';
 import VerifyOTPofForgotPasswordScreen from '../screens/ForgetPasswordScreen/VerifyOTPofForgotPasswordScreen'
 import SetupPasswordScreen from '../screens/ForgetPasswordScreen/SetupPasswordScreen';
+import RegisterSellerScreen from '../screens/Seller/RegisterSellerScreen';
+import AddProductScreen from '../screens/Seller/AddProductScreen';
+import CategoryScreen from "../screens/Seller/Categories/CategoryScreen";
+import SubcategoryScreen from "../screens/Seller/Categories/SubcategoryScreen";
+import MyShopScreen from '../screens/Seller/MyShopScreen';
+import ListProductsScreen from '../screens/Seller/ListProducts';
+import EditProductScreen from '../screens/Seller/EditProductScreen';
+import ShopInfoScreen from '../screens/Seller/ShopInfoScreen';
+import ShopOrdersScreen from '../screens/Seller/ShopOrdersScreen';
+
 import SearchScreen from '../screens/SearchScreen';
 import DetailScreen from '../screens/DetailScreen';
+import CartScreen from '../screens/CartScreen';
+import OrderScreen from '../screens/OrderScreen';
+import ShippingUnitScreen from '../screens/ShippingUnitScreen';
+
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -145,9 +159,29 @@ const StackNavigation = () => {
         <Stack.Screen name="EmailAuthentication" component={EmailAuthenticationScreen} options={{headerTitle: 'Xác minh Email'}}/>
         <Stack.Screen name="VerifyOTPofForgotPassword" component={VerifyOTPofForgotPasswordScreen} options={{headerTitle: 'Xác thực OTP'}}/>
         <Stack.Screen name="SetupPassword" component={SetupPasswordScreen} options={{headerTitle: 'Thiết lập mật khẩu'}}/>
-
+        <Stack.Screen name="RegisterSeller" component={RegisterSellerScreen} options={{headerTitle: 'Đăng ký bán hàng'}}/>
+        <Stack.Screen name="AddProduct" component={AddProductScreen} options={{headerTitle: 'Thêm sản phẩm'}}/>
+        <Stack.Screen name="SelectCategory" component={CategoryScreen} options={{
+            headerTitle: "Chọn danh mục",
+          }} 
+        />
+        <Stack.Screen name="SelectSubcategory" component={SubcategoryScreen}options={{
+            headerTitle: "Chọn danh mục con",
+          }} 
+        />
+         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
+         <Stack.Screen name="MyShop" component={MyShopScreen} options={{headerTitle: 'Quản lý cửa hàng'}}/>
+        <Stack.Screen name="ListProducts" component={ListProductsScreen} options={{headerTitle: 'Danh sách sản phẩm'}}/>
+        <Stack.Screen name="EditProduct" component={EditProductScreen} options={{headerTitle: 'Chỉnh sửa sản phẩm'}}/>
+        <Stack.Screen name="ShopInfo" component={ShopInfoScreen} options={{headerTitle: 'Thông tin cửa hàng'}}/>
+        <Stack.Screen name="ShopOrders" component={ShopOrdersScreen} options={{headerTitle: 'Quản lý đơn hàng'}}/>
         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
-        {/* <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/> */}
+        
+        <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="Cart" component={CartScreen} options={{headerTitle: 'Giỏ hàng'}}/>
+        <Stack.Screen name="Order" component={OrderScreen} options={{headerTitle: 'Đặt hàng'}}/>
+        <Stack.Screen name="ShippingUnit" component={ShippingUnitScreen} options={{headerTitle: 'Đơn vị vận chuyển'}}/>
+
 
       </Stack.Navigator>
     </NavigationContainer>

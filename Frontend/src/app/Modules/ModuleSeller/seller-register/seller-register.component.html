@@ -1,0 +1,71 @@
+<div  class="container mx-auto mt-10 flex flex-col justify-center items-center">
+    <h1 class="register">seller Register</h1>
+  
+    <div class="border-b border-gray-300 w-full mb-10 mt-5">
+    </div>
+    <h2>
+      Your Personal Details
+    </h2>
+    <form
+    
+      class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
+      [formGroup]="signInForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>shopDescript</mat-label>
+        <input
+          matInput
+          type="text"
+          name="shopDescript"
+          id=""
+          placeholder="Enter user name"
+          formControlName="shopDescript"
+        />
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>shopAddress</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="shopAddress"
+          name="shopAddress"
+          formControlName="shopAddress"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>shopName</mat-label>
+        <input
+          type="shopName"
+          matInput
+          placeholder="shopName"
+          formControlName="shopName"
+        />
+      </mat-form-field>
+
+      <div class="flex flex-row justify-center items-stretch gap-10">
+        <mat-form-field appearance="outline">
+          <mat-label>OTP</mat-label>
+          <input
+            type="shopName"
+            matInput
+            placeholder="OTP"
+            formControlName="otp"
+          />
+        </mat-form-field>
+        <button mat-flat-button class="bg-yellow-200 h-14" type="button"  (click)="sendcode()">Send code</button>
+      </div>
+      <div class="mb-3 text-cyan-600">{{message}}</div>
+      
+      <button mat-flat-button class="bg-green-300">Register</button>
+      <span class="mt-5" href="">Do you have an account <a routerLink="/login" 
+        class="text-cyan-500 underline">yet</a>?
+      </span>
+    </form>
+  
+   
+  </div>
+  
+
+  

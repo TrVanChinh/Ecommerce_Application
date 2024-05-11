@@ -12,7 +12,7 @@ import VerifyScreen from "./screens/VerifyScreen";
 
 import { UserProvider } from "./UserContext";
 import store from "./store";
-
+import { Provider } from "react-redux"
 export default function App() {
   return (
     <>
@@ -21,7 +21,7 @@ export default function App() {
           <StackNavigation />
           <ModalPortal />
           {/* <VerifyScreen/> */}
-          {/* <RegisterScreen/> */}
+          {/* <RegisterScreen/> */} 
         </UserProvider>
       </Provider>
     </>

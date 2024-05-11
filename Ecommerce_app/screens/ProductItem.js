@@ -1,63 +1,69 @@
-import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
-import React from 'react'
+import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
 
-const ProductItem = ({item}) => {
-    return (
-        <TouchableOpacity
-          onPress={() => {
-            alert(`press ${item.price}`);
-          }}
+const ProductItem = ({ item, onPress  }) => {
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        // padding:10,
+      }}
+    >
+      <View>
+        <Image
           style={{
-            justifyContent: "center",
-            alignItems: "center",
+            width: 200,
+            height: 200,
+            resizeMode: "cover",
+            borderRadius: 25,
+            margin: 10,
+          }}
+          source={{
+            uri: item.image[0].url,
+          }}
+        />
+        <View
+          style={{
+            width: 50,
+            position: "absolute",
+            marginTop: 20,
+            alignItems: "flex-end",
+            backgroundColor: "red",
           }}
         >
-          <View>
-            <Image
-              style={{
-                width: 200,
-                height: 200,
-                resizeMode: "cover",
-                borderRadius: 25,
-                margin: 10,
-              }}
-              source={{
-                uri: item.url,
-              }}
-            />
-            <View
-              style={{
-                width: 50,
-                position: "absolute",
-                marginTop: 20,
-                alignItems: "flex-end",
-                backgroundColor: "red",
-              }}
-            >
-              <Text style={{ color: "yellow" }}>{item.sale}</Text>
-            </View>
-          </View>
-          <View style={{ width: 200, paddingBottom: 10 }}>
-            <Text
-              style={{ fontSize: 16, color: "black" }}
-              numberOfLines={1}
-            >
-              {item.name}
-            </Text>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 20,
-                color: "red",
-              }}
-            >
-              {item.price}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
-}
+          <Text style={{ color: "yellow" }}>{item.sale}</Text>
+        </View>
+      </View>
+      <View style={{ width: 200, paddingBottom: 10 }}>
+        <Text style={{ fontSize: 16, color: "black", textAlign: "center", }} numberOfLines={1}>
+          {item.name}
+        </Text>
+        {/* {priceMin !== priceMax ? (
+          <Text style={{ textAlign: "center", fontSize: 20, color: "red" }}>
+            {priceMin}đ - {priceMax}đ
+          </Text>
+        ) : (
+          <Text style={{ textAlign: "center", fontSize: 20, color: "red" }}>
+            {priceMax}đ
+          </Text>
+        )} */}
+        <Text
+            style={{
+              textAlign: "center",
+              fontSize: 20,
+              color: "red",
+            }}
+          >
+            {item.option[0].price} đ
+          </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
-export default ProductItem
+export default ProductItem;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

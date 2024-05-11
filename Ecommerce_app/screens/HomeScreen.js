@@ -65,57 +65,73 @@ const HomeScreen = ({navigation}) => {
         },
       ]);
     
-      const [product, setProduct] = useState([
-        {
-          sold: "234",
-          price: "221.000đ",
-          sale: "-22%",
-          introduce: "Áo Nỉ Lót Lông Có Mũ Thời Trang THE GOOD/ Basic Hoodie",
-          url: "https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-llei62d3h3go41",
-          name: "Áo hoodie nam nữ áo nỉ hoodie basic form rộng",
-        },
-        {
-          sold: "224",
-          price: "222.000đ",
-          sale: "-37%",
-          introduce: "Thắt Lưng Nam PISA Giấu Đuôi Dây Khóa Tự Động Da Bò Thật",
-          url: "https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lgtepr0mzfoyca",
-          name: "Dây nịt thắt lưng nam da bò thật 2 lớp không có khóa đi kèm bền đẹp AMIRCUX",
-        },
-        {
-          sold: "112",
-          price: "398.800đ",
-          sale: "-25%",
-          introduce: "áo khoác gió vansity phối màu đen trắng",
-          url: "https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-llv06xeia21ra9",
-          name: "Áo khoác bomber nhung tăm cổ bẻ kiểu trơn 1 lớp dày dặn chuẩn form siêu xinh sành điệu cao cấp BẢO ĐĂNG",
-        },
-        {
-          sold: "445",
-          price: "34.000đ",
-          sale: "-33%",
-          introduce: "Sơn Bạc Mạ Crom Sơn Xịt Mạ Chrome Sáng Bóng 350ml",
-          url: "https://down-vn.img.susercontent.com/file/sg-11134201-23030-gh8iuwuxc5nv0d",
-          name: "SƠN MẠ CROM CAO CẤP Chai 350ML",
-        },
-        {
-          sold: "788",
-          price: "1.733.000đ",
-          sale: "-55%",
-          introduce: "Freedom Mô Hình Nhân Vật gundam eg hg mg z nt unicorn",
-          url: "https://down-vn.img.susercontent.com/file/cn-11134207-7r98o-lna6ztr124yjb0",
-          name: "Mô Hình Ráp Sẵn Metal Build Takeda Shingen Limited Edition Màu đen phiên bản hội chợ WFC2023 của Moshow toys",
-        },
-        {
-          sold: "755",
-          price: "242.250đ",
-          sale: "-45%",
-          introduce:
-            "1 Hồ Cá Sinh Thái Để Bàn Trang Trí Rượu hảo hạng của Hãng Marimo Eco",
-          url: "https://down-vn.img.susercontent.com/file/d0a017b9eccfbd24cb829da32eb4ceea",
-          name: "Bể Cá Nguyên Bộ SOBO - Tích Hợp sẵn Lọc và Đèn bên trong Hồ Cá",
-        },
-      ]);
+  const [product, setProduct] = useState([
+    {
+      sold: "234",
+      price: "221.000đ",
+      sale: "-22%",
+      introduce: "Áo Nỉ Lót Lông Có Mũ Thời Trang THE GOOD/ Basic Hoodie",
+      url: "https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-llei62d3h3go41",
+      name: "Áo hoodie nam nữ áo nỉ hoodie basic form rộng",
+    },
+    {
+      sold: "224",
+      price: "222.000đ",
+      sale: "-37%",
+      introduce: "Thắt Lưng Nam PISA Giấu Đuôi Dây Khóa Tự Động Da Bò Thật",
+      url: "https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lgtepr0mzfoyca",
+      name: "Dây nịt thắt lưng nam da bò thật 2 lớp không có khóa đi kèm bền đẹp AMIRCUX",
+    },
+    {
+      sold: "112",
+      price: "398.800đ",
+      sale: "-25%",
+      introduce: "áo khoác gió vansity phối màu đen trắng",
+      url: "https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-llv06xeia21ra9",
+      name: "Áo khoác bomber nhung tăm cổ bẻ kiểu trơn 1 lớp dày dặn chuẩn form siêu xinh sành điệu cao cấp BẢO ĐĂNG",
+    },
+    {
+      sold: "445",
+      price: "34.000đ",
+      sale: "-33%",
+      introduce: "Sơn Bạc Mạ Crom Sơn Xịt Mạ Chrome Sáng Bóng 350ml",
+      url: "https://down-vn.img.susercontent.com/file/sg-11134201-23030-gh8iuwuxc5nv0d",
+      name: "SƠN MẠ CROM CAO CẤP Chai 350ML",
+    },
+    {
+      sold: "788",
+      price: "1.733.000đ",
+      sale: "-55%",
+      introduce: "Freedom Mô Hình Nhân Vật gundam eg hg mg z nt unicorn",
+      url: "https://down-vn.img.susercontent.com/file/cn-11134207-7r98o-lna6ztr124yjb0",
+      name: "Mô Hình Ráp Sẵn Metal Build Takeda Shingen Limited Edition Màu đen phiên bản hội chợ WFC2023 của Moshow toys",
+    },
+    {
+      sold: "755",
+      price: "242.250đ",
+      sale: "-45%",
+      introduce:
+        "1 Hồ Cá Sinh Thái Để Bàn Trang Trí Rượu hảo hạng của Hãng Marimo Eco",
+      url: "https://down-vn.img.susercontent.com/file/d0a017b9eccfbd24cb829da32eb4ceea",
+      name: "Bể Cá Nguyên Bộ SOBO - Tích Hợp sẵn Lọc và Đèn bên trong Hồ Cá",
+    },
+  ]);
+
+  useEffect(() => {
+    fetchDataProduct()
+  }, []);
+
+  const fetchDataProduct = () => {
+    axios.get(`${API_BASE_URL}/products`).then((response) => {
+      // console.log(response.data.data);
+      setProducts(response.data.data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+
 
  // Navigate to the details screen 
   const handleItemPress = (product) => {
@@ -160,23 +176,23 @@ const HomeScreen = ({navigation}) => {
 
   
 
-  // const getSubcategory = () => {
-  //   const id = "661c0bcf5fddd37bdf84f83e"
-  //   const subCategoryId = "66235653ce23e38ed32ad59d"
-  //   axios.get(`${API_BASE_URL}/admin/${id}/${subCategoryId}`)
-  //   .then((response) => {
-  //     if (response.data.status === "FAILED") {
-  //       alert(response.data.message); 
-  //       console.log(response.data.message);
-  //     } else {
-  //       console.log(response.data)
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     alert(" Error")
-  //     console.log(error)
-  //   })
-  // }
+  const getSubcategory = () => {
+    const id = "661c0bcf5fddd37bdf84f83e"
+    const subCategoryId = "66235653ce23e38ed32ad59d"
+    axios.get(`${API_BASE_URL}/admin/${id}/${subCategoryId}`)
+    .then((response) => {
+      if (response.data.status === "FAILED") {
+        alert(response.data.message); 
+        console.log(response.data.message);
+      } else {
+        console.log(response.data)
+      }
+    })
+    .catch((error) => {
+      alert(" Error")
+      console.log(error)
+    })
+  }
 
   return (
     <SafeAreaView
@@ -187,7 +203,7 @@ const HomeScreen = ({navigation}) => {
       }}
     >
       <ScrollView>
-        <SlideShow />
+        <SlideShow/>
         <View
           style={{
             position: "absolute",
@@ -240,7 +256,7 @@ const HomeScreen = ({navigation}) => {
             <AntDesign
               name="shoppingcart"
               size={24}
-              color="white"
+              color="#857E7C"
               padding={10}
             />
           </Pressable>
@@ -290,6 +306,17 @@ const HomeScreen = ({navigation}) => {
             FLASH SALE
           </Text>
         </View>
+        <View style={{ height: 250 }}> 
+          <FlatList
+              horizontal
+              style={{ flex: 1 }}
+              keyExtractor={(item) => item._id}
+              data={products}
+              renderItem={({ item }) => 
+              
+              <ProductItem item={item} onPress={() => handleItemPress(item)}/>}
+            />
+        </View>
          
         <View>
           <Text style={{ color: "red", fontWeight: "bold", padding: 20 }}>
@@ -297,7 +324,7 @@ const HomeScreen = ({navigation}) => {
           </Text>
         </View>
         <View style={{ height: 250 }}>
-          {/* <FlatList
+          <FlatList
             horizontal
             style={{ flex: 1 }}
             keyExtractor={(item) => item.url}
@@ -358,14 +385,14 @@ const HomeScreen = ({navigation}) => {
                 </TouchableOpacity>
               );
             }}
-          /> */}
-          <FlatList
+          />
+          {/* <FlatList
             horizontal
             style={{ flex: 1 }}
             keyExtractor={(item) => item.url}
             data={product}
             renderItem={({ item }) => <ProductItem item={item} />}
-          />
+          /> */}
         </View>
       </ScrollView>
       <TouchableOpacity
