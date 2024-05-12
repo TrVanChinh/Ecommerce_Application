@@ -31,7 +31,7 @@ router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
 router.post("/admin/addShippingUnit", AdminController.addShippingUnit);
 router.get("/shippingUnit", AdminController.ShowShippingUnit);
- 
+
 
 //User
 router.get("/shop/user/:id", UserController.getUser);
@@ -81,6 +81,7 @@ router.get("/product/detail/:id", ProductController.getOneProduct)
 router.get("/products", ProductController.getAllProduct)
 router.get("/product/:productId/option/:optionId", ProductController.getProductOption)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
+router.get("/product/category/:idCategory", ProductController.getProductByCategory)
 // router.post("/product/newProduct", ProductController.NewProduct)
 // router.put("/product/updateProduct", ProductController.UpdateProduct)
 // router.delete("/product/deleteProduct", ProductController.DeleteProduct)
@@ -105,7 +106,7 @@ router.post("/order/createOrder", OrderController.createOrder);
 //change status order
 router.put("/order/changeStatusOrder", OrderController.changeStatusOrder);
 //show order detail
-router.get("/order/showOrderDetail/:id",OrderController.showOrderDetail)
+router.get("/order/showOrderDetail/:id", OrderController.showOrderDetail)
 
 
 //Cart

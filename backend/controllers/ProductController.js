@@ -19,15 +19,15 @@ exports.getOneProduct = (req, res) => {
                         message: "Product not found!"
                     });
                     return;
-                } else { 
-                    User.findById(data.idShop).then( shop => {
+                } else {
+                    User.findById(data.idShop).then(shop => {
                         if (!shop) {
                             res.json({
                                 status: "FAILED",
                                 message: "shop not found!"
                             });
                             return;
-                        } else { 
+                        } else {
                             res.json({
                                 status: "SUCCESS",
                                 data: data,
@@ -60,11 +60,11 @@ exports.getAllProduct = (req, res) => {
                 message: err.message
             })
         })
-    }
+}
 
 exports.getProductOption = (req, res) => {
     const { optionId, productId } = req.params;
-    if (optionId === '' || productId === '' ) {
+    if (optionId === '' || productId === '') {
         res.json({
             status: "FAILED",
             message: "Empty input fields!"
@@ -79,7 +79,7 @@ exports.getProductOption = (req, res) => {
                     });
                     return;
                 }
-                const option =product.option.id(optionId);
+                const option = product.option.id(optionId);
                 if (!option) {
                     res.json({
                         status: "FAILED",
@@ -125,9 +125,9 @@ exports.getProductOption = (req, res) => {
 //             status: 'SUCCESS',
 //             message: 'Option found',
 //             data: {
-                //     nameProduct: product.name,
-                //     option
-                // }
+//     nameProduct: product.name,
+//     option
+// }
 //         });
 //     } catch (error) {
 //         console.error("Error updating subcategory:", error);
@@ -149,7 +149,7 @@ exports.getInfoShop = async (req, res) => {
                 res.json({
                     status: "SUCCESS",
                     products: data,
-                    user: user 
+                    user: user
                 })
             })
             .catch(err => {
@@ -225,3 +225,26 @@ exports.DeleteProduct = async (req, res) => {
     }
 };
 
+exports.getProductByCategory = (req, res) => {
+    const { idCategory } = req.params;
+    if (idCategory === '') {
+        res.json({
+            status: "FAILED",
+            message: "Empty input fields!"
+        })
+    } else {
+        Product.find({ "idCategory": idCategory })
+            .then(data => {
+                res.json({
+                    status: "SUCCESS",
+                    data: data
+                })
+            })
+            .catch(err => {
+                res.json({
+                    status: "FAILED",
+                    message: err.message
+                })
+            })
+    }
+}
