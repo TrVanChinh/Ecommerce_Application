@@ -32,6 +32,14 @@ import CartScreen from '../screens/CartScreen';
 import OrderScreen from '../screens/OrderScreen';
 import ShippingUnitScreen from '../screens/ShippingUnitScreen';
 
+import AddressScreen from "../screens/Address/AddressScreen";
+import NewAddressScreen from "../screens/Address/NewAddressScreen";
+import SetUpAddressScreen from "../screens/Address/SetUpAddressScreen";
+import UpdateAddressScreen from "../screens/Address/UpdateAddressScreen";
+import ResetAddressScreen from "../screens/Address/ResetAddressScreen";
+import ShopScreen from "../screens/ShopScreen";
+import PurchaseOrderScreen from '../screens/PurchaseOrderScreen';
+import OrderDetailScreen from '../screens/OrderDetailScreen';
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -175,13 +183,20 @@ const StackNavigation = () => {
         <Stack.Screen name="EditProduct" component={EditProductScreen} options={{headerTitle: 'Chỉnh sửa sản phẩm'}}/>
         <Stack.Screen name="ShopInfo" component={ShopInfoScreen} options={{headerTitle: 'Thông tin cửa hàng'}}/>
         <Stack.Screen name="ShopOrders" component={ShopOrdersScreen} options={{headerTitle: 'Quản lý đơn hàng'}}/>
-        <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
         
         <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Cart" component={CartScreen} options={{headerTitle: 'Giỏ hàng'}}/>
         <Stack.Screen name="Order" component={OrderScreen} options={{headerTitle: 'Đặt hàng'}}/>
         <Stack.Screen name="ShippingUnit" component={ShippingUnitScreen} options={{headerTitle: 'Đơn vị vận chuyển'}}/>
 
+        <Stack.Screen name="Address" component={AddressScreen} options={{headerTitle: 'Chọn địa chỉ giao hàng'}}/>
+        <Stack.Screen name="NewAddress" component={NewAddressScreen} options={{headerTitle: 'Địa chỉ mới'}}/>
+        <Stack.Screen name="SetUpAddress" component={SetUpAddressScreen} options={{headerTitle: 'Thiết lập địa chỉ'}}/>
+        <Stack.Screen name="UpdateAddress" component={UpdateAddressScreen} options={{headerTitle: 'Cập nhật địa chỉ'}}/>
+        <Stack.Screen name="ResetAddress" component={ResetAddressScreen} options={{headerTitle: 'Đặt lại địa chỉ'}}/>
+        <Stack.Screen name="Shop" component={ShopScreen} options={{headerTitle: 'Xem Shop'}}/>
+        <Stack.Screen name="PurchaseOrder" component={PurchaseOrderScreen} options={{headerTitle: 'Đơn mua'}}/>
+        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{headerTitle: 'Chi tiết đơn hàng'}}/>
 
       </Stack.Navigator>
     </NavigationContainer>

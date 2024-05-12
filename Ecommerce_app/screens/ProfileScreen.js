@@ -214,7 +214,7 @@ const ProfileScreen = ({ navigation, route }) => {
         >
           <Pressable
             style={{ flex: 1, alignItems: "center" }}
-            // onPress={() => dataUser ? navigation.navigate("PurchaseOrder") : navigation.navigate("Login")}
+            onPress={() => user ? navigation.navigate("PurchaseOrder") : navigation.navigate("Login")}
           >
             <Ionicons name="wallet-outline" size={24} color={color.origin} />
             <Text style={styles.text_order}>Chờ xác nhận</Text>

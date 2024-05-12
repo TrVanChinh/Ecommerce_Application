@@ -65,72 +65,6 @@ exports.addProductToCart = async (req, res) => {
     }
   }
 };
-exports.showCart = async (req, res) => {
-  let { userId } = req.params;
-  if (userId === "") {
-    res.json({
-      status: "FAILED",
-      message: "Empty input fields!",
-    });
-    return;
-  } else {
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        res.json({
-          status: "FAILED",
-          message: "The user with the provided id does not exist.",
-        });
-        return;
-      } else if (!user.carts || user.carts.length === 0) {
-        res.json({
-          status: "SUCCESS",
-          message: "Cart is empty",
-          data: null
-        });
-        return;
-      } else {
-        const cartData = await Promise.all(
-          user.carts.map(async (product) => {
-            const productData = await Product.findOne({ _id: product.productId });
-            if (!productData) {
-              res.json({
-                status: "FAILED",
-                message: "Product does not exist.",
-              });
-              return null;
-            } else {
-              const optionData = productData.option.id(product.optionProductId)
-              if (!optionData) {
-                res.json({
-                  status: "FAILED",
-                  message: "Option does not exist."
-                })
-                return null;
-              } else {
-                return {
-                  option: optionData,
-                  product: productData,
-                  quantity: product.quantity,
-                  checked: false,
-                  _id: product._id
-                }
-              }
-            }
-          })
-        );
-        res.json({
-          status: "SUCCESS",
-          data: cartData.filter(item => item !== null),
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-};
-
 // exports.showCart = async (req, res) => {
 //   let { userId } = req.params;
 //   if (userId === "") {
@@ -141,73 +75,130 @@ exports.showCart = async (req, res) => {
 //     return;
 //   } else {
 //     try {
-//       await User.findById(userId)
-//         .then(async (user) => {
-//           if (!user) {
-//             res.json({
-//               status: "FAILED",
-//               message: "The user with the provided id does not exist.",
-//             });
-//             return;
-//           } else if (!user.carts || user.carts.length === 0) {
-//             res.json({
-//               status: "SUCCESS",
-//               message: "Cart is empty",
-//               data: null
-//             });
-//             return;
-//           } else {
-//             const cartData = await Promise.all(
-//               user.carts.map(async (product) => {
-//                 if (errorOccurred) return; 
-
-//                 const productData = await Product.findOne({ _id: product.productId });
-//                 if (!productData) {
-//                   res.json({
-//                     status: "FAILED",
-//                     message: "Product does not exist.",
-//                   });
-//                   errorOccurred = true; 
-//                   return;
-//                 } else {
-//                   const optionData = productData.option.id(product.optionProductId)
-//                   if(!optionData) {
-//                       res.json({
-//                           status:"FAILED",
-//                           message:"Option does not exist."
-//                       })
-//                       errorOccurred = true;
-//                       return;
-//                   } else {
-//                       return {
-//                           option: optionData,
-//                           product: productData,
-//                           quantity: product.quantity,
-//                           checked: false,
-//                           _id: product._id
-//                       }
-//                   }
-//                 }
-//               })
-//             );
-//             res.json({
-//               status: "SUCCESS",
-//               data: cartData,
-//             });
-//           }
-//         })
-//         .catch((err) => {
-//           res.json({
-//             status: "FAILED",
-//             message: "hehehe",
-//           });
+//       const user = await User.findById(userId);
+//       if (!user) {
+//         res.json({
+//           status: "FAILED",
+//           message: "The user with the provided id does not exist.",
 //         });
+//         return;
+//       } else if (!user.carts || user.carts.length === 0) {
+//         res.json({
+//           status: "SUCCESS",
+//           message: "Cart is empty",
+//           data: null
+//         });
+//         return;
+//       } else {
+//         const cartData = await Promise.all(
+//           user.carts.map(async (product) => {
+//             const productData = await Product.findOne({ _id: product.productId });
+//             if (!productData) {
+//               res.json({
+//                 status: "FAILED",
+//                 message: "Product does not exist.",
+//               });
+//               return null;
+//             } else {
+//               const optionData = productData.option.id(product.optionProductId)
+//               if (!optionData) {
+//                 res.json({
+//                   status: "FAILED",
+//                   message: "Option does not exist."
+//                 })
+//                 return null;
+//               } else {
+//                 return {
+//                   option: optionData,
+//                   product: productData,
+//                   quantity: product.quantity,
+//                   checked: false,
+//                   _id: product._id
+//                 }
+//               }
+//             }
+//           })
+//         );
+//         res.json({
+//           status: "SUCCESS",
+//           data: cartData.filter(item => item !== null),
+//         });
+//       }
 //     } catch (error) {
 //       console.error("Error:", error);
 //       res.status(500).json({ message: "Internal server error" });
 //     }
 //   }
 // };
+
+exports.showCart = async (req, res) => {
+  let { userId } = req.params;
+  if (!userId) {
+    return res.json({
+      status: "FAILED",
+      message: "Trường nhập liệu trống!",
+    });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({
+        status: "FAILED",
+        message: "Người dùng với id được cung cấp không tồn tại.",
+      });
+    }
+
+    if (!user.carts || user.carts.length === 0) {
+      return res.json({
+        status: "SUCCESS",
+        message: "Giỏ hàng trống",
+        data: null
+      });
+    }
+
+    const cartData = [];
+    let errorMessage = null;
+
+    for (const product of user.carts) {
+      const productData = await Product.findOne({ _id: product.productId });
+      if (!productData) {
+        errorMessage = "Một hoặc nhiều sản phẩm không tồn tại.";
+        break; // Sử dụng break hợp lệ trong vòng lặp for...of
+      }
+
+      const optionData = productData.option.find(option => option._id.toString() === product.optionProductId);
+      if (!optionData) {
+        errorMessage = "Một hoặc nhiều tùy chọn không tồn tại.";
+        break; // Sử dụng break hợp lệ trong vòng lặp for...of
+      }
+
+      cartData.push({
+        option: optionData,
+        product: productData,
+        quantity: product.quantity,
+        checked: false,
+        _id: product._id
+      });
+    }
+
+    if (errorMessage) {
+      return res.json({
+        status: "FAILED",
+        message: errorMessage
+      });
+    }
+
+    res.json({
+      status: "SUCCESS",
+      data: cartData,
+    });
+  } catch (error) {
+    console.error("Lỗi:", error);
+    res.status(500).json({ message: "Lỗi máy chủ nội bộ" });
+  }
+};
+
 
 exports.removeFromCart = async (req, res) => {
   const { cartId, userId } = req.body;
@@ -216,16 +207,16 @@ exports.removeFromCart = async (req, res) => {
       if (!user) {
         res.json({
           status: "FAILED",
-          message: "User not found!",
-        });
-        return;
+          message: "User not found!", 
+        });   
+        return; 
       } else {
         user.carts.pull({ _id: cartId });
-        user.save();
+        user.save(); 
 
         res.json({
           status: "SUCCESS",
-          message: "Remove product from cart successfully.",
+          message: "Remove product from cart successfully.", 
         });
       }
     });
@@ -332,3 +323,5 @@ exports.decrementQuantity = async (req, res) => {
     }
   }
 };
+
+

@@ -49,6 +49,21 @@ router.post("/user/sendOTPVerificationEmailSeller", UserController.sendOTPVerifi
 //verifyOTPVerificationEmailSeller
 router.post("/user/verifyOTPSeller", UserController.verifyOTPSeller);
 
+//Address
+router.get("/user/:id/getAddress", UserController.getAddress);
+router.post("/user/newAddress", UserController.newAddress);
+router.put("/user/updateAddress", UserController.updateAddress);
+router.post("/user/deleteAddress", UserController.deleteAddress);
+
+//order
+router.post("/user/order", UserController.order);
+router.get("/user/getOrder/:id", UserController.getOrderData);
+router.post("/user/getOrder/cancelOrder", UserController.cancelOrder);
+
+//payment
+router.post("/user/create-payment", UserController.createPayment);
+
+
 //category
 router.post("/admin/newCategory", CategoryController.NewCategory)
 router.post("/admin/newSubCategory", CategoryController.CreateSubCategory)

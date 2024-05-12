@@ -7,6 +7,7 @@ import {
   TextInput,
   Image,
   Dimensions,
+  Alert,
   SafeAreaView,
 } from "react-native";
 import React, {
@@ -34,7 +35,6 @@ const OrderScreen = ({ navigation, route }) => {
   console.log(shippingUnit)
 
   const handleDataProduct = async () => {
-    // const productOrder = await AsyncStorage.getItem("productsAreOrdered");
     const retrievedValue = await AsyncStorage.getItem('productsAreOrdered');
     const productOrder = JSON.parse(retrievedValue);
     const groupedProducts = {};
@@ -81,12 +81,14 @@ const OrderScreen = ({ navigation, route }) => {
     //Tính tổng hóa đơn
     let total = 0;
     if (shippingUnit) {
+      // console.log("updatedListProducts", updatedListProducts);
       updatedListProducts.forEach((group) => {
+        // console.log("group", group.products)
         total += group.totalByShop + shippingUnit.price;
       });
     } else {
       updatedListProducts.forEach((group) => {
-        console.log(group);
+        ;
         total += group.totalByShop;
       });
     }
@@ -115,14 +117,96 @@ const OrderScreen = ({ navigation, route }) => {
     }, [product, shippingUnit])
   );
 
-  const SaveOrder = async (shipPrice) => {};
+const SaveOrder = async (shippingCost) => {
+  if (!address) {
+    alert("Vui lòng chọn địa chỉ nhận hàng!")
+  } else if (!shippingUnit) {
+    alert("Vui lòng chọn đơn vị vận chuyển!")
+  } else {
+    try {
+      const CartInfo = [];
+      for (const group of listProducts) {
+        const orderInfo = {
+          totalByShop: group.totalByShop + shippingCost,
+          idUser: idUser, 
+          address: address,
+          idShop: group.idShop,
+          idShippingUnit: shippingUnit._id,
+          nameShippingUnit: shippingUnit.name,
+          shippingCost: shippingUnit.price,
+          option: []
+        };
 
-  const deleteProductsFromCart = async (userId, productsToDelete) => {};
+        for (const product of group.products) {
+          console.log(product)
+          const optionInfo = {
+            // name: product.product.name - product.option.name,
+            idOption: product.option._id,
+            idProduct: product.product._id,
+            quantity: product.quantity,
+            price: product.option.price,
+          };
+
+          orderInfo.option.push(optionInfo)
+          CartInfo.push({
+            cartId: product._id, 
+            userId: idUser
+          })
+        }
+        axios.post(`${API_BASE_URL}/user/order`,orderInfo).then((response) => {
+            if (response.data.status === "FAILED") {
+              alert(response.data.message); 
+              console.log(response.data.message);
+            } else {
+              console.log(response.data.message);
+            }
+          })
+          .catch((error) => {
+            alert("error order")
+            console.log(error) 
+          })
+        // console.log(CartInfo)
+      }
+      await processCartRemovals(CartInfo); // Gọi hàm xử lý xóa giỏ hàng với thời gian chờ giữa các lần xóa
+      Alert.alert(
+        '',
+        `Đặt hàng thành công.`,
+        [
+          { text: 'OK', onPress: () => navigation.navigate("Main")  },
+        ],
+        { cancelable: false } 
+      )
+    } catch (error) {
+      console.error('Lỗi khi Đặt hàng', error);
+    }
+  }
+};
+
+const processCartRemovals = async (CartInfo) => {
+  for (const cart of CartInfo) {
+    await removeFromCart(cart.cartId, cart.userId); // Gửi yêu cầu xóa
+    await delay(500); // Đợi 1 giây trước khi gửi yêu cầu xóa tiếp theo
+  }
+};
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const removeFromCart = async (cartId, userId) => {
+  try {
+    const productInfo = {
+      cartId: cartId,
+      userId: userId,
+    }
+    await axios.post(`${API_BASE_URL}/cart/removeFromCart`,productInfo);
+  } catch (error) {
+    throw new Error("Xảy ra lỗi khi xóa sản phẩm từ giỏ hàng");
+  }
+};
 
   return (
     <>
       <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-        <View>
+        <View >
           {address ? (
             <Pressable
               style={{
@@ -176,6 +260,7 @@ const OrderScreen = ({ navigation, route }) => {
               </View>
             </Pressable>
           )}
+            
 
           {shippingUnit ? (
             <Pressable
@@ -223,6 +308,27 @@ const OrderScreen = ({ navigation, route }) => {
               <AntDesign name="right" size={24} color="#D0D0D0" />
             </Pressable>
           )}
+
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              alignItems: "center",
+              borderTopWidth: 1,
+              borderColor: "#D0D0D0",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text>Phương thức thanh toán:</Text>
+            <Pressable
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <Text>Thanh toán khi nhân hàng</Text>
+              <AntDesign name="right" size={24} color="#D0D0D0" />
+            </Pressable>
+          </View>
         </View>
         {listProducts?.map((group, index) => (
           <View style={{ borderTopWidth: 2, borderColor: "green" }} key={index}>
@@ -383,27 +489,6 @@ const OrderScreen = ({ navigation, route }) => {
                 justifyContent: "space-between",
               }}
             >
-              <Text>Phương thức thanh toán:</Text>
-              <Pressable
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text>Thanh toán khi nhân hàng</Text>
-                <AntDesign name="right" size={24} color="#D0D0D0" />
-              </Pressable>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                padding: 10,
-                alignItems: "center",
-                borderTopWidth: 1,
-                borderColor: "#D0D0D0",
-                justifyContent: "space-between",
-              }}
-            >
               <View style={{ padding: 10 }}>
                 <Text>Tổng tiền hàng:</Text>
                 <Text>Giảm giá tiền hàng:</Text>
@@ -476,9 +561,6 @@ const OrderScreen = ({ navigation, route }) => {
         </Pressable>
       </View>
     </>
-    // <View>
-    //   <Text>Tess</Text>
-    // </View>
     );
 };
 

@@ -74,8 +74,8 @@ const DetailScreen = ({ navigation, route }) => {
     })
   };
 
-  const handleShop = () => {
-    navigation.navigate("Shop", { shop });
+  const handleShop = (idShop) => {
+    navigation.navigate("Shop", { idShop});
   };
 
   return (
@@ -212,7 +212,7 @@ const DetailScreen = ({ navigation, route }) => {
                     borderWidth: 1,
                     borderColor: "#F1582C",
                   }}
-                  onPress={() => handleShop()}
+                  onPress={() => handleShop(shop._id)}
                 >
                   <Text style={{ color: "#F1582C", fontSize: 16 }}>
                     Xem shop
@@ -424,7 +424,7 @@ const DetailScreen = ({ navigation, route }) => {
               onPress={() => {
                 if (idOption) {
                   user !== null
-                    ? addToCart(user[0]._id, productId, idOption, quantity)
+                    ? addToCart(user._id, productId, idOption, quantity)
                     : navigation.navigate("Login"),
                     setModalVisible(!modalVisible);
                 }

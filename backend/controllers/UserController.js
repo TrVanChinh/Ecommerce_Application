@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 //mongodb user model
 const User = require('../models/User')
 const Admin = require('../models/Admin')
+const Order = require('../models/Order')
+const Product = require('../models/Product')
+
 //Password handler
 const bcrypt = require('bcrypt')
 
@@ -612,3 +615,742 @@ exports.verifyOTPSeller = async (req, res) => {
       });
     }
   };
+
+
+  exports.newAddress = async (req, res) => {
+    try {
+      let { userId, name, street, Ward, District, city, mobileNo } = req.body;
+      if (userId === '' || name === '' || street === '' || Ward === '' || District === '' || city === ''|| mobileNo === '' ) {
+        res.json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+        return;
+    } else if (/\D/.test(mobileNo)) {
+        res.json({
+            status: "FAILED",
+            message: "MobileNo must contain only numbers."
+        });
+        return;
+    } else if(mobileNo.length !== 10) {
+        res.json({
+            status:"FAILED",
+            message:"MobileNo must have 10 numbers."
+        })
+        return;
+    } else {
+        try {
+            User.findOne({ _id: userId })
+                .then(async (user) => {
+                    if (!user) {
+                    res.json({
+                        status: "FAILED",
+                        message: "The user with the provided id does not exist. ",
+                    });
+                    return;
+                    } else {
+                        user.addresses.push({
+                            name: name,
+                            street: street,
+                            Ward: Ward,
+                            District: District,
+                            city: city,
+                            mobileNo: mobileNo,
+                        });
+                            
+                        await user.save();
+                        res.json({
+                        status: "SUCCESS",
+                        message: "Create new address successfully",
+                        });
+                    }
+                }).catch ((err) => {
+                    res.json({
+                        status: "FAILED",
+                        message: err.message,
+                      });
+                })
+        } catch (err) {
+            res.json({
+              status: "FAILED",
+              message: err.message,
+            });
+        }
+      }
+    } catch (err) {
+      res.json({
+        status: "FAILED",
+        message: err.message,
+      });
+    }
+  };
+
+exports.getAddress = (req, res) => { 
+    const { id } = req.params; 
+    if(!id){
+        res.json({
+            status: "FAILED",
+            message: "id null"
+        })
+    } else {
+        User.findById(id)
+        .then(data => {
+             res.json({
+                 status: "SUCCESS",
+                 data: data.addresses
+             })
+         })
+        .catch(err => {
+             res.json({
+                 status: "FAILED",
+                 message: err.message
+             })
+         })
+    }
+}
+
+
+exports.updateAddress = async (req, res) => {
+    try {
+      let { userId, addressId, name, street, Ward, District, city, mobileNo } = req.body;
+      if (userId === '' || addressId === '' || name === '' || street === '' || Ward === '' || District === '' || city === ''|| mobileNo === '' ) {
+        res.json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+        return;
+    } else if (/\D/.test(mobileNo)) {
+        res.json({
+            status: "FAILED",
+            message: "MobileNo must contain only numbers."
+        });
+        return;
+    } else if(mobileNo.length !== 10) {
+        res.json({
+            status:"FAILED",
+            message:"MobileNo must have 10 numbers."
+        })
+        return;
+    } else {
+        try {
+            User.findOne({ _id: userId })
+                .then(async (user) => {
+                    if (!user) {
+                    res.json({
+                        status: "FAILED",
+                        message: "The user with the provided id does not exist. ",
+                    });
+                    return;
+                    } else {
+                        const address = user.addresses.id(addressId)
+                    
+                        if (!address) { 
+                            res.json({
+                                status: "FAILED",
+                                message: "The address with the provided id does not exist. ",
+                            });
+                            return;
+                        } else { 
+                            address.name = name;
+                            address.street = street;
+                            address.Ward = Ward;
+                            address.District = District;
+                            address.city = city;
+                            address.mobileNo = mobileNo;
+                            await user.save();
+                            res.json({
+                            status: "SUCCESS",
+                            message: "Update address successfully",
+                            });
+                        }
+                    }
+                }).catch ((err) => {
+                    res.json({
+                        status: "FAILED",
+                        message: err.message,
+                      });
+                })
+        } catch (err) {
+            res.json({
+              status: "FAILED",
+              message: err.message,
+            });
+        }
+      }
+    } catch (err) {
+      res.json({
+        status: "FAILED",
+        message: err.message,
+      });
+    }
+  };
+
+exports.deleteAddress = async (req, res) => {
+try {
+    const { userId, addressId } = req.body;
+    
+    if (!userId || !addressId) {
+        return res.status(400).json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+    }
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+        return res.status(404).json({
+            status: "FAILED",
+            message: "The user with the provided id does not exist.",
+        });
+    }
+
+    user.addresses.pull({ _id: addressId })// Assuming addresses is an array of ObjectId's
+
+    await user.save();
+    
+    return res.json({
+        status: "SUCCESS",
+        message: "Address deleted successfully",
+    });
+} catch (err) {
+    return res.status(500).json({
+        status: "FAILED",
+        message: err.message,
+    });
+}
+};
+
+// exports.order = async (req, res) => {
+//     try {
+//         const { idUser, idShop, address, totalByShop, idShippingUnit, nameShippingUnit,shippingCost, options } = req.body;
+        
+//         if (!idUser || !idShop || !address || !totalByShop || !idShippingUnit || !nameShippingUnit || !shippingCost ||  !options) {
+//             return res.status(400).json({
+//                 status: "FAILED",
+//                 message: "Empty input fields!",
+//             });
+//         }
+
+//         for (const option of options) {
+//             if (!option.idOption || !option.idProduct || !option.price || !option.quantity) {
+//                 return res.status(400).json({
+//                     status: "FAILED",
+//                     message: "One of the Options is missing required fields!",
+//                 });
+//             }
+//         }
+    
+//         const newOrder = new Order({
+//             idUser,
+//             idShop,  
+//             address,
+//             totalByShop,
+//             idShippingUnit,
+//             nameShippingUnit,
+//             shippingCost,
+//             status:"Ordered", 
+//             options,
+//         })
+
+//         newOrder.save().then((result) => {
+//             return res.json({
+//                 status: "SUCCESS",
+//                 message: "Order successfully",
+//                 data: result
+//             });
+//         })
+//     } catch (err) {
+//         return res.status(500).json({
+//             status: "FAILED",
+//             message: err.message,
+//         });
+//     }
+//     };
+exports.order = async (req, res) => {
+    const {
+        idShop,
+        idUser, 
+        option,   
+        address, 
+        nameShippingUnit, 
+        shippingCost,
+        totalByShop,
+        idShippingUnit,
+    } = req.body;
+    if (!idUser || !idShop || !address || !totalByShop || !idShippingUnit || !nameShippingUnit || !shippingCost ||  !option) {
+        return res.status(400).json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+    }
+
+    for (const item of option) {
+        if (!item.idOption || !item.idProduct || !item.price || !item.quantity) {
+            return res.status(400).json({
+                status: "FAILED",
+                message: "One of the Options is missing required fields!",
+            });
+        } 
+    }
+
+    try {
+        let totalByShop = shippingCost;
+        // Trừ số lượng sản phẩm trong kho
+        for (const opt of option) {
+        const product = await Product.findById(opt.idProduct);
+        let stock = 0;
+        product.option.forEach((opt1) => {
+            stock += opt1.quantity;
+        });
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        const optionPrd = product.option.find(
+            (opt1) => opt1._id.toString() == opt.idOption
+        );
+        if (optionPrd.quantity >= opt.quantity) {
+            totalByShop += opt.price * opt.quantity;
+            optionPrd.quantity = optionPrd.quantity - opt.quantity;
+            //Cập nhật tồn kho
+            opt.stock = stock - opt.quantity; 
+            // Cập nhật số lượng sản phẩm đã bán
+            product.sold += opt.quantity;
+            await product.save();
+        }
+        }
+        // Tạo đơn hàng mới
+        const order = new Order({
+        idShop,
+        idUser,
+        option,
+        address,
+        nameShippingUnit,
+        shippingCost, 
+        status: "processing",
+        totalByShop,
+        idShippingUnit,
+        });
+        await order.save();
+    
+        res.status(200).json({ message: "Order created successfully" });
+    } catch (error) {
+        console.error("Error creating order:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getOrderData = async (req, res) => {
+    try {
+        const { id} = req.params;
+        
+        if (!id) {
+            return res.status(400).json({
+                status: "FAILED",
+                message: "Empty input fields!",
+            });
+        } else {
+            const orderData = await Order.find({ idUser: id})
+            if (orderData) { 
+                const orderDataWithDetails = await Promise.all(orderData.map(async (item) => {
+                    const details = await Promise.all(item.option.map(async (option) => { 
+                        const productId = option.idProduct;
+                        const optionId = option.idOption;
+                        const price = option.price;
+                        const quantity = option.quantity;
+                        const stock = option.stock;
+
+                        const product = await Product.findById(productId)
+                        if (!product) {
+                            res.json({
+                                status: "FAILED",
+                                message: "Product not found!"
+                            });
+                            return;
+                        } else {
+                            const OptionOfProduct =product.option.id(optionId);
+                            if (!option) {
+                                res.json({
+                                    status: "FAILED",
+                                    message: "Option not found for this product!"
+                                });
+                                return;
+                            } else {
+                                const nameProduct = product.name 
+                                const nameOption = OptionOfProduct.name;
+                                const imageUrl = OptionOfProduct.imageUrl
+
+                                return {
+                                    productId: productId,
+                                    optionId: optionId,
+                                    nameProduct: nameProduct,
+                                    nameOption: nameOption,
+                                    imageUrl: imageUrl,
+                                    price: price,
+                                    quantity: quantity,
+                                    stock: stock,
+                                };
+                            }
+                        }
+                    }));
+                    return {
+                        ...item,
+                        option: details
+                    };
+                }));
+                const newOrdered = [];
+                const newDeliveringOrder = [];
+                const newDeliveredOrder = [];
+                const newCompletedOrder = [];
+                const newCancelOrder = [];
+
+                orderDataWithDetails.forEach((order) => {
+                    switch (order._doc.status) {
+                    case "processing":
+                    case "paid":
+                        newOrdered.push(order);
+                        break;
+                    case "delivering":
+                        newDeliveringOrder.push(order);
+                        break;
+                    case "delivered":
+                        newDeliveredOrder.push(order);
+                        break;
+                    case "completed":
+                        newCompletedOrder.push(order);
+                        break;
+                    case "canceled":
+                        newCancelOrder.push(order);
+                        break;
+                    }
+                });
+                res.json({
+                    status: "SUCCESS",
+                    newOrdered: newOrdered,
+                    newDeliveringOrder: newDeliveringOrder,
+                    newDeliveredOrder: newDeliveredOrder,
+                    newCompletedOrder: newCompletedOrder,
+                    newCancelOrder: newCancelOrder,
+                });
+            }
+        }
+        
+    } catch (err) {
+        return res.status(500).json({
+            status: "FAILED",
+            message: err.message,
+        });
+    }
+};
+
+exports.cancelOrder = async (req, res) => {
+    const {orderId} = req.body;
+    if (!orderId) {
+        return res.status(400).json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+    } else { 
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({
+                status: "FAILED",
+                message: "Order not found!",
+            });
+        } else {
+            order.status = "canceled";
+            await order.save();
+            res.json({
+                status: "SUCCESS",
+                message: "Order cancelled successfully!"
+            });
+        }
+    }
+
+};
+// exports.createPaymentQR = async (req, res) => {
+//     const { priceGlobal } = req.body;
+//     var partnerCode = "MOMO";
+//     var accessKey = "F8BBA842ECF85";
+//     var secretkey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+//     // chuỗi ngẫu nhiên để phân biệt cái request
+//     var requestId = partnerCode + new Date().getTime() + "id";
+//     // mã đặt đơn
+//     var orderId = new Date().getTime() + ":0123456778";
+//     //
+//     var orderInfo = "Thanh toán qua ví MoMo";
+//     // cung cấp họ về một cái pages sau khi thanh toán sẽ trở về trang nớ
+//     var redirectUrl = "https://clever-tartufo-c324cd.netlify.app/pages/home.html";
+//     // Trang thank you
+//     var ipnUrl = "https://clever-tartufo-c324cd.netlify.app/pages/home.html";
+//     // var ipnUrl = redirectUrl = "https://webhook.site/454e7b77-f177-4ece-8236-ddf1c26ba7f8";
+//     // số tiền
+//     var amount = priceGlobal;
+//     //var requestType = "payWithATM";
+//     // show cái thông tin thẻ, cái dưới quét mã, cái trên điền form
+//     var requestType = "captureWallet";
+//     var extraData = ""; //pass empty value if your merchant does not have stores
+  
+//     //before sign HMAC SHA256 with format
+//     //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
+//     var rawSignature =
+//       "accessKey=" +
+//       accessKey +
+//       "&amount=" +
+//       amount +
+//       "&extraData=" +
+//       extraData +
+//       "&ipnUrl=" +
+//       ipnUrl +
+//       "&orderId=" +
+//       orderId +
+//       "&orderInfo=" +
+//       orderInfo +
+//       "&partnerCode=" +
+//       partnerCode +
+//       "&redirectUrl=" +
+//       redirectUrl +
+//       "&requestId=" +
+//       requestId +
+//       "&requestType=" +
+//       requestType;
+//     // thư viện node js , model tích họp ,liên quan đến mã hóa, giải mã và bảo mật, cung cấp chức năng và phương thức sử lý dữ liệu liên quan đến mật mã
+//     const crypto = require("crypto");
+//     var signature = crypto
+//       // thuật toán tạo ra mới với tham số là secretkey
+//       .createHmac("sha256", secretkey)
+//       // thêm biến rawSignature vào băm
+//       .update(rawSignature)
+//       // tạo chữ kí và chuyển sang mã hex
+//       .digest("hex");
+  
+//     //json object send to MoMo endpoint, gửi cái aip của momo
+//     const requestBody = JSON.stringify({
+//       partnerCode: partnerCode,
+//       accessKey: accessKey,
+//       requestId: requestId,
+//       amount: amount,
+//       orderId: orderId,
+//       orderInfo: orderInfo,
+//       redirectUrl: redirectUrl,
+//       ipnUrl: ipnUrl,
+//       extraData: extraData,
+//       requestType: requestType,
+//       signature: signature,
+//       lang: "en",
+//     });
+  
+//     //Create the HTTPS objects, tạo sever, https để call cái aip khác, call tới momo
+//     const https = require("https");
+//     // yêu cầu truyền đi
+//     const options = {
+//       hostname: "test-payment.momo.vn",
+//       port: 443,
+//       path: "/v2/gateway/api/create",
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Content-Length": Buffer.byteLength(requestBody),
+//       },
+//     };
+//     //Send the request and get the response
+//     const reqq = https.request(options, (resMom) => {
+//       console.log(`Status: ${resMom.statusCode}`);
+//       console.log(`Headers: ${JSON.stringify(resMom.headers)}`);
+//       resMom.setEncoding("utf8");
+//       // trả về body là khi mình call momo
+//       resMom.on("data", (body) => {
+//         // url dẫn đến tranh toán của momo
+//         console.log(JSON.parse(body).payUrl);
+//         res.json({ payUrl: JSON.parse(body).payUrl });
+//       });
+//       resMom.on("end", () => {
+//         console.log("No more data in response.");
+//       });
+//     });
+  
+//     reqq.on("error", (e) => {
+//       console.log(`problem with request: ${e.message}`);
+//     });
+//     // write data to request body
+//     console.log("Sending....");
+//     reqq.write(requestBody);
+//     reqq.end();
+//   };
+
+exports.createPayment = async (req, res) => {
+    const { priceGlobal } = req.body;
+    const partnerCode = "MOMO";
+    const accessKey = "F8BBA842ECF85";
+    const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+    const requestId = partnerCode + new Date().getTime() + "id";
+    const orderId = new Date().getTime() + ":0123456778";
+    const orderInfo = "Thanh toán qua ATM MoMo";
+    //nếu thanh toán thành công thì trả về
+    const redirectUrl = "https://clever-tartufo-c324cd.netlify.app/pages/home.html";
+    const ipnUrl = "https://www.google.com/search?q=gg+d%E1%BB%8Bch&oq=GG&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIPCAEQRRg5GIMBGLEDGIAEMg4IAhBFGCcYOxiABBiKBTIMCAMQABhDGIAEGIoFMg0IBBAAGIMBGLEDGIAEMg0IBRAAGIMBGLEDGIAEMg0IBhAAGIMBGLEDGIAEMg0IBxAAGIMBGLEDGIAEMg0ICBAAGIMBGLEDGIAEMhIICRAAGEMYgwEYsQMYgAQYigXSAQgxNzMyajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
+    const amount = priceGlobal;
+    const requestType = "payWithATM";  // Changed from "captureWallet" to "payWithATM"
+    const extraData = "";  // Pass empty value if your merchant does not have stores
+  
+    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+
+    const crypto = require("crypto");
+    const signature = crypto.createHmac("sha256", secretKey)
+                            .update(rawSignature)
+                            .digest("hex");
+  
+    const requestBody = JSON.stringify({
+      partnerCode: partnerCode,
+      accessKey: accessKey,
+      requestId: requestId,
+      amount: amount,
+      orderId: orderId,
+      orderInfo: orderInfo,
+      redirectUrl: redirectUrl,
+      ipnUrl: ipnUrl,
+      extraData: extraData,
+      requestType: requestType,
+      signature: signature,
+      lang: "en",
+    });
+  
+    const https = require("https");
+    const options = {
+      hostname: "test-payment.momo.vn",
+      port: 443,
+      path: "/v2/gateway/api/create",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(requestBody),
+      },
+    };
+
+    const reqq = https.request(options, (resMom) => {
+      console.log(`Status: ${resMom.statusCode}`);
+      resMom.setEncoding("utf8");
+      resMom.on('data', (body) => {
+        try {
+            let data = JSON.parse(body);
+            console.log("Data received:", data);
+            if (data && data.payUrl) {
+                res.json({ payUrl: data.payUrl });
+            } else {
+                console.error("No payUrl received:", data);
+                res.status(500).json({ error: 'No payUrl received, check logs for details.' });
+            }
+        } catch (error) {
+            console.error("Error parsing response:", error);
+            res.status(500).json({ error: 'Error parsing response from MoMo.' });
+        }
+    });
+      resMom.on("end", () => {
+        console.log("No more data in response.");
+      });
+    });
+  
+    reqq.on("error", (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+
+    console.log("Sending....");
+    reqq.write(requestBody);
+    reqq.end();
+  };
+  
+
+
+//Tên: NGUYEN VAN A
+//Số thẻ: 9704 0000 0000 0018
+//Ngày phát hàng: 03/07 
+//OTP: OTP
+
+
+
+// exports.createPayment = async (req, res) => {
+//     const { priceGlobal } = req.body;
+// var accessKey = 'F8BBA842ECF85';
+// var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+// var orderInfo = 'pay with MoMo';
+// var partnerCode = 'MOMO';
+// var redirectUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
+// var ipnUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
+// var requestType = "payWithATM";
+// var amount = priceGlobal;
+// var orderId = partnerCode + new Date().getTime();
+// var requestId = orderId;
+// var extraData ='';
+// var paymentCode = 'T8Qii53fAXyUftPV3m9ysyRhEanUs9KlOPfHgpMR0ON50U10Bh+vZdpJU7VY4z+Z2y77fJHkoDc69scwwzLuW5MzeUKTwPo3ZMaB29imm6YulqnWfTkgzqRaion+EuD7FN9wZ4aXE1+mRt0gHsU193y+yxtRgpmY7SDMU9hCKoQtYyHsfFR5FUAOAKMdw2fzQqpToei3rnaYvZuYaxolprm9+/+WIETnPUDlxCYOiw7vPeaaYQQH0BF0TxyU3zu36ODx980rJvPAgtJzH1gUrlxcSS1HQeQ9ZaVM1eOK/jl8KJm6ijOwErHGbgf/hVymUQG65rHU2MWz9U8QUjvDWA==';
+// var orderGroupId ='';
+// var autoCapture =true;
+// var lang = 'vi';
+
+// //before sign HMAC SHA256 with format
+// //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
+// var rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
+// //puts raw signature
+// console.log("--------------------RAW SIGNATURE----------------")
+// console.log(rawSignature)
+// //signature
+// const crypto = require('crypto');
+// var signature = crypto.createHmac('sha256', secretKey)
+//     .update(rawSignature)
+//     .digest('hex');
+// console.log("--------------------SIGNATURE----------------")
+// console.log(signature)
+
+// //json object send to MoMo endpoint
+// const requestBody = JSON.stringify({
+//     partnerCode : partnerCode,
+//     partnerName : "Test",
+//     storeId : "MomoTestStore",
+//     requestId : requestId,
+//     amount : amount,
+//     orderId : orderId,
+//     orderInfo : orderInfo,
+//     redirectUrl : redirectUrl,
+//     ipnUrl : ipnUrl,
+//     lang : lang,
+//     requestType: requestType,
+//     autoCapture: autoCapture,
+//     extraData : extraData,
+//     orderGroupId: orderGroupId,
+//     signature : signature
+// });
+// //Create the HTTPS objects
+// const https = require('https');
+// const options = {
+//     hostname: 'test-payment.momo.vn',
+//     port: 443,
+//     path: '/v2/gateway/api/create',
+//     method: 'POST',
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Content-Length': Buffer.byteLength(requestBody)
+//     }
+// }
+// //Send the request and get the response
+// const reqq = https.request(options, res => {
+//     console.log(`Status: ${res.statusCode}`);
+//     console.log(`Headers: ${JSON.stringify(res.headers)}`);
+//     res.setEncoding('utf8');
+//     res.on('data', (body) => {
+//         console.log('Body: ');
+//         console.log(body);
+//         console.log('resultCode: ');
+//         console.log(JSON.parse(body).resultCode);
+//     });
+//     res.on('end', () => {
+//         console.log('No more data in response.');
+//     });
+// })
+
+// reqq.on('error', (e) => {
+//     console.log(`problem with request: ${e.message}`);
+// });
+// // write data to request body
+// console.log("Sending....")
+// reqq.write(requestBody);
+// reqq.end();
+//   };

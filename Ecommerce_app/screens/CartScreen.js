@@ -26,7 +26,7 @@ const CartScreen = ({navigation}) => {
   const { height, width } = Dimensions.get("window");
   const [reloadCart, setReloadCart] = useState(false);
 
-  const userId = user[0]._id
+  const userId = user._id
 
 
   const GetCart = async () => {
@@ -155,14 +155,24 @@ const handleSelectAll = () => {
 };
 
 const handleItemCart = () => {
-  console.log("số lần")
   let products = [];
+  let exceededQuantity = false; // Biến để kiểm tra xem có sản phẩm vượt quá số lượng không
   cart.forEach(item => {
     if (item.checked) {
+      if (item.option.quantity < item.quantity) {
+        exceededQuantity = true; // Đánh dấu có sản phẩm vượt quá số lượng
+        return; // Dừng vòng lặp ngay khi có sản phẩm vượt quá số lượng
+      }
       products.push(item);
     } 
+  })
+
+  if (exceededQuantity) {
+    alert("Có sản phẩm vượt quá số lượng cho phép");
+    return;
   }
-)
+
+  console.log(cart)
   const valueToStore = JSON.stringify(products);
   AsyncStorage.setItem("productsAreOrdered", valueToStore)
   // updateProduct(products)
@@ -171,11 +181,10 @@ const handleItemCart = () => {
   if(products.length === 0) {
     alert("Vui lòng chọn sản phẩm bạn muốn mua")
   } else {
-    // navigation.navigate('Order', { products });
     navigation.navigate('Order');
-
   }  
 };
+
  
   return (
     <>
