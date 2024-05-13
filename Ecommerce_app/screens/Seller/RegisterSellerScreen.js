@@ -13,9 +13,11 @@ import { Button } from "react-native-elements";
 import color from "../../components/color";
 import { API_BASE_URL } from "../../Localhost";
 import axios from "axios";
+import { useUser } from "../../UserContext";
 
 const RegisterSellerScreen = ({ navigation, route }) => {
   const [shopName, onChangeShopName] = useState("");
+  const { updateUser, user } = useUser();
   const [address, setAddress] = useState("");
   const [shopDescript, setShopDescript] = useState("");
   //   const [phone, setPhoneNumber] = useState("");
@@ -70,7 +72,7 @@ const RegisterSellerScreen = ({ navigation, route }) => {
           shopDescript: shopDescript,
           shopAddress: address,
           shopName: shopName,
-          userid: idUser,
+          userid: user._id,
         });
         setLoading(false);
         if (res.data.status === "SUCCESS") {
@@ -100,7 +102,7 @@ const RegisterSellerScreen = ({ navigation, route }) => {
       const res = await axios.post(
         `${API_BASE_URL}/user/sendOTPVerificationEmailSeller`,
         {
-            email: "tuongdang297@gmail.com",
+            email: user.email,
         }
       );
       setHashedOTP(res.data.data.hashedOTP);

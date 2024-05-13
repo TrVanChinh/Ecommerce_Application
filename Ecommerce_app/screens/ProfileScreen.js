@@ -25,11 +25,31 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../UserContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
+import { API_BASE_URL } from "../Localhost";
+import axios from "axios";
 
 const ProfileScreen = ({ navigation, route }) => {
   const { updateUser, user } = useUser();
+  const isFocused = useIsFocused();
   const showItems = () => {
     console.log(user);
+  };
+  useEffect(() => {
+    if (isFocused) {
+      getShopInfo();
+    }
+  }, [isFocused]);
+  const getShopInfo = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/shop/user/${user._id}`);
+      const data = response.data;
+      console.log("Shop info:", data.data);
+
+      updateUser(response.data.data);
+      // setSeller(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   };
 
   const handleLogout = async () => {
