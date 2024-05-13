@@ -185,7 +185,7 @@ const StackNavigation = () => {
         <Stack.Screen name="Revenue" component={RevenueScreen} options={{headerTitle: 'Doanh thu'}}/>
         <Stack.Screen name="Profit" component={ProfitScreen} options={{headerTitle: 'Lợi nhuận'}}/>
         <Stack.Screen name="Customer" component={CustomerScreen} options={{headerTitle: 'Khách hàng'}}/>
-        <Stack.Screen name="Inventory" component={InventoryScreen} options={{headerTitle: 'Hàng tồn'}}/>
+        <Stack.Screen name="Inventory" component={InventoryScreen} options={{headerTitle: 'Hàng tồn kho'}}/>
         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown:false}}/>
         
         <Stack.Screen name="Detail" component={DetailScreen} options={{headerShown:false}}/>

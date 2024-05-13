@@ -39,7 +39,7 @@ const ListProducts = ({ navigation, route }) => {
   useEffect(() => {
     if (user) {
       getProductList();
-      getShopCategory();
+      // getShopCategory();
     }
     // });
   }, []);

@@ -38,7 +38,7 @@ exports.addProduct = async (req, res) => {
     });
     let stock = 0;
     for (const opt of option) {
-      stock = stock + opt.quantity;
+      stock += parseInt(opt.quantity);
     }
 
     await newProduct.save();
@@ -176,6 +176,26 @@ exports.showShopProduct = async (req, res) => {
       message: "Failed to fetch product",
       error: error.message,
     });
+  }
+};
+
+//edit shop profile
+exports.updateShop = async (req, res) => {
+  const { id, avatarUrl, shopName, shopAddress, shopDescript } = req.body;
+  try {
+    const shop = await User.findById(id);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+    shop.shopName = shopName;
+    shop.avatarUrl = avatarUrl;
+    shop.shopAddress = shopAddress;
+    shop.shopDescript = shopDescript;
+    await shop.save();
+    res.status(200).json({ message: "Shop updated successfully" });
+  } catch (error) {
+    console.error("Error updating shop:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -317,7 +337,7 @@ exports.revenueByCustomer = async (req, res) => {
     // Tính ngày đầu tiên và ngày cuối cùng của tháng
     const firstDayOfMonth = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed
     const lastDayOfMonth = new Date(year, month, 0);
-    
+
     let result = [];
     // Sử dụng phương thức aggregate để group theo tháng và tính tổng doanh thu
     const monthlyRevenue = await Order.aggregate([
@@ -343,12 +363,11 @@ exports.revenueByCustomer = async (req, res) => {
     for (let i = 0; i < monthlyRevenue.length; i++) {
       await User.findById(monthlyRevenue[i]._id).then((user) => {
         result.push({
-          userId : user._id,
+          userId: user._id,
           userName: user.name,
           totalRevenue: monthlyRevenue[i].totalRevenue,
         });
-      }
-      );
+      });
     }
 
     // Trả về kết quả
@@ -411,65 +430,60 @@ exports.inventoryStatsByMonth = async (req, res) => {
         ]);
 
         // Lấy kết quả tổng số lượng sản phẩm đã bán trong tháng
-        const totalSoldInMonth = totalSoldInMonthResult.length > 0 ? totalSoldInMonthResult[0].totalQuantity : 0;
+        const totalSoldInMonth =
+          totalSoldInMonthResult.length > 0
+            ? totalSoldInMonthResult[0].totalQuantity
+            : 0;
 
-        const totalImportInMonthResult = await Inventory.aggregate([
-          {
-              $match: {
-                  idProduct: productId, // Chỉ lấy hàng hóa có idProduct phù hợp
-                  createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth } // Trong khoảng thời gian từ ngày đầu tiên đến ngày cuối của tháng
-              }
+            const totalImportInMonthResult = await Inventory.find({
+              idProduct: productId,
+              createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+            });
+            let totalImportInMonth = 0;
+            totalImportInMonthResult.forEach((inv) => {
+              inv.option.forEach((opt) => {
+                totalImportInMonth += opt.quantity;
+              });
+            });
+
+        let totalSold = 0;
+        const orders = await Order.find({
+          status: "completed",
+          "option.idProduct": productId,
+          createAt: {
+            $gte: new Date(product.createAt),
+            $lte: new Date(year, i, 0),
           },
-          {
-              $group: {
-                  _id: null, // Nhóm tất cả các tài liệu lại với nhau
-                  totalQuantity: { $sum: "$quantity" } // Tính tổng số lượng từ các tài liệu đã nhóm lại
-              }
-          }
-      ]);
-      
-      // Lấy kết quả tổng số lượng hàng đã nhập trong tháng
-      const totalImportInMonth = totalImportInMonthResult.length > 0 ? totalImportInMonthResult[0].totalQuantity : 0;
-      
-      let totalSold = 0;
-      const orders = await Order.find({
-        status: "completed",
-        "option.idProduct": productId,
-        createAt: {
-          $gte: new Date(product.createAt),
-          $lte: new Date(year, i, 0),
-        },
-      });
-      orders.forEach((order) => {
-        order.option.forEach((opt) => {
-          if (opt.idProduct == productId) {
-            totalSold += opt.quantity;
-          }
         });
-      });
-      let totalImport = 0;
-      const inventory = await Inventory.find({
-        idProduct: productId,
-        createAt: {
-          $gte: new Date(product.createAt),
-          $lte: new Date(year, i, 0),
-        },
-      });
-      inventory.forEach((inv) => {
-        inv.option.forEach((opt) => {
-          totalImport += opt.quantity;
+        orders.forEach((order) => {
+          order.option.forEach((opt) => {
+            if (opt.idProduct == productId) {
+              totalSold += opt.quantity;
+            }
+          });
         });
-      });
+        let totalImport = 0;
+        const inventory = await Inventory.find({
+          idProduct: productId,
+          createAt: {
+            $gte: new Date(product.createAt),
+            $lte: new Date(year, i, 0),
+          },
+        });
+        inventory.forEach((inv) => {
+          inv.option.forEach((opt) => {
+            totalImport += opt.quantity;
+          });
+        });
 
-      if (inventory) {
-        result.push({
-          month: i,
-          stock: totalImport - totalSold,
-          totalSoldInMonth: totalSoldInMonth,
-          totalImportInMonth: totalImportInMonth,
-        });
-      }
-
+        if (inventory) {
+          result.push({
+            month: i,
+            stock: totalImport - totalSold,
+            totalSoldInMonth: totalSoldInMonth,
+            totalImportInMonth: totalImportInMonth,
+          });
+        }
       }
     }
 
@@ -480,6 +494,19 @@ exports.inventoryStatsByMonth = async (req, res) => {
     });
   } catch (error) {
     console.error("Error calculating inventory by month:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.totalImportInMonth = async (req, res) => {
+  try {
+    const { productId, month, year } = req.params;
+    const firstDayOfMonth = new Date(year, month - 1, 1);
+    const lastDayOfMonth = new Date(year, month, 0);
+
+    res.status(200).json({ totalImportInMonth });
+  } catch (error) {
+    console.error("Error calculating total import in month:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

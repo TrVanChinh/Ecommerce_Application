@@ -66,8 +66,7 @@ exports.uploadProductImages = async (req, res) => {
       const uploadResult = await cloudinary.uploader.upload(file.path, {
         public_id: 'products/' + file.filename,
       });
-      
-      fs.unlinkSync(file.path);
+
       uploadedImageUrls.push(uploadResult.url);
       fs.unlinkSync(file.path);
     }
@@ -78,6 +77,7 @@ exports.uploadProductImages = async (req, res) => {
     res.status(500).json({ error: 'Failed to upload product images' });
   }
 };
+
 
 //-------------------------------------------------------------\\
 

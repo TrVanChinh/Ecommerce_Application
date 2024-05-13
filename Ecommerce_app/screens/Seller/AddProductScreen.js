@@ -714,7 +714,7 @@ const AddProductScreen = ({ navigation, route }) => {
           styles.list_items,
           {
             alignItems: "center",
-            backgroundColor: itemLoaiHang.length > 0 ? "lightgray" : "white",
+            backgroundColor:"white" ,
           },
         ]}
       >
@@ -749,11 +749,10 @@ const AddProductScreen = ({ navigation, route }) => {
           <>
             <TextInput
               style={{ marginRight: 5, textAlign: "right" }}
-              placeholder="Thiết lập giá"
               keyboardType="numeric"
               value={price}
               onChangeText={setPrice}
-              editable={itemLoaiHang.length > 0 ? false : true}
+              editable={false}
             />
           </>
         )}
@@ -764,7 +763,7 @@ const AddProductScreen = ({ navigation, route }) => {
           styles.list_items,
           {
             alignItems: "center",
-            backgroundColor: itemLoaiHang.length > 0 ? "lightgray" : "white",
+            backgroundColor: "white",
           },
         ]}
       >
@@ -776,7 +775,7 @@ const AddProductScreen = ({ navigation, route }) => {
           }}
         >
           <Octicons name="stack" size={25} marginLeft={10} color="gray" />
-          <Text style={{ marginLeft: 10 }}> Tổng số lượng </Text>
+          <Text style={{ marginLeft: 10 }}> Tổng số lượng sản phẩm</Text>
         </View>
         {itemLoaiHang.length > 0 ? (
           <>
@@ -788,7 +787,6 @@ const AddProductScreen = ({ navigation, route }) => {
           <>
             <TextInput
               style={{ marginRight: 5, textAlign: "right" }}
-              placeholder="Nhập số lượng sản phẩm"
               keyboardType="numeric"
               value={quantity}
               onChangeText={handleQuantityChange}

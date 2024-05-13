@@ -31,7 +31,6 @@ const ProfitScreen = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const yearArray = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
-  // Lấy danh sách 10 năm gần nhất
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };

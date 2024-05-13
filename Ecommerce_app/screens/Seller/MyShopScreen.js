@@ -31,7 +31,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}> Đăng bán sản phẩm mới</Text>
+          <Text style={styles.txtMenuTag}> Thêm sản phẩm mới</Text>
         </View>
         <View
           style={{
@@ -66,7 +66,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}> Quản lý sản phẩm</Text>
+          <Text style={styles.txtMenuTag}> Quản lý sản phẩm</Text>
         </View>
         <View
           style={{
@@ -84,7 +84,7 @@ const MyShopScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
       {/* Quản lý danh mục shop*/}
-      <TouchableOpacity style={styles.list_items} onPress={()=> navigation.navigate("ShopCategory")}>
+      {/* <TouchableOpacity style={styles.list_items} onPress={()=> navigation.navigate("ShopCategory")}>
         <View
           style={{
             alignItems: "flex-start",
@@ -98,7 +98,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}>Quản lý danh mục cửa hàng </Text>
+          <Text style={styles.txtMenuTag}>Quản lý danh mục cửa hàng </Text>
         </View>
         <View
           style={{
@@ -114,7 +114,7 @@ const MyShopScreen = ({ navigation }) => {
             color="#60698a"
           />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       {/* Quản lý đơn hàng */}
       <TouchableOpacity style={styles.list_items} onPress={() => navigation.navigate("ShopOrders")}>
@@ -131,7 +131,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}>Quản lý đơn hàng</Text>
+          <Text style={styles.txtMenuTag}>Quản lý đơn hàng</Text>
         </View>
         <View
           style={{
@@ -163,7 +163,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}>Thống kê</Text>
+          <Text style={styles.txtMenuTag}>Thống kê</Text>
         </View>
         <View
           style={{
@@ -200,7 +200,7 @@ const MyShopScreen = ({ navigation }) => {
             marginLeft={10}
             color={color.origin}
           />
-          <Text style={{ marginLeft: 10 }}>Thông tin cửa hàng </Text>
+          <Text style={styles.txtMenuTag}>Thông tin cửa hàng </Text>
         </View>
         <View
           style={{
@@ -256,5 +256,11 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: color.origin,
     fontWeight: "bold",
+  },
+
+  txtMenuTag: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: color.text,
   },
 });

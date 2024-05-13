@@ -76,7 +76,8 @@ router.post("/seller/addProduct", SellerController.addProduct)
 router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
 router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
-
+//update shop info
+router.put("/seller/updateShop", SellerController.updateShop)
 
 //orders
 //show order by shop
@@ -85,7 +86,7 @@ router.get("/order/showOrdersByShop/:shopId", OrderController.showOrdersByShop);
 router.get("/order/showOrdersByBuyer/:userId", OrderController.showOrdersByBuyer);
 //show order by id
 router.get("/order/showOrderById/:id", OrderController.showOrderById);
-//show shop order by status: processing, paid , delivered, completed
+//show shop order by status: processing: đã đặt, paid: đã thanh toán , delivered:đã giao, completed:đã hoàn thành, canceled: đã hủy
 router.get("/order/showOrdersByStatus", OrderController.showOrdersByStatus);
 //create order
 router.post("/order/createOrder", OrderController.createOrder);
@@ -109,11 +110,14 @@ router.post("/cart/decrementQuantity", CartController.decrementQuantity)
 router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
 //Tiền lời của từng tháng trong năm
 router.get("/seller/profitByYear/:shopId/:year", SellerController.profitByYear)
-//Hàng tồn theo tháng
-router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
 //doanh thu theo tháng trong 1 năm
 router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear)
 //thống kê doanh thu của từng khách hàng theo tháng
 router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
+//Hàng tồn 1 sản phẩm theo tháng trong năm
+router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
+
+//total import in month
+router.get("/seller/totalImportInMonth/:productId/:month/:year", SellerController.totalImportInMonth)
 
 module.exports = router;
