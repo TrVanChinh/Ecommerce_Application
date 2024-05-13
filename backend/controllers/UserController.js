@@ -615,7 +615,7 @@ exports.verifyOTPSeller = async (req, res) => {
       });
     }
   };
-
+  
 
   exports.newAddress = async (req, res) => {
     try {

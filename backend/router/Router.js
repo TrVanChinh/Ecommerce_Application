@@ -84,11 +84,14 @@ router.get("/detail/shop/:id", ProductController.getInfoShop)
 router.get("/product/category/:idCategory", ProductController.getProductByCategory)
 
 
+
 //seller add product
 router.post("/seller/addProduct", SellerController.addProduct)
 router.get("/seller/showShopProduct/:idShop", SellerController.showShopProduct)
 router.put("/seller/updateProduct", SellerController.updateProduct)
 router.delete("/seller/deleteProduct/:productId", SellerController.deleteProduct)
+//update shop info
+router.put("/seller/updateShop", SellerController.updateShop)
 
 //orders
 //show order by shop
@@ -97,7 +100,7 @@ router.get("/order/showOrdersByShop/:shopId", OrderController.showOrdersByShop);
 router.get("/order/showOrdersByBuyer/:userId", OrderController.showOrdersByBuyer);
 //show order by id
 router.get("/order/showOrderById/:id", OrderController.showOrderById);
-//show order by status: processing, shipping, delivered
+//show shop order by status: processing: đã đặt, paid: đã thanh toán , delivered:đã giao, completed:đã hoàn thành, canceled: đã hủy
 router.get("/order/showOrdersByStatus", OrderController.showOrdersByStatus);
 //create order
 router.post("/order/createOrder", OrderController.createOrder);
@@ -113,6 +116,20 @@ router.get("/Cart/:userId", CartController.showCart)
 router.post("/cart/removeFromCart", CartController.removeFromCart)
 router.post("/cart/increaseQuantity", CartController.increaseQuantity)
 router.post("/cart/decrementQuantity", CartController.decrementQuantity)
+
+
+//Thống kê
+
+//doanh thu cửa hàng theo tháng
+router.get("/seller/revenueByMonth/:shopId/:month/:year", SellerController.revenueByMonth)
+//Tiền lời của từng tháng trong năm
+router.get("/seller/profitByYear/:shopId/:year", SellerController.profitByYear)
+//doanh thu theo tháng trong 1 năm
+router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear)
+//thống kê doanh thu của từng khách hàng theo tháng
+router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
+//Hàng tồn 1 sản phẩm theo tháng trong năm
+router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
 
 
 module.exports = router;

@@ -24,8 +24,8 @@ import { useUser } from "../../UserContext";
 import color from "../../components/color";
 import { API_BASE_URL } from "../../Localhost";
 import axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
 const ListProducts = ({ navigation, route }) => {
-  const idUser = user?.user?.uid;
   const [name, setName] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,13 +37,17 @@ const ListProducts = ({ navigation, route }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("Tất cả");
   const { updateUser, user } = useUser();
+  const isFocused = useIsFocused();
   useEffect(() => {
     if (user) {
       getProductList();
-      getShopCategory();
+      // getShopCategory();
     }
     // });
   }, []);
+  useEffect(() => {
+    getProductList();
+  }, [isFocused]);
   // useEffect(() => {
   //   if (selectedCategoryId === "") {
   //     setSelectedCategoryName("Tất cả");
@@ -75,19 +79,23 @@ const ListProducts = ({ navigation, route }) => {
     closeModal();
     // setLoading(true);
     const listproducts = [];
-    axios.get(`${API_BASE_URL}/seller/showShopProduct/${user._id}`)
-    .then(function (response) {
-      let data = response.data.data;
-      data.forEach((item) => {
-        item.price = getMinMaxPrice(item.option).min + " - " + getMinMaxPrice(item.option).max;
-        listproducts.push(item);
+    axios
+      .get(`${API_BASE_URL}/seller/showShopProduct/${user._id}`)
+      .then(function (response) {
+        let data = response.data.data;
+        data.forEach((item) => {
+          item.price =
+            getMinMaxPrice(item.option).min +
+            " - " +
+            getMinMaxPrice(item.option).max;
+          listproducts.push(item);
+        });
+        setProducts(listproducts);
+        // setLoading(false);
+      })
+      .catch(function (error) {
+        console.log(error);
       });
-      setProducts(listproducts);
-      // setLoading(false);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
   };
   const getMinMaxPrice = (optionItem) => {
     let min = optionItem[0].price;
@@ -108,148 +116,150 @@ const ListProducts = ({ navigation, route }) => {
     }
   };
   return (
-    <View style={{ flex: 1 }}><View style={{ flexDirection: "row", alignItems: "center" }}>
-    <Text style={{ margin: 10 }}>Chọn danh mục</Text>
-    <TouchableOpacity
-      style={{
-        paddingHorizontal: 5,
-        backgroundColor: "white",
-
-        margin: 5,
-        alignItems: "center",
-        borderColor: "gray",
-        borderWidth: 1,
-      }}
-      onPress={() => {
-        toggleModal();
-      }}
-    >
-      <Text style={{ textAlign: "center", margin: 10 }}>
-        -- {selectedCategoryName} --
-      </Text>
-    </TouchableOpacity>
-  </View>
-  <Modal
-    visible={isModalVisible}
-    animationType="fade"
-    transparent={true}
-    onRequestClose={toggleModal}
-  >
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-      }}
-    >
-      <View
-        style={{
-          backgroundColor: "white",
-          padding: 10,
-          borderRadius: 10,
-          width: "90%",
-        }}
-      >
-        {/* button đóng */}
+    <View style={{ flex: 1 }}>
+      {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Text style={{ margin: 10 }}>Chọn danh mục</Text>
         <TouchableOpacity
           style={{
-            marginTop: -10,
-            marginRight: -10,
-            alignSelf: "flex-end",
-          }}
-          onPress={closeModal}
-        >
-          <Ionicons name="close-circle" size={25} color="lightgray" />
-        </TouchableOpacity>
+            paddingHorizontal: 5,
+            backgroundColor: "white",
 
-        <View style={{ backgroundColor: "white" }}>
-          <Text
-            style={{
-              fontWeight: "bold",
-              textAlign: "center",
-              marginBottom: 10,
-            }}
-          >
-            Chọn danh mục cần xem
-          </Text>
-          <TouchableOpacity
-            style={{
-              borderColor: "lightgray",
-              borderWidth: 1,
-              marginVertical: 5,
-              paddingVertical: 5,
-              marginHorizontal: 50,
-            }}
-            onPress={() => {
-              getProductList();
-            }}
-          >
-            <Text style={{ color: "black", textAlign: "center" }}>
-              Tất cả
-            </Text>
-          </TouchableOpacity>
-          {shopCategory.map((item, key) => (
-            <TouchableOpacity
-              key={key}
-              style={{
-                borderColor: "lightgray",
-                borderWidth: 1,
-                marginVertical: 5,
-                paddingVertical: 5,
-                marginHorizontal: 50,
-              }}
-              onPress={() => {
-                getProductByCategory(item.id, item.name);
-              }}
-            >
-              <Text style={{ color: "black", textAlign: "center" }}>
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </View>
-  </Modal>
-  <FlatList
-    data={products}
-    renderItem={({ item }) => (
-      <TouchableOpacity 
-        key={item._id}
-        style={styles.item_prd}
-        onPress={() =>
-          navigation.navigate("EditProduct", { product: item })
-        }
-      >
-        <Image
-          source={{
-            uri: item.image[0].url,
+            margin: 5,
+            alignItems: "center",
+            borderColor: "gray",
+            borderWidth: 1,
           }}
-          style={[styles.prd_image, { flex: 1 }]}
-        />
-        <View style={{ flex: 9, justifyContent: "space-between" }}>
-          <Text style={[styles.name_prd]}>{item.name}</Text>
-          <Text style={{ marginLeft: 10 }}>
-            Đã bán: {item.sold >= 0 ? item.sold : 0}
+          onPress={() => {
+            toggleModal();
+          }}
+        >
+          <Text style={{ textAlign: "center", margin: 10 }}>
+            -- {selectedCategoryName} --
           </Text>
+        </TouchableOpacity>
+      </View> */}
+      <Modal
+        visible={isModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={toggleModal}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "flex-end",
+              backgroundColor: "white",
+              padding: 10,
+              borderRadius: 10,
+              width: "90%",
             }}
           >
-            <Text style={styles.prd_price}>{ item.price } vnđ</Text>
+            {/* button đóng */}
+            <TouchableOpacity
+              style={{
+                marginTop: -10,
+                marginRight: -10,
+                alignSelf: "flex-end",
+              }}
+              onPress={closeModal}
+            >
+              <Ionicons name="close-circle" size={25} color="lightgray" />
+            </TouchableOpacity>
+
+            <View style={{ backgroundColor: "white" }}>
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Chọn danh mục cần xem
+              </Text>
+              <TouchableOpacity
+                style={{
+                  borderColor: "lightgray",
+                  borderWidth: 1,
+                  marginVertical: 5,
+                  paddingVertical: 5,
+                  marginHorizontal: 50,
+                }}
+                onPress={() => {
+                  getProductList();
+                }}
+              >
+                <Text style={{ color: "black", textAlign: "center" }}>
+                  Tất cả
+                </Text>
+              </TouchableOpacity>
+              {shopCategory.map((item, key) => (
+                <TouchableOpacity
+                  key={key}
+                  style={{
+                    borderColor: "lightgray",
+                    borderWidth: 1,
+                    marginVertical: 5,
+                    paddingVertical: 5,
+                    marginHorizontal: 50,
+                  }}
+                  onPress={() => {
+                    getProductByCategory(item.id, item.name);
+                  }}
+                >
+                  <Text style={{ color: "black", textAlign: "center" }}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
-      </TouchableOpacity>
-    )}
-  />
-  {loading && (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#0000ff" />
-    </View>
-  )}
+      </Modal>
+      <FlatList
+        data={products}
+        style={{ flex: 1, marginTop:20 }}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            key={item._id}
+            style={styles.item_prd}
+            onPress={() =>
+              navigation.navigate("EditProduct", { product: item })
+            }
+          >
+            <Image
+              source={{
+                uri: item.image[0].url,
+              }}
+              style={[styles.prd_image, { flex: 1 }]}
+            />
+            <View style={{ flex: 9, justifyContent: "space-between" }}>
+              <Text style={[styles.name_prd]}>{item.name}</Text>
+              <Text style={{ marginLeft: 10 }}>
+                Đã bán: {item.sold >= 0 ? item.sold : 0}
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Text style={styles.prd_price}>{item.price} vnđ</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 };
