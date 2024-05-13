@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View,Text, Image, StyleSheet } from 'react-native';
 import Swiper from 'react-native-swiper';
 import slides from './slides'; 
 
@@ -27,7 +27,11 @@ const SlideShow = () => {
     >
       {slides.map((slide) => (
         <View key={slide.id}>
-          <Image source={slide.image} style={styles.image} />
+          <Image source={{
+                      uri: slide.image,
+                    }}
+                  style={styles.image} />
+          {/* <Text>{slide.title}</Text> */}
         </View>
       ))}
     </Swiper>

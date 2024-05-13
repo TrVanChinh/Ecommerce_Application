@@ -6,6 +6,7 @@ import {
   Pressable,
   TextInput,
   Image,
+  TouchableOpacity,
   Dimensions,
   Alert,
   SafeAreaView,
@@ -22,7 +23,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../UserContext";
 import { API_BASE_URL } from "../Localhost";
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Modal from "react-native-modals";
+import color from "../components/color";
+import { WebView } from 'react-native-webview';
 
 const OrderScreen = ({ navigation, route }) => {
   const { user, product, address, shippingUnit } = useUser();
@@ -31,11 +35,13 @@ const OrderScreen = ({ navigation, route }) => {
   const [totalBill, setTotalBill] = useState(0);
   const { height, width } = Dimensions.get("window");
   const [listProducts, setListProducts] = useState([]);
-
-  console.log(shippingUnit)
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState("");
+  const [paymentUrl, setPaymentUrl] = useState("")
+  console.log(shippingUnit);
 
   const handleDataProduct = async () => {
-    const retrievedValue = await AsyncStorage.getItem('productsAreOrdered');
+    const retrievedValue = await AsyncStorage.getItem("productsAreOrdered");
     const productOrder = JSON.parse(retrievedValue);
     const groupedProducts = {};
     //Nhóm từng sản phẩm theo id của shop
@@ -88,7 +94,6 @@ const OrderScreen = ({ navigation, route }) => {
       });
     } else {
       updatedListProducts.forEach((group) => {
-        ;
         total += group.totalByShop;
       });
     }
@@ -117,96 +122,168 @@ const OrderScreen = ({ navigation, route }) => {
     }, [product, shippingUnit])
   );
 
-const SaveOrder = async (shippingCost) => {
-  if (!address) {
-    alert("Vui lòng chọn địa chỉ nhận hàng!")
-  } else if (!shippingUnit) {
-    alert("Vui lòng chọn đơn vị vận chuyển!")
-  } else {
-    try {
-      const CartInfo = [];
-      for (const group of listProducts) {
-        const orderInfo = {
-          totalByShop: group.totalByShop + shippingCost,
-          idUser: idUser, 
-          address: address,
-          idShop: group.idShop,
-          idShippingUnit: shippingUnit._id,
-          nameShippingUnit: shippingUnit.name,
-          shippingCost: shippingUnit.price,
-          option: []
-        };
+  const SaveOrder = async () => {
+    if (!address) {
+      alert("Vui lòng chọn địa chỉ nhận hàng!");
+    } else if (!shippingUnit) {
+      alert("Vui lòng chọn đơn vị vận chuyển!");
+    } else if (!paymentMethods) {
+      alert("Vui lòng chọn phương thức thanh toán!");
+    } else {
+      try {
+        const CartInfo = [];
+        if (paymentMethods === "Thanh toán khi nhận hàng") {
+          for (const group of listProducts) {
+            const orderInfo = {
+              idUser: idUser,
+              address: address,
+              idShop: group.idShop,
+              status: "processing",
+              idShippingUnit: shippingUnit._id,
+              nameShippingUnit: shippingUnit.name,
+              shippingCost: shippingUnit.price,
+              option: [],
+            };
 
-        for (const product of group.products) {
-          console.log(product)
-          const optionInfo = {
-            // name: product.product.name - product.option.name,
-            idOption: product.option._id,
-            idProduct: product.product._id,
-            quantity: product.quantity,
-            price: product.option.price,
-          };
+            for (const product of group.products) {
+              console.log(product);
+              const optionInfo = {
+                // name: product.product.name - product.option.name,
+                idOption: product.option._id,
+                idProduct: product.product._id,
+                quantity: product.quantity,
+                price: product.option.price,
+              };
 
-          orderInfo.option.push(optionInfo)
-          CartInfo.push({
-            cartId: product._id, 
-            userId: idUser
-          })
-        }
-        axios.post(`${API_BASE_URL}/user/order`,orderInfo).then((response) => {
-            if (response.data.status === "FAILED") {
-              alert(response.data.message); 
-              console.log(response.data.message);
-            } else {
-              console.log(response.data.message);
+              orderInfo.option.push(optionInfo);
+              CartInfo.push({
+                cartId: product._id,
+                userId: idUser,
+              });
             }
-          })
-          .catch((error) => {
-            alert("error order")
-            console.log(error) 
-          })
-        // console.log(CartInfo)
+            axios
+              .post(`${API_BASE_URL}/user/order`, orderInfo)
+              .then((response) => {
+                if (response.data.status === "FAILED") {
+                  alert(response.data.message);
+                  console.log(response.data.message);
+                } else {
+                  console.log(response.data.message);
+                }
+              })
+              .catch((error) => {
+                alert("error order");
+                console.log(error);
+              });
+            // console.log(CartInfo)
+          }
+          await processCartRemovals(CartInfo); // Gọi hàm xử lý xóa giỏ hàng với thời gian chờ giữa các lần xóa
+          Alert.alert(
+            "",
+            `Đặt hàng thành công.`,
+            [{ text: "OK", onPress: () => navigation.navigate("Main") }],
+            { cancelable: false }
+          );
+        } else {
+          for (const group of listProducts) {
+            const orderInfo = {
+              idUser: idUser,
+              address: address,
+              idShop: group.idShop,
+              status: "paid",
+              idShippingUnit: shippingUnit._id,
+              nameShippingUnit: shippingUnit.name,
+              shippingCost: shippingUnit.price,
+              option: [],
+            };
+
+            for (const product of group.products) {
+              console.log(product);
+              const optionInfo = {
+                // name: product.product.name - product.option.name,
+                idOption: product.option._id,
+                idProduct: product.product._id,
+                quantity: product.quantity,
+                price: product.option.price,
+              };
+
+              orderInfo.option.push(optionInfo);
+              CartInfo.push({
+                cartId: product._id,
+                userId: idUser,
+              });
+            }
+            axios
+              .post(`${API_BASE_URL}/user/order`, orderInfo)
+              .then((response) => {
+                if (response.data.status === "FAILED") {
+                  alert(response.data.message);
+                  console.log(response.data.message);
+                } else {
+                  console.log(response.data.message);
+                }
+              })
+              .catch((error) => {
+                alert("error order");
+                console.log(error);
+              });
+          }
+          await processCartRemovals(CartInfo); 
+
+          const bill = {
+            priceGlobal: totalBill
+          }
+          axios
+              .post(`${API_BASE_URL}/user/create-payment`, bill)
+              .then((response) => {
+                if (response.data.status === "FAILED") {
+                  alert(response.data.message);
+                  console.log(response.data.message);
+                } else {
+                  const result = response.data;
+                  navigation.navigate("WebViewScreen", {result})
+                  // console.log(response.data)
+                }
+              })
+              .catch((error) => {
+                alert("error order");
+                console.log(error);
+              });
+        }
+      } catch (error) {
+        console.error("Lỗi khi Đặt hàng", error);
       }
-      await processCartRemovals(CartInfo); // Gọi hàm xử lý xóa giỏ hàng với thời gian chờ giữa các lần xóa
-      Alert.alert(
-        '',
-        `Đặt hàng thành công.`,
-        [
-          { text: 'OK', onPress: () => navigation.navigate("Main")  },
-        ],
-        { cancelable: false } 
-      )
+    }
+  };
+
+  const processCartRemovals = async (CartInfo) => {
+    for (const cart of CartInfo) {
+      await removeFromCart(cart.cartId, cart.userId); // Gửi yêu cầu xóa
+      await delay(500); // Đợi 1 giây trước khi gửi yêu cầu xóa tiếp theo
+    }
+  };
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const removeFromCart = async (cartId, userId) => {
+    try {
+      const productInfo = {
+        cartId: cartId,
+        userId: userId,
+      };
+      await axios.post(`${API_BASE_URL}/cart/removeFromCart`, productInfo);
     } catch (error) {
-      console.error('Lỗi khi Đặt hàng', error);
+      throw new Error("Xảy ra lỗi khi xóa sản phẩm từ giỏ hàng");
     }
-  }
-};
+  };
 
-const processCartRemovals = async (CartInfo) => {
-  for (const cart of CartInfo) {
-    await removeFromCart(cart.cartId, cart.userId); // Gửi yêu cầu xóa
-    await delay(500); // Đợi 1 giây trước khi gửi yêu cầu xóa tiếp theo
-  }
-};
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-const removeFromCart = async (cartId, userId) => {
-  try {
-    const productInfo = {
-      cartId: cartId,
-      userId: userId,
-    }
-    await axios.post(`${API_BASE_URL}/cart/removeFromCart`,productInfo);
-  } catch (error) {
-    throw new Error("Xảy ra lỗi khi xóa sản phẩm từ giỏ hàng");
-  }
-};
-
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
   return (
     <>
       <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-        <View >
+        <View>
           {address ? (
             <Pressable
               style={{
@@ -260,7 +337,6 @@ const removeFromCart = async (cartId, userId) => {
               </View>
             </Pressable>
           )}
-            
 
           {shippingUnit ? (
             <Pressable
@@ -285,9 +361,7 @@ const removeFromCart = async (cartId, userId) => {
                 </Text>
               </View>
               <View>
-                <Text style={{ color: "red" }}>
-                  Giá: {shippingUnit.price}đ
-                </Text>
+                <Text style={{ color: "red" }}>Giá: {shippingUnit.price}đ</Text>
               </View>
             </Pressable>
           ) : (
@@ -320,14 +394,27 @@ const removeFromCart = async (cartId, userId) => {
             }}
           >
             <Text>Phương thức thanh toán:</Text>
-            <Pressable
-              style={{
-                flexDirection: "row",
-              }}
-            >
-              <Text>Thanh toán khi nhân hàng</Text>
-              <AntDesign name="right" size={24} color="#D0D0D0" />
-            </Pressable>
+            {paymentMethods ? (
+              <Pressable
+                style={{
+                  flexDirection: "row",
+                }}
+                onPress={toggleModal}
+              >
+                <Text style={{ color: color.origin }}>{paymentMethods}</Text>
+                <AntDesign name="right" size={24} color="#D0D0D0" />
+              </Pressable>
+            ) : (
+              <Pressable
+                style={{
+                  flexDirection: "row",
+                }}
+                onPress={toggleModal}
+              >
+                <Text>Chọn thanh toán</Text>
+                <AntDesign name="right" size={24} color="#D0D0D0" />
+              </Pressable>
+            )}
           </View>
         </View>
         {listProducts?.map((group, index) => (
@@ -395,97 +482,11 @@ const removeFromCart = async (cartId, userId) => {
               ))}
             </View>
 
-            {/* <View
-              style={{
-                flexDirection: "row",
-                padding: 10,
-                alignItems: "center",
-                borderTopWidth: 1,
-                borderColor: "#D0D0D0",
-              }}
-            >
-              <Text>Tin nhắn:</Text>
-              <TextInput
-                onChangeText={(text) => {
-                  setMessage(text);
-                }}
-                style={{
-                  height: 35,
-                  flex: 1,
-                  paddingStart: 20,
-                }}
-                autoCorrect={false}
-                placeholder="Lưu ý cho người bán..."
-              />
-            </View> */}
-
             <View
               style={{
                 flexDirection: "row",
                 padding: 10,
                 alignItems: "center",
-                borderTopWidth: 1,
-                borderColor: "#D0D0D0",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Voucher vận chuyển:</Text>
-              <Pressable
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "green",
-                    borderColor: "green",
-                    borderWidth: 1,
-                    padding: 2,
-                  }}
-                >
-                  Miễn phí vận chuyển
-                </Text>
-                <AntDesign name="right" size={24} color="#D0D0D0" />
-              </Pressable>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                padding: 10,
-                alignItems: "center",
-                borderTopWidth: 1,
-                borderColor: "#D0D0D0",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Voucher của Shop:</Text>
-              <Pressable
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "red",
-                    borderColor: "red",
-                    borderWidth: 1,
-                    padding: 2,
-                  }}
-                >
-                  Giảm giá sản phẩm
-                </Text>
-                <AntDesign name="right" size={24} color="#D0D0D0" />
-              </Pressable>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                padding: 10,
-                alignItems: "center",
-                borderTopWidth: 1,
-                borderColor: "#D0D0D0",
                 justifyContent: "space-between",
               }}
             >
@@ -546,7 +547,7 @@ const removeFromCart = async (cartId, userId) => {
           </Text>
         </View>
         <Pressable
-          onPress={() => SaveOrder(transportationCost)}
+          onPress={() => SaveOrder()}
           style={{
             backgroundColor: "red",
             padding: 10,
@@ -560,8 +561,55 @@ const removeFromCart = async (cartId, userId) => {
           <Text style={{ color: "white" }}>Đặt hàng</Text>
         </Pressable>
       </View>
+      <Modal
+        visible={isModalVisible}
+        animationDuration={300}
+        swipeDirection="right"
+        swipeThreshold={100}
+        modalStyle={{
+          width: width,
+          height: height / 6,
+          backgroundColor: "white",
+          marginTop: 30,
+        }}
+        onTouchOutside={toggleModal}
+        onSwipeOut={toggleModal}
+      >
+        <View style={{ flex: 1, justifyContent: "center", padding: 10 }}>
+          <TouchableOpacity
+            style={{
+              alignItems: "center",
+              borderWidth: 0.5,
+              borderColor: color.origin,
+              padding: 10,
+            }}
+            onPress={() => {
+              setModalVisible(false), setPaymentMethods("Thanh toán MOMO");
+            }}
+          >
+            <Text style={{ color: color.origin }}>Thanh toán MOMO</Text>
+          </TouchableOpacity>
+          <View style={{ height: 10 }}></View>
+          <TouchableOpacity
+            style={{
+              alignItems: "center",
+              borderWidth: 0.5,
+              borderColor: color.origin,
+              padding: 10,
+            }}
+            onPress={() => {
+              setModalVisible(false),
+                setPaymentMethods("Thanh toán khi nhận hàng");
+            }}
+          >
+            <Text style={{ color: color.origin }}>
+              Thanh toán khi nhận hàng
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </>
-    );
+  );
 };
 
 export default OrderScreen;

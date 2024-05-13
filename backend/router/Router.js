@@ -82,9 +82,7 @@ router.get("/products", ProductController.getAllProduct)
 router.get("/product/:productId/option/:optionId", ProductController.getProductOption)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
 router.get("/product/category/:idCategory", ProductController.getProductByCategory)
-// router.post("/product/newProduct", ProductController.NewProduct)
-// router.put("/product/updateProduct", ProductController.UpdateProduct)
-// router.delete("/product/deleteProduct", ProductController.DeleteProduct)
+
 
 //seller add product
 router.post("/seller/addProduct", SellerController.addProduct)

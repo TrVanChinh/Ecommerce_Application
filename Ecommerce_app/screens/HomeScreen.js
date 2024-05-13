@@ -197,7 +197,7 @@ const HomeScreen = ({navigation}) => {
   return (
     <SafeAreaView
       style={{
-        paddingTop: Platform.OS === "android" ? 20 : 0,
+        paddingTop: Platform.OS === "android" ? 30 : 0,
         flex: 1,
         backgroundColor: "white",
       }}
@@ -256,7 +256,7 @@ const HomeScreen = ({navigation}) => {
             <AntDesign
               name="shoppingcart"
               size={24}
-              color="#857E7C"
+              color="white"
               padding={10}
             />
           </Pressable>

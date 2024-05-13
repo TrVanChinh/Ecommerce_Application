@@ -875,10 +875,10 @@ exports.order = async (req, res) => {
         address, 
         nameShippingUnit, 
         shippingCost,
-        totalByShop,
         idShippingUnit,
+        status,
     } = req.body;
-    if (!idUser || !idShop || !address || !totalByShop || !idShippingUnit || !nameShippingUnit || !shippingCost ||  !option) {
+    if (!idUser || !idShop || !address  || !idShippingUnit || !nameShippingUnit || !shippingCost ||  !option || !status) {
         return res.status(400).json({
             status: "FAILED",
             message: "Empty input fields!",
@@ -927,7 +927,7 @@ exports.order = async (req, res) => {
         address,
         nameShippingUnit,
         shippingCost, 
-        status: "processing",
+        status,
         totalByShop,
         idShippingUnit,
         });
@@ -1187,7 +1187,7 @@ exports.createPayment = async (req, res) => {
     const orderId = new Date().getTime() + ":0123456778";
     const orderInfo = "Thanh toán qua ATM MoMo";
     //nếu thanh toán thành công thì trả về
-    const redirectUrl = "https://clever-tartufo-c324cd.netlify.app/pages/home.html";
+    const redirectUrl = "https://momo.vn/";
     const ipnUrl = "https://www.google.com/search?q=gg+d%E1%BB%8Bch&oq=GG&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIPCAEQRRg5GIMBGLEDGIAEMg4IAhBFGCcYOxiABBiKBTIMCAMQABhDGIAEGIoFMg0IBBAAGIMBGLEDGIAEMg0IBRAAGIMBGLEDGIAEMg0IBhAAGIMBGLEDGIAEMg0IBxAAGIMBGLEDGIAEMg0ICBAAGIMBGLEDGIAEMhIICRAAGEMYgwEYsQMYgAQYigXSAQgxNzMyajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
     const amount = priceGlobal;
     const requestType = "payWithATM";  // Changed from "captureWallet" to "payWithATM"

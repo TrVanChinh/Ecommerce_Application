@@ -51,7 +51,7 @@ import {
         await axios.get(`${API_BASE_URL}/user/getOrder/${idUser}`).then((response) => {
             if (response.data.status === "FAILED") {
                 alert(response.data.message); 
-                console.log(response.data.message);
+                console.log(response);
             } else {
               setOrdered(response.data.newOrdered);
               setDeliveringOrder(response.data.newDeliveringOrder);

@@ -40,6 +40,9 @@ import ResetAddressScreen from "../screens/Address/ResetAddressScreen";
 import ShopScreen from "../screens/ShopScreen";
 import PurchaseOrderScreen from '../screens/PurchaseOrderScreen';
 import OrderDetailScreen from '../screens/OrderDetailScreen';
+
+import WebViewScreen from '../screens/WebViewScreen';
+
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -197,6 +200,7 @@ const StackNavigation = () => {
         <Stack.Screen name="Shop" component={ShopScreen} options={{headerTitle: 'Xem Shop'}}/>
         <Stack.Screen name="PurchaseOrder" component={PurchaseOrderScreen} options={{headerTitle: 'Đơn mua'}}/>
         <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{headerTitle: 'Chi tiết đơn hàng'}}/>
+        <Stack.Screen name="WebViewScreen" component={WebViewScreen} options={{headerShown:false}}/>
 
       </Stack.Navigator>
     </NavigationContainer>
