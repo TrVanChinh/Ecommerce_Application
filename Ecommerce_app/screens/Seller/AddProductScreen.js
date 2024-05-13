@@ -361,7 +361,7 @@ const AddProductScreen = ({ navigation, route }) => {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={styles.container}>
       {/* hình ảnh */}
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <View
@@ -382,6 +382,35 @@ const AddProductScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
         <View style={{ width: "90%", flexDirection: "row", flexWrap: "wrap" }}>
+          <TouchableOpacity
+            // style={{ backgroundColor: "white" }}
+            onPress={pickImages}
+          >
+            <View
+              style={{
+                margin: 3,
+                padding: 5,
+                borderColor: "lightgray",
+                backgroundColor: "white",
+                borderWidth: 1,
+                borderStyle: "dashed",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: "red",
+                  textAlign: "center",
+                  textAlignVertical: "center",
+                  width: 200 / 3,
+                  height: 200 / 3,
+                }}
+              >
+                +Thêm ảnh
+              </Text>
+            </View>
+          </TouchableOpacity>
           {images.map((image, index) => (
             <TouchableOpacity
               key={index}
@@ -405,31 +434,6 @@ const AddProductScreen = ({ navigation, route }) => {
               />
             </TouchableOpacity>
           ))}
-          <TouchableOpacity onPress={pickImages}>
-            <View
-              style={{
-                margin: 3,
-                padding: 5,
-                borderColor: "black",
-                borderWidth: 1,
-                borderStyle: "dashed",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  color: "red",
-                  textAlign: "center",
-                  textAlignVertical: "center",
-                  width: 200 / 3,
-                  height: 200 / 3,
-                }}
-              >
-                +Thêm ảnh
-              </Text>
-            </View>
-          </TouchableOpacity>
         </View>
         <Text style={{ paddingVertical: 5 }}>Thêm tối đa 10 ảnh</Text>
       </View>
@@ -539,6 +543,7 @@ const AddProductScreen = ({ navigation, route }) => {
                 borderColor: color.origin,
                 alignSelf: "center",
                 width: "30%",
+                paddingVertical: 5,
               }}
               onPress={pickLoaiHangImg}
             >
@@ -618,51 +623,48 @@ const AddProductScreen = ({ navigation, route }) => {
       </Modal>
       {/* <Button title="items" onPress={showitems} /> */}
       <View
-        style={{ backgroundColor: "white", marginBottom: 5, paddingBottom: 5 }}
+        style={{ backgroundColor: "white", marginBottom: 5, paddingBottom: 5 ,
+        backgroundColor: "#f2f2f2",}}
       >
-        <View
+        <TouchableOpacity
           style={[
             styles.list_items,
-            { marginBottom: 0, paddingRight: 20, alignItems: "center" },
+            {
+              marginVertical: 10,
+              marginHorizontal: 20,
+              borderWidth: 1,
+              borderColor: "lightgray",
+              // paddingRight: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            },
           ]}
+          onPress={toggleModal}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons
               name="duplicate-outline"
               size={25}
               marginLeft={10}
-              color="gray"
-            />
-            <Text style={{ marginLeft: 10 }}>Thêm phân loại hàng</Text>
-          </View>
-
-          <TouchableOpacity
-            style={{ alignContent: "flex-end" }}
-            onPress={toggleModal}
-          >
-            <Ionicons
-              style={{ alignSelf: "center" }}
-              name="add-circle-outline"
-              size={25}
               color={color.origin}
             />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            height: 1,
-            width: "90%",
-            alignSelf: "center",
-            backgroundColor: "lightgray",
-          }}
-        ></View>
+            <Text style={{ marginLeft: 10, color: color.origin }}>
+              Thêm phân loại hàng
+            </Text>
+          </View>
+        </TouchableOpacity>
+        
         {itemLoaiHang.map((item, index) => (
           <View
             key={index}
-            style={[
-              styles.itemContainer,
-              { flexDirection: "row", marginVertical: 5, marginHorizontal: 5 },
-            ]}
+            style={
+              {
+                flexDirection: "row",
+                marginVertical: 5,
+                marginHorizontal: 5,
+                padding: 10,
+                backgroundColor: "white",
+              }}
           >
             {/* Cột bên trái */}
             {/* {item.imageUrl.map((image, index) => ( */}
@@ -677,7 +679,7 @@ const AddProductScreen = ({ navigation, route }) => {
             <View
               style={{ flex: 1, paddingHorizontal: 10, alignSelf: "center" }}
             >
-              <Text>Tên phân loại: {item.name}</Text>
+              <Text>Loại: {item.name}</Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -714,7 +716,7 @@ const AddProductScreen = ({ navigation, route }) => {
           styles.list_items,
           {
             alignItems: "center",
-            backgroundColor:"white" ,
+            backgroundColor: "white",
           },
         ]}
       >
@@ -797,7 +799,8 @@ const AddProductScreen = ({ navigation, route }) => {
       </View>
       {/* Button Thêm */}
       <TouchableOpacity
-        style={{ backgroundColor: color.origin, marginHorizontal: 100 }}
+        style={{ backgroundColor: color.origin, marginHorizontal: 90, paddingVertical:3, 
+         }}
         // press upload image
         onPress={() => {
           // uploadImages(images).then((response) => {
@@ -809,7 +812,7 @@ const AddProductScreen = ({ navigation, route }) => {
         <View
           style={{ alignItems: "center", justifyContent: "center", height: 35 }}
         >
-          <Text style={{ color: "white" }}>Thêm</Text>
+          <Text style={{ color: "white",fontSize:16}}>Thêm vào cửa hàng</Text>
         </View>
       </TouchableOpacity>
       {loading && (
@@ -824,6 +827,9 @@ const AddProductScreen = ({ navigation, route }) => {
 export default AddProductScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   name_item: {
     marginVertical: 1,
     width: "100%",

@@ -24,6 +24,7 @@ import { useUser } from "../../UserContext";
 import color from "../../components/color";
 import { API_BASE_URL } from "../../Localhost";
 import axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
 const ListProducts = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [products, setProducts] = useState([]);
@@ -36,6 +37,7 @@ const ListProducts = ({ navigation, route }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("Tất cả");
   const { updateUser, user } = useUser();
+  const isFocused = useIsFocused();
   useEffect(() => {
     if (user) {
       getProductList();
@@ -43,6 +45,9 @@ const ListProducts = ({ navigation, route }) => {
     }
     // });
   }, []);
+  useEffect(() => {
+    getProductList();
+  }, [isFocused]);
   // useEffect(() => {
   //   if (selectedCategoryId === "") {
   //     setSelectedCategoryName("Tất cả");
@@ -112,7 +117,7 @@ const ListProducts = ({ navigation, route }) => {
   };
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Text style={{ margin: 10 }}>Chọn danh mục</Text>
         <TouchableOpacity
           style={{
@@ -132,7 +137,7 @@ const ListProducts = ({ navigation, route }) => {
             -- {selectedCategoryName} --
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
       <Modal
         visible={isModalVisible}
         animationType="fade"
@@ -218,6 +223,7 @@ const ListProducts = ({ navigation, route }) => {
       </Modal>
       <FlatList
         data={products}
+        style={{ flex: 1, marginTop:20 }}
         renderItem={({ item }) => (
           <TouchableOpacity
             key={item._id}

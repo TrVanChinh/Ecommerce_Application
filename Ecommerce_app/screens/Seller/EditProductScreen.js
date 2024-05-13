@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import * as FileSystem from "expo-file-system";
 import {
   StyleSheet,
   Button,
@@ -13,6 +14,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { useIsFocused } from "@react-navigation/native";
 import color from "../../components/color";
 import {
   Feather,
@@ -23,26 +25,22 @@ import {
   Octicons,
 } from "@expo/vector-icons";
 import { useUser } from "../../UserContext";
-import { useIsFocused } from "@react-navigation/native";
 import { API_BASE_URL } from "../../Localhost";
 import axios from "axios";
 
 const EditProductScreen = ({ navigation, route }) => {
-  const { product: product } = route.params;
+  const { product: productData } = route.params;
+  const [product, setProduct] = useState(productData);
   const [name, setName] = useState("");
   const [descript, setProductDes] = useState("");
   const [images, setImages] = useState([]);
+  const [selectedImagesDB, setSelectedImagesDB] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
-  const [urlImage, setUrlImage] = useState([]);
+  const { updateUser, user } = useUser();
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const { user } = useUser();
-  const idUser = user?.user?.uid;
   const [categories, setCategory] = useState([]);
-  const { idSubcategory, nameSubcategory, idCategory } = route.params || {};
-  const [editNameSubcate, setEditNameSubcate] = useState("");
-  const [editIDSubcate, setEditIDSubcate] = useState("");
-  const [editIDCate, setEditIDCate] = useState("");
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
@@ -52,14 +50,23 @@ const EditProductScreen = ({ navigation, route }) => {
   const [soLuong, setSoLuong] = useState("");
   const [giaLoaiHang, setGiaLoaiHang] = useState("");
   const [itemLoaiHang, setItemLoaiHang] = useState([]);
+  const [imagesDB, setImagesDB] = useState([]);
+
+  const { idSubcategory, nameSubcategory, idCategory } = route.params || {};
+  const [editNameSubcate, setEditNameSubcate] = useState("");
+  const [editIDSubcate, setEditIDSubcate] = useState("");
+  const [editIDCate, setEditIDCate] = useState("");
 
   useEffect(() => {
     getCategorytList();
     // getProduct();
     setItemLoaiHang(product.option);
-    console.log("product", product.option);
+    console.log("productOption", product.option);
   }, []);
 
+  useEffect(() => {
+    console.log(nameSubcategory);
+  }, [nameSubcategory]);
   const getCategorytList = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/showCategory`);
@@ -104,24 +111,47 @@ const EditProductScreen = ({ navigation, route }) => {
     if (product) {
       setName(product.name);
       setProductDes(product.description);
+      setImagesDB(product.image);
     }
   }, [product]);
 
-  useEffect(() => {
-    setEditNameSubcate(nameSubcategory);
-  }, [nameSubcategory]);
-
   useEffect(() => {}, [categories]);
 
-  const isFocused = useIsFocused();
   useEffect(() => {
-    setEditIDCate(idCategory);
-    setEditIDSubcate(idSubcategory);
+    if (nameSubcategory) {
+      setEditIDCate(idCategory);
+      setEditIDSubcate(idSubcategory);
+      setEditNameSubcate(nameSubcategory);
+    } else {
+      setEditIDCate(product.idCategory);
+      setEditIDSubcate(product.idSubCategory);
+    }
   }, [isFocused]);
+
   useEffect(() => {
-    getNameSubcate();
+    if (!nameSubcategory) {
+      getNameSubcate();
+    }
   }, [editIDSubcate]);
-  useEffect(() => {}, [editNameSubcate]);
+
+  useEffect(() => {
+    console.log("editNameCate", editNameSubcate);
+  }, [editNameSubcate]);
+
+  const showItems = () => {
+    // console.log("idproduct", product._id);
+    // console.log("name", name);
+    // console.log("descript", descript);
+    console.log("--------------------");
+    // console.log("product", product);
+    // console.log("editIDCate", editIDCate);
+    // console.log("editIDSubcate", editIDSubcate);
+    console.log("itemLoaiHang", itemLoaiHang); // mảng phân loại hàng
+    // console.log("nameSubcategory", nameSubcategory);
+    // console.log("userId", user._id);
+    // console.log("images", imagesDB);
+    console.log("--------------------");
+  };
 
   const updateProduct = async () => {
     const inputValues = [name, descript, editIDSubcate];
@@ -130,24 +160,112 @@ const EditProductScreen = ({ navigation, route }) => {
         Alert.alert("Thông báo", "Nhập thiếu thông tin");
       } else {
         try {
-          // setLoading(true);
-          const productRef = doc(db, "product", idProduct);
-          await updateDoc(productRef, {
-            // name: name,
-            // description: descript,
-            idCategory: editIDCate,
-            idSubCategory: editIDSubcate,
-            // discount: "",
-          });
-          setLoading(false);
-          Alert.alert("Thông báo", "Đã lưu", [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.navigate("ListProducts");
-              },
-            },
-          ]);
+          setLoading(true);
+          // console.log("itemLoaiHang", itemLoaiHang);
+          for (let index = 0; index < itemLoaiHang.length; index++) {
+            if (itemLoaiHang[index].imageUrl.includes("file:///")) {
+              try {
+                const formData = new FormData();
+                const imageUri = itemLoaiHang[index].imageUrl;
+                const imageData = await FileSystem.readAsStringAsync(imageUri, {
+                  encoding: FileSystem.EncodingType.Base64,
+                });
+                formData.append(`images`, {
+                  uri: imageUri,
+                  type: "image/jpeg",
+                  name: `image.jpg`,
+                  data: imageData,
+                });
+
+                // Gửi yêu cầu POST để tải lên tất cả các hình ảnh
+                const itemUploadRes = await axios.post(
+                  `${API_BASE_URL}/upload/productImage`,
+                  formData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
+                  }
+                );
+                itemLoaiHang[index].imageUrl = itemUploadRes.data.imageUrls[0];
+                
+              } catch (error) {
+                console.error("Error uploading image:", error);
+                // Xử lý lỗi nếu có
+              }
+            }
+          }
+          let uploadComplete = true; // Khởi tạo biến cờ
+          if (images.length > 0) {
+            const formData = new FormData();
+            uploadComplete = false; // Nếu có hình ảnh, đặt cờ thành false
+            for (let index = 0; index < images.length; index++) {
+              const imageUri = images[index];
+              const imageData = await FileSystem.readAsStringAsync(imageUri, {
+                encoding: FileSystem.EncodingType.Base64,
+              });
+              formData.append(`images`, {
+                uri: imageUri,
+                type: "image/jpeg",
+                name: `image_${index + 1}.jpg`,
+                data: imageData,
+              });
+
+              // Kiểm tra xem có phải là hình ảnh cuối cùng không
+              if (index === images.length - 1) {
+                uploadComplete = true;
+              }
+            }
+
+            // Gửi yêu cầu POST để tải lên tất cả các hình ảnh
+            const uploadRes = await axios.post(
+              `${API_BASE_URL}/upload/productImage`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            // Log kết quả và trả về URL của tất cả các hình ảnh đã tải lên
+            // console.log("Images uploaded successfully:", uploadRes.data.imageUrls);
+            const imgUrls = uploadRes.data.imageUrls;
+            let newImages = imagesDB;
+            imgUrls.forEach((url) => {
+              newImages.push({ url });
+            });
+            setImagesDB(newImages);
+            // console.log("imagesDB", imagesDB);
+            setImages([]);
+          }
+
+          if (uploadComplete) {
+            // Kiểm tra xem đã upload hoàn tất chưa
+            const response = await axios.put(
+              `${API_BASE_URL}/seller/updateProduct`,
+              {
+                productId: product._id,
+                name: name,
+                description: descript,
+                idCategory: editIDCate,
+                idSubCategory: editIDSubcate,
+                idShop: user._id,
+                image: imagesDB,
+                option: itemLoaiHang,
+              }
+            );
+            console.log("response", response.data.message);
+            setLoading(false);
+            Alert.alert("Thông báo", "Đã cập nhật"); //, [
+            //   {
+            //     text: "OK",
+            //     onPress: () => {
+            //       navigation.goBack();
+            //     },
+            //   },
+            // ]);
+          }
         } catch (error) {
           console.log("loi khi update product", error);
         }
@@ -156,6 +274,13 @@ const EditProductScreen = ({ navigation, route }) => {
       Alert.alert("Cảnh báo", "Nhập thiếu thông tin sản phẩm");
     }
   };
+  useEffect(() => {
+    console.log("imagesDB", imagesDB);
+  }, [imagesDB]);
+
+  useEffect(() => {
+    console.log("images", images);
+  }, [images]);
 
   const updatedImagesProduct = async () => {
     images.forEach(async (image) => {
@@ -167,7 +292,7 @@ const EditProductScreen = ({ navigation, route }) => {
     });
   };
 
-  const pickImages1 = async () => {
+  const pickImages = async () => {
     if (images.length < 10) {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -211,6 +336,15 @@ const EditProductScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleImageDBPress = (index) => {
+    // Khi người dùng nhấn vào ảnh, xóa ảnh khỏi danh sách đã chọn
+    const isSelected = selectedImagesDB.includes(index);
+    const updatedSelectedImages = isSelected
+      ? selectedImagesDB.filter((selectedIndex) => selectedIndex !== index)
+      : [...selectedImagesDB, index];
+
+    setSelectedImagesDB(updatedSelectedImages);
+  };
   const handleImagePress = (index) => {
     // Khi người dùng nhấn vào ảnh, xóa ảnh khỏi danh sách đã chọn
     const isSelected = selectedImages.includes(index);
@@ -223,11 +357,20 @@ const EditProductScreen = ({ navigation, route }) => {
 
   const handleDelete = () => {
     // Xóa các ảnh đã chọn khỏi danh sách images
-    const updatedImages = images.filter(
-      (_, index) => !selectedImages.includes(index)
-    );
-    setImages(updatedImages);
-    setSelectedImages([]);
+    if (selectedImagesDB.length > 0) {
+      const updatedImagesDB = imagesDB.filter(
+        (_, index) => !selectedImagesDB.includes(index)
+      );
+      setImagesDB(updatedImagesDB);
+      setSelectedImagesDB([]);
+    }
+    if (selectedImages.length > 0) {
+      const updatedImages = images.filter(
+        (_, index) => !selectedImages.includes(index)
+      );
+      setImages(updatedImages);
+      setSelectedImages([]);
+    }
   };
 
   // Add thông tin phân loại hàng vào mảng
@@ -243,7 +386,7 @@ const EditProductScreen = ({ navigation, route }) => {
 
     if (!result.canceled) {
       const newImages = result.assets.map((asset) => asset.uri);
-      setLoaiHangImg(newImages);
+      setLoaiHangImg(newImages[0]);
     }
   };
   useEffect(() => {
@@ -294,14 +437,30 @@ const EditProductScreen = ({ navigation, route }) => {
   const addLoaiHang = () => {
     // Kiểm tra xem cả hai thẻ input đã được nhập chưa
     if (loaiHangImg !== "" && loaiHang && soLuong > 0 && giaLoaiHang > 0) {
-      const newItem = { loaiHangImg, loaiHang, soLuong, giaLoaiHang };
+      const newItem = {
+        imageUrl: loaiHangImg,
+        name: loaiHang,
+        price: giaLoaiHang,
+        quantity: soLuong,
+      };
 
       if (editIndex !== null) {
         // Nếu đang chỉnh sửa, cập nhật item tại editIndex
         const updatedItems = [...itemLoaiHang];
+        newItem._id = updatedItems[editIndex]._id;
         updatedItems[editIndex] = newItem;
-        setItemLoaiHang(updatedItems);
-        setEditIndex(null);
+        if (soLuong < 0) {
+          Alert.alert("Thông báo", "Số lượng sản phẩm phải lớn hơn 0");
+        }
+        if (soLuong >= itemLoaiHang[editIndex].quantity) {
+          setItemLoaiHang(updatedItems);
+          setEditIndex(null);
+        } else {
+          Alert.alert(
+            "Thông báo",
+            "Số lượng mặt hàng phải lớn hơn hoặc bằng số lượng hiện có"
+          );
+        }
       } else {
         // Nếu không, thêm một item mới
         setItemLoaiHang([...itemLoaiHang, newItem]);
@@ -370,20 +529,20 @@ const EditProductScreen = ({ navigation, route }) => {
           ]}
         >
           <Text style={{}}>Hình ảnh sản phẩm</Text>
-          {/* <TouchableOpacity onPress={handleDelete}>
+          <TouchableOpacity onPress={handleDelete}>
             <Text style={{ color: "red" }}>Xóa ảnh</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
         <View style={{ width: "90%", flexDirection: "row", flexWrap: "wrap" }}>
-          {product.image.map((image, index) => (
+          {imagesDB.map((image, index) => (
             <TouchableOpacity
               key={index}
-              onPress={() => handleImagePress(index)}
+              onPress={() => handleImageDBPress(index)}
               style={{
-                borderColor: selectedImages.includes(index)
+                borderColor: selectedImagesDB.includes(index)
                   ? "red"
                   : "lightgray",
-                borderWidth: selectedImages.includes(index) ? 1 : 1,
+                borderWidth: selectedImagesDB.includes(index) ? 1 : 1,
                 margin: 3,
                 padding: 5,
               }}
@@ -398,7 +557,30 @@ const EditProductScreen = ({ navigation, route }) => {
               />
             </TouchableOpacity>
           ))}
-          {/* <TouchableOpacity onPress={pickImages}>
+          {images.map((image, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleImagePress(index)}
+              style={{
+                borderColor: selectedImages.includes(index)
+                  ? "red"
+                  : "lightgray",
+                borderWidth: selectedImages.includes(index) ? 1 : 1,
+                margin: 3,
+                padding: 5,
+              }}
+            >
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: 200 / 3,
+                  height: 200 / 3,
+                }}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={pickImages}>
             <View
               style={{
                 margin: 3,
@@ -422,9 +604,9 @@ const EditProductScreen = ({ navigation, route }) => {
                 +Thêm ảnh
               </Text>
             </View>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
-        {/* <Text style={{ paddingVertical: 5 }}>Thêm tối đa 10 ảnh</Text> */}
+        <Text style={{ paddingVertical: 5 }}>Thêm tối đa 10 ảnh</Text>
       </View>
       {/* Tên sản phẩm */}
       <View style={styles.name_item}>
@@ -533,6 +715,7 @@ const EditProductScreen = ({ navigation, route }) => {
                 borderColor: color.origin,
                 alignSelf: "center",
                 width: "30%",
+                paddingVertical: 5,
               }}
               onPress={pickLoaiHangImg}
             >
@@ -607,53 +790,54 @@ const EditProductScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
-      {/* <Button title="items" onPress={showitems} /> */}
       <View
-        style={{ backgroundColor: "white", marginBottom: 5, paddingBottom: 5 }}
+        style={{
+          backgroundColor: "white",
+          marginBottom: 5,
+          paddingBottom: 5,
+          backgroundColor: "#f2f2f2",
+        }}
       >
-        <View
+        <TouchableOpacity
           style={[
             styles.list_items,
-            { marginBottom: 0, paddingRight: 20, alignItems: "center" },
+            {
+              marginVertical: 10,
+              marginHorizontal: 20,
+              borderWidth: 1,
+              borderColor: "lightgray",
+              // paddingRight: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            },
           ]}
+          onPress={toggleModal}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons
               name="duplicate-outline"
               size={25}
               marginLeft={10}
-              color="gray"
-            />
-            <Text style={{ marginLeft: 10 }}>Phân loại hàng</Text>
-          </View>
-
-          <TouchableOpacity
-            style={{ alignContent: "flex-end" }}
-            onPress={toggleModal}
-          >
-            <Ionicons
-              style={{ alignSelf: "center" }}
-              name="add-circle-outline"
-              size={25}
               color={color.origin}
             />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            height: 1,
-            width: "90%",
-            alignSelf: "center",
-            backgroundColor: "lightgray",
-          }}
-        ></View>
+            <Text style={{ marginLeft: 10, color: color.origin }}>
+              Thêm phân loại mặt hàng
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {itemLoaiHang.map((item, index) => (
           <View
             key={index}
             style={[
               styles.itemContainer,
-              { flexDirection: "row", marginVertical: 5, marginHorizontal: 5 },
+              {
+                flexDirection: "row",
+                marginVertical: 5,
+                marginHorizontal: 5,
+                padding: 10,
+                backgroundColor: "white",
+              },
             ]}
           >
             {/* Cột bên trái */}
@@ -669,7 +853,7 @@ const EditProductScreen = ({ navigation, route }) => {
             <View
               style={{ flex: 1, paddingHorizontal: 10, alignSelf: "center" }}
             >
-              <Text>Tên phân loại: {item.name}</Text>
+              <Text>Loại: {item.name}</Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -693,28 +877,32 @@ const EditProductScreen = ({ navigation, route }) => {
               >
                 <Feather name="edit" size={20} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteLoaiHang(index)}>
+              {/* <TouchableOpacity onPress={() => deleteLoaiHang(index)}>
                 <Feather name="trash-2" size={20} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         ))}
       </View>
       {/* Button Thêm */}
-      {/* <TouchableOpacity
+      <TouchableOpacity
         style={{
           backgroundColor: color.origin,
           marginHorizontal: 100,
           marginBottom: 20,
+          marginTop: 10,
         }}
-        onPress={updateProduct}
+        onPress={() => {
+          updateProduct();
+          // showItems()
+        }}
       >
         <View
           style={{ alignItems: "center", justifyContent: "center", height: 35 }}
         >
           <Text style={{ color: "white" }}>Lưu thay đổi</Text>
         </View>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />

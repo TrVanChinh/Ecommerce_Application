@@ -98,7 +98,7 @@ const ShopInfoScreen = ({ navigation, route }) => {
           uri: imageUri,
           type: "image/jpeg",
           name: `image.jpg`,
-          data: imageData,
+          data: result.assets[0].base64,
         });
 
         // Gửi yêu cầu POST để tải lên tất cả các hình ảnh

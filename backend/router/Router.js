@@ -117,7 +117,5 @@ router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.re
 //Hàng tồn 1 sản phẩm theo tháng trong năm
 router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
 
-//total import in month
-router.get("/seller/totalImportInMonth/:productId/:month/:year", SellerController.totalImportInMonth)
 
 module.exports = router;

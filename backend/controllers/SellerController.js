@@ -4,7 +4,8 @@ const User = require("../models/User");
 const Admin = require("../models/Admin");
 //Password handler
 const bcrypt = require("bcrypt");
-
+//mongoose is not defined
+const mongoose = require("mongoose");
 //email handler
 const nodemailer = require("nodemailer");
 
@@ -90,7 +91,7 @@ exports.updateProduct = async (req, res) => {
       const existingOption = product.option.find(
         (opt1) => opt1._id.toString() == opt._id
       );
-      stock = stock + opt.quantity;
+      stock += parseInt(opt.quantity);
       // Nếu existingOption.quantity > opt.quantity thì cho update
       if (existingOption) {
         if (existingOption.quantity > opt.quantity) {
@@ -103,8 +104,18 @@ exports.updateProduct = async (req, res) => {
             quantity: opt.quantity - existingOption.quantity,
           });
         }
+      }else{
+        //generate _id
+        opt._id = new mongoose.Types.ObjectId();
+        newOption.push({
+          _id: opt._id,
+          name: opt.name,
+          price: opt.price,
+          quantity: opt.quantity,
+        });
       }
     }
+
     if (isEqual) {
       return res.status(400).json({
         message:
@@ -116,7 +127,7 @@ exports.updateProduct = async (req, res) => {
       }
       product.option = option;
       await product.save();
-      res.status(200).json({ message: "Product updated successfully" });
+      res.status(200).json({ message: option });
     }
   } catch (error) {
     console.error("Error updating product:", error);
@@ -435,16 +446,16 @@ exports.inventoryStatsByMonth = async (req, res) => {
             ? totalSoldInMonthResult[0].totalQuantity
             : 0;
 
-            const totalImportInMonthResult = await Inventory.find({
-              idProduct: productId,
-              createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
-            });
-            let totalImportInMonth = 0;
-            totalImportInMonthResult.forEach((inv) => {
-              inv.option.forEach((opt) => {
-                totalImportInMonth += opt.quantity;
-              });
-            });
+        const totalImportInMonthResult = await Inventory.find({
+          idProduct: productId,
+          createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+        });
+        let totalImportInMonth = 0;
+        totalImportInMonthResult.forEach((inv) => {
+          inv.option.forEach((opt) => {
+            totalImportInMonth += opt.quantity;
+          });
+        });
 
         let totalSold = 0;
         const orders = await Order.find({
@@ -494,19 +505,6 @@ exports.inventoryStatsByMonth = async (req, res) => {
     });
   } catch (error) {
     console.error("Error calculating inventory by month:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-exports.totalImportInMonth = async (req, res) => {
-  try {
-    const { productId, month, year } = req.params;
-    const firstDayOfMonth = new Date(year, month - 1, 1);
-    const lastDayOfMonth = new Date(year, month, 0);
-
-    res.status(200).json({ totalImportInMonth });
-  } catch (error) {
-    console.error("Error calculating total import in month:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -171,6 +171,9 @@ exports.showOrderDetail = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
     const user = await User.findById(order.idUser);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const productOptionInfoPromises = order.option.map(async (opt) => {
       const product = await Product.findById(opt.idProduct);
@@ -190,7 +193,7 @@ exports.showOrderDetail = async (req, res) => {
       id: id,
       idShop: order.idShop,
       idUser: order.idUser,
-      buyerName: user.name,
+      buyerName: user.name || "Unknown", // Kiểm tra xem user có tồn tại hay không trước khi truy cập thuộc tính name
       status: order.status,
       address: order.address,
       nameShippingUnit: order.nameShippingUnit,
