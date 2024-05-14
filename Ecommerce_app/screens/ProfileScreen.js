@@ -36,7 +36,9 @@ const ProfileScreen = ({ navigation, route }) => {
   };
   useEffect(() => {
     if (isFocused) {
+      if(user){        
       getShopInfo();
+      }
     }
   }, [isFocused]);
   const getShopInfo = async () => {
