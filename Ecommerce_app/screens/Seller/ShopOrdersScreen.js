@@ -63,7 +63,7 @@ const ShopOrdersScreen = ({ navigation }) => {
           deliveredOrder.push(order);
         } else if (order.status === "completed") {
           completedOrder.push(order);
-        } else if (order.status === "cancelled") {
+        } else if (order.status === "canceled") {
           cancelledOrder.push(order);
         }
       });
