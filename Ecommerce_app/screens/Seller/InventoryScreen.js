@@ -62,7 +62,7 @@ const InventoryScreen = () => {
   }, [year]);
 
   const getInventoryByYear = async (inputYear) => {
-    setLoading(true)
+    setLoading(true);
     const inventoryData = [];
     // Sử dụng Promise.all để chờ tất cả các yêu cầu lấy dữ liệu hoàn tất
     await Promise.all(
@@ -82,7 +82,7 @@ const InventoryScreen = () => {
       })
     );
     setResults(inventoryData);
-    setLoading(false)
+    setLoading(false);
   };
 
   const get = async (inputYear) => {

@@ -47,6 +47,10 @@ import ShopScreen from "../screens/ShopScreen";
 import PurchaseOrderScreen from '../screens/PurchaseOrderScreen';
 import OrderDetailScreen from '../screens/OrderDetailScreen';
 
+import AdminListScreen from '../screens/Admin/AdminListScreen';
+import CategoryManagerScreen from '../screens/Admin/CategoryManagerScreen';
+import SubcategoryManagerScreen from '../screens/Admin/SubcategoryManagerScreen';
+
 import WebViewScreen from '../screens/WebViewScreen';
 
 const StackNavigation = () => {
@@ -214,6 +218,9 @@ const StackNavigation = () => {
         <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{headerTitle: 'Chi tiết đơn hàng'}}/>
         <Stack.Screen name="WebViewScreen" component={WebViewScreen} options={{headerShown:false}}/>
 
+        <Stack.Screen name="AdminList" component={AdminListScreen} options={{headerTitle: 'Danh sách Admin'}}/>
+        <Stack.Screen name="CategoryManager" component={CategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục'}}/>
+        <Stack.Screen name="SubcategoryManager" component={SubcategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục con'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   )
