@@ -305,46 +305,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 Thông tin tài khoản
               </Text>
             </View>
-          </TouchableOpacity>
-
-          {/* QUẢN TRỊ VIÊN */}
-          <Text style={{ fontSize: 16, color: "gray", padding: 10 }}>
-            Phần admin tạm thời
-          </Text>
-          
-          <TouchableOpacity
-            style={styles.list_items}
-            onPress={()=>navigation.navigate("AdminList")}
-          >
-            <View style={styles.item}>
-              <MaterialIcons
-                name="manage-accounts"
-                size={25}
-                marginLeft={10}
-                color={color.origin}
-              />
-              <Text style={{ marginLeft: 10, fontSize: 16 }}>
-                Danh sách quản trị viên
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.list_items}
-            onPress={()=>navigation.navigate("CategoryManager")}
-          >
-            <View style={styles.item}>
-              <MaterialCommunityIcons
-                name="format-list-text"
-                size={25}
-                marginLeft={10}
-                color={color.origin}
-              />
-              <Text style={{ marginLeft: 10, fontSize: 16 }}>
-                Quản lý danh mục
-              </Text>
-            </View>
-          </TouchableOpacity>
-          
+          </TouchableOpacity>          
           {user ? (
             <TouchableOpacity style={styles.logoutbtn} onPress={handleLogout}>
               <Text style={{ color: "white", fontSize: 16 }}>Đăng xuất</Text>

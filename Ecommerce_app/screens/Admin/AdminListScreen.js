@@ -55,6 +55,17 @@ const AdminListScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "bold",
+            color: "#f74600",
+            marginVertical: 10,
+            textAlign: "center",
+          }}
+        >
+          Thêm tài khoản Admin
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Tên"
@@ -74,7 +85,7 @@ const AdminListScreen = () => {
           value={password}
           onChangeText={setPassword}
         />
-        <Button color={'#f74600'} title="Thêm" onPress={handleAddUser} />
+        <Button color={"#f74600"} title="Thêm" onPress={handleAddUser} />
       </View>
       <FlatList
         data={data}
@@ -112,9 +123,10 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   inputContainer: {
-    padding: 20,
+    paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    paddingHorizontal: 20,
   },
   input: {
     height: 40,
