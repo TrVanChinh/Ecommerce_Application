@@ -1,6 +1,6 @@
 require("dotenv").config()
 const mongoose = require('mongoose');
-
+const moment = require('moment');
 //mongodb user model
 const User = require('../models/User')
 const Admin = require('../models/Admin')
@@ -513,7 +513,7 @@ exports.saleRegister = async (req, res) => {
 // Displays the request to register as a seller
 exports.showSaleRegister = async (req, res) => { 
     try {
-        const result = await User.find({ sellerRequestStatus: "pending"})
+        const result = await User.find({ sellerRequestStatus: "PENDING"})
         res.json({
             status: 'SUCCESS',
             message: 'Registration list become a seller',
@@ -551,6 +551,141 @@ exports.getUser = (req, res) => {
              })
          })
     }
+}
+
+const formatDateString = (dateInput) => {
+    // Danh sách các định dạng có thể có
+    const formats = ['YYYY-DD-MM', 'MM-DD-YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD', 'DD/MM/YYYY', 'MM/DD/YYYY'];
+
+    // Phân tích ngày tháng từ chuỗi đầu vào với các định dạng cho trước
+    const date = moment(dateInput, formats, true);
+
+    // Kiểm tra ngày tháng có hợp lệ hay không 
+    if (!date.isValid()) {
+        throw new Error('Invalid date format');
+    }
+
+    // Định dạng lại ngày tháng theo chuẩn YYYY-MM-DD
+    return date.format('YYYY-MM-DD');
+} 
+
+exports.updateUser = (req, res) => { 
+    
+    const { id, name, dateOfBirth } = req.body; 
+    let date = moment(dateOfBirth, "DD-MM-YYYY").toDate();
+    if (!id ) {
+        return res.status(400).json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        }); 
+     
+    } else { 
+        User.findById(id)
+        .then(user => {
+            if(!user) {  
+                return res.status(404).json({
+                    status: "FAILED",
+                    message: "User does not exist!",
+                });
+            }
+            else {
+                try {
+                    user.name = name;
+                    user.dateOfBirth = date;
+                    user.save()
+
+                    res.json({
+                        status: "SUCCESS",
+                        message: "User update successfully",
+                        data: user
+                    })
+                
+                } catch (error) {
+                    res.json({
+                        status: "FAILED",
+                        message: error
+                    })
+                }
+            }
+         })
+        .catch(err => {
+             res.json({
+                 status: "FAILED",
+                 message: err.message
+             })
+         })
+    }
+}
+
+exports.updatePassword =  async (req, res) => {
+    try{ 
+        let{userId, password, newPassword} = req.body;
+        if(!userId || !password || !newPassword) { 
+            throw Error("Empty are not allowed")
+        } else if(password.length < 8) {
+            res.json({
+                status:"FAILED",
+                message:"Password must be at least 8 characters long!"
+            })
+        }else {
+            User.findById(userId).then(user => {
+                if(user) {
+                    const hashedPassword = user.password
+                    bcrypt.compare(password, hashedPassword).then(result => {
+                        if(result) {
+                            const saltRounds = 10;
+                            bcrypt.hash(newPassword, saltRounds).then(hashedPassword => {
+                                user.password = hashedPassword    
+                                user.save().then(() => {
+                                    res.json({
+                                        status:"SUCCESS",
+                                        message:"Password updated successfully!"
+                                    })
+                                }).catch(err => {
+                                    res.json({
+                                        status:"FAILED",
+                                        message: "An error occurred while updating the password!"
+                                    })
+                                })
+                            }).catch(err => {
+                                res.json({
+                                    status:"FAILED",
+                                    message: "An error occurred while encrypting the password!"
+                                })
+                            })
+                        } else {
+                            res.json({
+                                status:"FAILED",
+                                message:"Incorrect password!"
+                            })
+                        }
+                    })
+                    .catch(err => {
+                        res.json({
+                            status:"FAILED",
+                            message: "An error occurred while comparing passwords!"
+                        })
+                    })  
+                } else {
+                    res.json({
+                        status:"FAILED",
+                        message:"Invalid credentials supplied!"
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+                res.json({
+                    status:"FAILED",
+                    message: "An error occurred while checking for existing user!"
+                })
+            }) 
+        }
+    } catch (err) {
+        res.json({
+            status:"FAILED",
+            message: err.message
+        })
+    }  
 }
 
 exports.sendOTPVerificationEmailSeller = async (req, res) => {
@@ -617,7 +752,7 @@ exports.verifyOTPSeller = async (req, res) => {
   };
   
 
-  exports.newAddress = async (req, res) => {
+exports.newAddress = async (req, res) => {
     try {
       let { userId, name, street, Ward, District, city, mobileNo } = req.body;
       if (userId === '' || name === '' || street === '' || Ward === '' || District === '' || city === ''|| mobileNo === '' ) {
@@ -1043,6 +1178,199 @@ exports.getOrderData = async (req, res) => {
     }
 };
 
+const getMonthYearFromAtCreate = (atCreate) => {
+    const atCreateTimestamp = new Date(atCreate);
+    const year = atCreateTimestamp.getFullYear();
+    const month = atCreateTimestamp.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0, nên cần +1 để đúng với tháng thực tế
+    return { month, year };
+  };
+const sortByCreatedAt = (order) => {
+const sortbyCreateAtproduct = order.sort((a, b) => {
+    const aTimestamp = new Date(a.createAt).getTime();
+    const bTimestamp = new Date(b.createAt).getTime();
+    // So sánh theo timestamp
+    return aTimestamp - bTimestamp;
+});
+// In ra mảng đã sắp xếp
+return sortbyCreateAtproduct;
+};
+exports.getOrderCompleted = async (req, res) => {
+    try {
+        const { id} = req.params;
+        
+        if (!id) {
+            return res.status(400).json({
+                status: "FAILED",
+                message: "Empty input fields!",
+            });
+        } else {
+            const order = await Order.find({ idUser: id, status:"completed"})
+            if (order) { 
+                let total = 0
+                let timeOfOrderCreate = []
+                const orderData = sortByCreatedAt(order)
+                const orderDataWithDetails = await Promise.all(orderData.map(async (item) => {
+                    const details = await Promise.all(item.option.map(async (option) => { 
+                        const productId = option.idProduct;
+                        const optionId = option.idOption;
+                        const price = option.price;
+                        const quantity = option.quantity;
+                        const stock = option.stock;
+
+                        const product = await Product.findById(productId)
+                        if (!product) {
+                            res.json({
+                                status: "FAILED",
+                                message: "Product not found!"
+                            });
+                            return;
+                        } else {
+                            const OptionOfProduct =product.option.id(optionId);
+                            if (!option) {
+                                res.json({
+                                    status: "FAILED",
+                                    message: "Option not found for this product!"
+                                });
+                                return;
+                            } else {
+                                const nameProduct = product.name 
+                                const nameOption = OptionOfProduct.name;
+                                const imageUrl = OptionOfProduct.imageUrl
+
+                                return {
+                                    productId: productId,
+                                    optionId: optionId,
+                                    nameProduct: nameProduct,
+                                    nameOption: nameOption,
+                                    imageUrl: imageUrl,
+                                    price: price,
+                                    quantity: quantity,
+                                    stock: stock,
+                                };
+                            }
+                        }
+                    }));
+                    total += item.totalByShop
+                    const orderCreateTime = getMonthYearFromAtCreate(item.createAt);
+                    if (!timeOfOrderCreate.some(time => time.month === orderCreateTime.month && time.year === orderCreateTime.year)) {
+                        timeOfOrderCreate.push(orderCreateTime);
+                    }
+                     // Sắp xếp timeOfOrderCreate từ tháng năm mới đến cũ
+                    timeOfOrderCreate.sort((a, b) => {
+                        if (b.year !== a.year) {
+                        return b.year - a.year;
+                        }
+                        return b.month - a.month;
+                    });
+                    return {
+                        ...item,
+                        option: details
+                    };
+                }));
+
+                res.json({
+                    status: "SUCCESS",
+                    order: orderDataWithDetails,
+                    totalAmount: total,
+                    timeofOrder: timeOfOrderCreate,
+                });
+            }
+        }
+        
+    } catch (err) {
+        return res.status(500).json({
+            status: "FAILED",
+            message: err.message,
+        });
+    }
+};
+
+exports.getOrderCompletedByMonth = async (req, res) => {
+    try {
+        const { id, month, year } = req.body;
+
+        if (!id || !month || !year) {
+            return res.status(400).json({
+                status: "FAILED",
+                message: "Empty input fields!",
+            });
+        } else {
+            const startOfMonth = moment().year(year).month(month - 1).startOf('month').toDate();
+            const endOfMonth = moment().year(year).month(month - 1).endOf('month').toDate();
+
+            const orderData = await Order.find({
+                idUser: id,
+                status: "completed",
+                createAt: { $gte: startOfMonth, $lte: endOfMonth }
+            });
+
+            if (orderData) { 
+                let total = 0;
+                const orderDataWithDetails = await Promise.all(orderData.map(async (item) => {
+                    const details = await Promise.all(item.option.map(async (option) => { 
+                        const productId = option.idProduct;
+                        const optionId = option.idOption;
+                        const price = option.price;
+                        const quantity = option.quantity;
+                        const stock = option.stock;
+
+                        const product = await Product.findById(productId);
+                        if (!product) {
+                            res.json({
+                                status: "FAILED",
+                                message: "Product not found!"
+                            });
+                            return;
+                        } else {
+                            const OptionOfProduct = product.option.id(optionId);
+                            if (!OptionOfProduct) {
+                                res.json({
+                                    status: "FAILED",
+                                    message: "Option not found for this product!"
+                                });
+                                return;
+                            } else {
+                                const nameProduct = product.name;
+                                const nameOption = OptionOfProduct.name;
+                                const imageUrl = OptionOfProduct.imageUrl;
+
+                                return {
+                                    productId: productId,
+                                    optionId: optionId,
+                                    nameProduct: nameProduct,
+                                    nameOption: nameOption,
+                                    imageUrl: imageUrl,
+                                    price: price,
+                                    quantity: quantity,
+                                    stock: stock,
+                                };
+                            }
+                        }
+                    }));
+                    total += item.totalByShop;
+                    return {
+                        ...item._doc,
+                        option: details
+                    };
+                }));
+
+                res.json({
+                    status: "SUCCESS",
+                    order: orderDataWithDetails,
+                    totalAmount: total,
+                });
+            }
+        }
+        
+    } catch (err) {
+        return res.status(500).json({
+            status: "FAILED",
+            message: err.message,
+        });
+    }
+};
+
+
 exports.cancelOrder = async (req, res) => {
     const {orderId} = req.body;
     if (!orderId) {
@@ -1068,6 +1396,7 @@ exports.cancelOrder = async (req, res) => {
     }
 
 };
+
 // exports.createPaymentQR = async (req, res) => {
 //     const { priceGlobal } = req.body;
 //     var partnerCode = "MOMO";

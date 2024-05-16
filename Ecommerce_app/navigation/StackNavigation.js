@@ -48,7 +48,9 @@ import PurchaseOrderScreen from '../screens/PurchaseOrderScreen';
 import OrderDetailScreen from '../screens/OrderDetailScreen';
 
 import WebViewScreen from '../screens/WebViewScreen';
-
+import UserInfoScreen from '../screens/UserInfoScreen';
+import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
+import ExpenditureStatisticsScreen from '../screens/ExpenditureStatisticsScreen';
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -213,6 +215,9 @@ const StackNavigation = () => {
         <Stack.Screen name="PurchaseOrder" component={PurchaseOrderScreen} options={{headerTitle: 'Đơn mua'}}/>
         <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{headerTitle: 'Chi tiết đơn hàng'}}/>
         <Stack.Screen name="WebViewScreen" component={WebViewScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="UserInfo" component={UserInfoScreen} options={{headerTitle: 'Thông tin tài khoản'}}/>
+        <Stack.Screen name="UpdatePassword" component={UpdatePasswordScreen} options={{headerTitle: 'Cập nhật mật khẩu'}}/>
+        <Stack.Screen name="ExpenditureStatistics" component={ExpenditureStatisticsScreen} options={{headerTitle: 'Thống kê chi tiêu'}}/>
 
       </Stack.Navigator>
     </NavigationContainer>

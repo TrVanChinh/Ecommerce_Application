@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
   const [product, setProduct] = useState(null)
   const [address, setAddress] = useState(null)
   const [shippingUnit, setShippingUnit] = useState(null)
+  const [completedOrder, setCompletedOrder] = useState([]);
 
   const updateUser = (newUser) => { 
     setUser(newUser);
@@ -20,9 +21,11 @@ export const UserProvider = ({ children }) => {
   const updateShippingUnit = (newShippingUnit) => {
     setShippingUnit(newShippingUnit);
   };
-
+  const updateCompletedOrder = (newOrderItemList) => {
+    setCompletedOrder(newOrderItemList);
+  };
   return (
-    <UserContext.Provider value={{ user, updateUser, product ,updateProduct, address, updateAddress, shippingUnit, updateShippingUnit}}>
+    <UserContext.Provider value={{ user, updateUser, product ,updateProduct, address, updateAddress, shippingUnit, updateShippingUnit, completedOrder, updateCompletedOrder}}>
       {children}
     </UserContext.Provider>
   );

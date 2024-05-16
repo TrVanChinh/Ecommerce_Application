@@ -18,7 +18,7 @@ const upload = multer({ dest: '../uploads/' });
 // router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
 // router.post('/upload/productImage', upload.single('image'), Images.uploadProductImage);
 // router.post('/upload/productImages', upload.array('images', 20), Images.uploadProductImages);
-router.post('/upload/avatar', upload.single('image'), Images.uploadAvatar);
+router.put('/upload/avatar', upload.single('image'), Images.uploadAvatar);
 router.post('/upload/productImage', upload.array('images', 10), Images.uploadProductImages);
 
 
@@ -35,6 +35,8 @@ router.get("/shippingUnit", AdminController.ShowShippingUnit);
 
 //User
 router.get("/shop/user/:id", UserController.getUser);
+router.put("/user/updateUser", UserController.updateUser);
+router.put("/user/updatePassword", UserController.updatePassword);
 router.post("/user/signup", UserController.signup);
 router.post("/user/verify", UserController.verifyOTP);
 router.post("/user/resendVerificationCode", UserController.resendVerificationCode);
@@ -58,6 +60,8 @@ router.post("/user/deleteAddress", UserController.deleteAddress);
 //order
 router.post("/user/order", UserController.order);
 router.get("/user/getOrder/:id", UserController.getOrderData);
+router.get("/user/getOrderCompleted/:id", UserController.getOrderCompleted);
+router.get("/user/getOrderCompletedByMonth", UserController.getOrderCompletedByMonth);
 router.post("/user/getOrder/cancelOrder", UserController.cancelOrder);
 
 //payment
@@ -72,6 +76,7 @@ router.delete("/admin/deleteCategory", CategoryController.DeleteCategory)
 router.put("/admin/updateSubCategory", CategoryController.UpdateSubCategory)
 router.delete("/admin/deleteSubCategory", CategoryController.DeleteSubCategory)
 router.get("/admin/showCategory", CategoryController.ShowCategory)
+router.get("/showCategory", CategoryController.ShowCategory)
 router.get("/admin/Category/:id", CategoryController.ShowOneCategory)
 router.post("/admin/subCategory", CategoryController.showSubCategory)
 router.get("/admin/:id/:subCategoryId", CategoryController.getSubCategory)
@@ -82,6 +87,9 @@ router.get("/products", ProductController.getAllProduct)
 router.get("/product/:productId/option/:optionId", ProductController.getProductOption)
 router.get("/detail/shop/:id", ProductController.getInfoShop)
 router.get("/product/category/:idCategory", ProductController.getProductByCategory)
+
+//search 
+router.get("/product/searchProduct", ProductController.searchProduct)
 
 
 

@@ -17,6 +17,7 @@ import {
   AntDesign,
   Ionicons,
   FontAwesome6,
+  FontAwesome ,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
@@ -31,9 +32,9 @@ import axios from "axios";
 const ProfileScreen = ({ navigation, route }) => {
   const { updateUser, user } = useUser();
   const isFocused = useIsFocused();
-  const showItems = () => {
-    console.log(user);
-  };
+  // const showItems = () => {
+  //   console.log(user);
+  // };
   useEffect(() => {
     if (isFocused) {
       getShopInfo();
@@ -41,7 +42,7 @@ const ProfileScreen = ({ navigation, route }) => {
   }, [isFocused]);
   const getShopInfo = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/shop/user/${user._id}`);
+      const response = await axios.get(`${API_BASE_URL}/shop/user/${user?._id}`);
       const data = response.data;
       console.log("Shop info:", data.data);
 
@@ -290,7 +291,18 @@ const ProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.list_items}
-            onPress={showItems}
+            onPress={() =>
+              user
+                ? navigation.navigate("UserInfo")
+                : Alert.alert("Thông báo", "Vui lòng đăng nhập trước", [
+                    {
+                      text: "OK",
+                      onPress: () => {
+                        navigation.navigate("Login");
+                      },
+                    },
+                  ])
+            }
           >
             <View style={styles.item}>
               <FontAwesome6
@@ -301,6 +313,33 @@ const ProfileScreen = ({ navigation, route }) => {
               />
               <Text style={{ marginLeft: 10, fontSize: 16 }}>
                 Thông tin tài khoản
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.list_items}
+            onPress={() =>
+              user
+                ? navigation.navigate("ExpenditureStatistics")
+                : Alert.alert("Thông báo", "Vui lòng đăng nhập trước", [
+                    {
+                      text: "OK",
+                      onPress: () => {
+                        navigation.navigate("Login");
+                      },
+                    },
+                  ])
+            }
+          >
+            <View style={styles.item}>
+              <FontAwesome
+                name="bar-chart"
+                size={24}
+                marginLeft={10}
+                color={color.origin}
+              />
+              <Text style={{ marginLeft: 10, fontSize: 16 }}>
+                Thống kê chi tiêu
               </Text>
             </View>
           </TouchableOpacity>

@@ -248,3 +248,32 @@ exports.getProductByCategory = (req, res) => {
             })
     }
 }
+
+  exports.searchProduct = async (req, res) => {
+    try {
+      let { searchText } = req.query;
+      if (!searchText) {
+        throw Error("Empty searchText are not allowed");
+      } else {
+        Product.find({ $text: { $search: searchText } })
+          .then(data => {
+            res.json({
+              status: "SUCCESS",
+              data: data
+            })
+          })
+          .catch(err => {
+            res.json({
+              status: "FAILED",
+              message: err.message
+            })
+          })
+      }
+    } catch (err) {
+      res.json({
+        status: "FAILED",
+        message: err.message,
+      });
+    }
+  };
+  

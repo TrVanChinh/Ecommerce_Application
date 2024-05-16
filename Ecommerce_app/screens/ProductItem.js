@@ -1,7 +1,8 @@
-import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, View, Image, Text, Dimensions, StyleSheet } from "react-native";
 import React, { useState, useEffect } from "react";
 
 const ProductItem = ({ item, onPress  }) => {
+  const { height, width } = Dimensions.get("window");
 
   return (
     <TouchableOpacity
@@ -9,14 +10,17 @@ const ProductItem = ({ item, onPress  }) => {
       style={{
         justifyContent: "center",
         alignItems: "center",
-        // padding:10,
+        backgroundColor:"white",
+        borderColor: "gray",
+        margin: 5,
+        borderRadius: 10,
       }}
     >
       <View>
         <Image
           style={{
-            width: 200,
-            height: 200,
+            width: width*0.4,
+            height: width*0.4,
             resizeMode: "cover",
             borderRadius: 25,
             margin: 10,
@@ -25,17 +29,6 @@ const ProductItem = ({ item, onPress  }) => {
             uri: item.image[0].url,
           }}
         />
-        <View
-          style={{
-            width: 50,
-            position: "absolute",
-            marginTop: 20,
-            alignItems: "flex-end",
-            backgroundColor: "red",
-          }}
-        >
-          <Text style={{ color: "yellow" }}>{item.sale}</Text>
-        </View>
       </View>
       <View style={{ width: 200, paddingBottom: 10 }}>
         <Text style={{ fontSize: 16, color: "black", textAlign: "center", }} numberOfLines={1}>

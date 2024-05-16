@@ -9,6 +9,7 @@ import {
   Image,
   TextInput,
   FlatList,
+  Dimensions,
   Pressable,
 } from "react-native";
 import React from "react";
@@ -19,6 +20,7 @@ import { useUser } from '../UserContext';
 import { API_BASE_URL } from "../Localhost";
 import  axios  from "axios";
 import ProductItem from "./ProductItem";
+import color from "../components/color";
 const HomeScreen = ({navigation}) => {
   const { user } = useUser();
   const [products, setProducts] = useState([]);
@@ -116,6 +118,7 @@ const HomeScreen = ({navigation}) => {
       name: "Bể Cá Nguyên Bộ SOBO - Tích Hợp sẵn Lọc và Đèn bên trong Hồ Cá",
     },
   ]);
+  const { height, width } = Dimensions.get("window");
 
   useEffect(() => {
     fetchDataProduct()
@@ -153,29 +156,7 @@ const HomeScreen = ({navigation}) => {
       console.log(error)
     })
   }
-
-  const showSubcategory = () => {
-    const categoryInfo = {
-      categoryId:"661c0bcf5fddd37bdf84f83e",
-      subCategoryId: "66235653ce23e38ed32ad59d"
-    }
-    axios.post(`${API_BASE_URL}/admin/subCategory`,categoryInfo)
-    .then((response) => {
-      if (response.data.status === "FAILED") {
-        alert(response.data.message); 
-        console.log(response.data.message);
-      } else {
-        console.log(response.data)
-      }
-    })
-    .catch((error) => {
-      alert(" Error")
-      console.log(error)
-    })
-  }
-
   
-
   const getSubcategory = () => {
     const id = "661c0bcf5fddd37bdf84f83e"
     const subCategoryId = "66235653ce23e38ed32ad59d"
@@ -199,17 +180,19 @@ const HomeScreen = ({navigation}) => {
       style={{
         paddingTop: Platform.OS === "android" ? 30 : 0,
         flex: 1,
-        backgroundColor: "white",
+        // backgroundColor: "white",
       }}
     >
       <ScrollView>
-        <SlideShow/>
+        <SlideShow style={{flex:2}}/>
+
         <View
           style={{
             position: "absolute",
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
+            paddingTop: 5,
           }}
         >
           <Pressable
@@ -218,6 +201,7 @@ const HomeScreen = ({navigation}) => {
               width: "70%",
               marginHorizontal: 10,
               flexDirection: "row",
+              borderRadius: 30,
               alignItems: "center",
               backgroundColor: "white",
               padding: 10,
@@ -229,7 +213,7 @@ const HomeScreen = ({navigation}) => {
                 handleSearch()
               }
             >
-              <Feather name="search" size={24} color="#857E7C" />
+              <Feather name="search" size={20} color="#857E7C" />
             </TouchableOpacity>
             <TextInput
               placeholder="Tìm kiếm"
@@ -240,13 +224,12 @@ const HomeScreen = ({navigation}) => {
                 height: 35,
                 flex: 1,
                 marginEnd: 8,
-                borderRadius: 5,
                 opacity: 0.5,
                 paddingStart: 10,
               }}
               autoCorrect={false}
             />
-            <AntDesign name="camerao" size={24} color="#857E7C" />
+            <AntDesign name="camerao" size={22} color="#857E7C" />
           </Pressable>
           <Pressable
             onPress={() => {
@@ -262,7 +245,8 @@ const HomeScreen = ({navigation}) => {
           </Pressable>
           <AntDesign name="message1" size={24} color="white" padding={10} />
         </View>
-        <View style={{ height: 100 }}>
+
+        <View style={{ flex:2 ,backgroundColor: "white"}}>
           <FlatList
             horizontal
             style={{ flex: 1 }}
@@ -301,32 +285,33 @@ const HomeScreen = ({navigation}) => {
             }}
           />
         </View>
+
         <View>
-          <Text style={{ color: "red", fontWeight: "bold", padding: 20 }}>
+          <Text style={{ color: "red", fontWeight: "bold", padding: 20 ,backgroundColor: "white"}}>
             FLASH SALE
           </Text>
         </View>
-        <View style={{ height: 250 }}> 
+        
+        <View style={{flex: 3}}> 
           <FlatList
               horizontal
-              style={{ flex: 1 }}
+              style={{ flex: 1, padding:10 }}
               keyExtractor={(item) => item._id}
               data={products}
               renderItem={({ item }) => 
-              
               <ProductItem item={item} onPress={() => handleItemPress(item)}/>}
             />
         </View>
          
         <View>
-          <Text style={{ color: "red", fontWeight: "bold", padding: 20 }}>
+          <Text style={{ color: "red", fontWeight: "bold", padding: 20 ,backgroundColor: "white",}}>
             GỢI Ý HÔM NAY
           </Text>
         </View>
-        <View style={{ height: 250 }}>
+        <View style={{ flex: 3 }}>
           <FlatList
             horizontal
-            style={{ flex: 1 }}
+            style={{ flex: 1, padding:10  }}
             keyExtractor={(item) => item.url}
             data={product}
             renderItem={({ item }) => {
@@ -338,13 +323,17 @@ const HomeScreen = ({navigation}) => {
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
+                    backgroundColor:"white",
+                    borderColor: "gray",
+                    margin: 5,
+                    borderRadius: 10,
                   }}
                 >
                   <View>
                     <Image
                       style={{
-                        width: 200,
-                        height: 200,
+                        width: width*0.4,
+                        height: width*0.4,
                         resizeMode: "cover",
                         borderRadius: 25,
                         margin: 10,
@@ -353,7 +342,7 @@ const HomeScreen = ({navigation}) => {
                         uri: item.url,
                       }}
                     />
-                    <View
+                    {/* <View
                       style={{
                         width: 50,
                         position: "absolute",
@@ -363,7 +352,7 @@ const HomeScreen = ({navigation}) => {
                       }}
                     >
                       <Text style={{ color: "yellow" }}>{item.sale}</Text>
-                    </View>
+                    </View> */}
                   </View>
                   <View style={{ width: 200, paddingBottom: 10 }}>
                     <Text
@@ -395,11 +384,6 @@ const HomeScreen = ({navigation}) => {
           /> */}
         </View>
       </ScrollView>
-      <TouchableOpacity
-        onPress={() => getSubcategory()}
-      >
-        <Text>SubCategory</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   )
 }
