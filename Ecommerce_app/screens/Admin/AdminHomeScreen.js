@@ -48,22 +48,23 @@ const AdminHomeScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBar barStyle="dark-content" /> */}
+      <View
+        style={{
+          backgroundColor: color.origin,
+          padding: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop:30,
+        }}
+      >
+        <MaterialIcons name="space-dashboard" size={50} color="white" />
+        <Text style={{ fontSize: 25, textAlign: "center", color: "white" }}>
+          Admin Home
+        </Text>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View>
-          <View
-            style={{
-              backgroundColor: color.origin,
-              padding: 10,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <MaterialIcons name="space-dashboard" size={50} color="white" />
-            <Text style={{ fontSize: 25, textAlign: "center", color: "white" }}>
-              Admin Home
-            </Text>
-          </View>
           <TouchableOpacity
             style={styles.list_items}
             onPress={() => navigation.navigate("AdminList")}
@@ -124,7 +125,7 @@ const AdminHomeScreen = ({ navigation, route }) => {
           {/* Duyệt seller */}
           <TouchableOpacity
             style={styles.list_items}
-            // onPress={() => navigation.navigate("CategoryManager")}
+            onPress={() => navigation.navigate("SellerRegister")}
           >
             <View style={styles.item}>
               <Ionicons
@@ -154,7 +155,7 @@ const AdminHomeScreen = ({ navigation, route }) => {
           {/* Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng */}
           <TouchableOpacity
             style={styles.list_items}
-            // onPress={() => navigation.navigate("CategoryManager")}
+            onPress={() => navigation.navigate("RevenueSeller")}
           >
             <View style={styles.item}>
               <Ionicons
@@ -183,6 +184,28 @@ const AdminHomeScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <TouchableOpacity
+        style={{
+            margin: 10,
+          borderWidth: 1,
+          borderColor: "#e80707",
+          padding: 10,
+          alignItems: "center",
+          backgroundColor: "white",
+        }}
+        onPress={() =>
+          Alert.alert("Thông báo", "Xác nhận đăng xuất?", [
+            {
+              text: "Cancel",
+              onPress: () => null,
+              style: "cancel",
+            },
+            { text: "YES", onPress: () => navigation.popToTop() },
+          ])
+        }
+      >
+        <Text style={{ color: "#e80707" }}>Đăng xuất</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -192,13 +215,14 @@ export default AdminHomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#e8e8e8",
   },
   scrollView: {
     flexGrow: 1,
+    margin: 10,
   },
   list_items: {
-    marginVertical: 1,
+    marginBottom: 5,
     width: "100%",
     alignItems: "center",
     flexDirection: "row",

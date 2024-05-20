@@ -529,6 +529,25 @@ exports.showSaleRegister = async (req, res) => {
     }
 }
 
+exports.showAllSellerRequestStatus = async (req, res) => {
+    try {
+        const result = await User.find({
+            sellerRequestStatus: { $in: ["pending", "SUCCESS", "rejected"] }
+          });
+        res.json({
+            status: 'SUCCESS',
+            message: 'Registration list become a seller',
+            data: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch registered user',
+            error: error.message
+        });
+    }
+}
+
 exports.getUser = (req, res) => { 
     const { id } = req.params; 
     if(!id){

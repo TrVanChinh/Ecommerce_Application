@@ -51,6 +51,8 @@ import AdminHomeScreen from '../screens/Admin/AdminHomeScreen';
 import AdminListScreen from '../screens/Admin/AdminListScreen';
 import CategoryManagerScreen from '../screens/Admin/CategoryManagerScreen';
 import SubcategoryManagerScreen from '../screens/Admin/SubcategoryManagerScreen';
+import SellerRegisterScreen from '../screens/Admin/SellerRegisterScreen';
+import RevenueSellerScreen from '../screens/Admin/RevenueSellerScreen';
 
 import WebViewScreen from '../screens/WebViewScreen';
 
@@ -223,6 +225,8 @@ const StackNavigation = () => {
         <Stack.Screen name="AdminList" component={AdminListScreen} options={{headerTitle: 'Danh sách Admin'}}/>
         <Stack.Screen name="CategoryManager" component={CategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục'}}/>
         <Stack.Screen name="SubcategoryManager" component={SubcategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục con'}}/>
+        <Stack.Screen name="SellerRegister" component={SellerRegisterScreen} options={{headerTitle: 'Duyệt yêu cầu bán hàng'}}/>
+        <Stack.Screen name="RevenueSeller" component={RevenueSellerScreen} options={{headerTitle: 'Doanh thu của người bán'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   )
