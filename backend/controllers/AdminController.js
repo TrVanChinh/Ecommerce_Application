@@ -360,14 +360,24 @@ exports.revenueSellerByMonth = async (req, res) => {
             }
         ]);
 
-        if (!result || result.length === 0) {
-            return res.json({
-                status: "FAILED",
-                message: "No revenue data found for the specified month and year"
-            });
-        }
         const allSeller = await User.find({sellerRequestStatus: "SUCCESS"});
         let result1 = [];
+
+        
+        if (!result || result.length === 0) {
+            for (let i = 0; i < allSeller.length; i++) {
+                result1.push({
+                    _id: allSeller[i]._id,
+                    shopName: allSeller[i].shopName,
+                    totalByShop: 0
+                });
+            }
+            return res.json({
+                status: "SUCCESS",
+                message: "Revenue by month",
+                data: result1
+            });
+        }
         for (let i = 0; i < allSeller.length; i++) {
             let shopFound = result.find(shop => shop._id.toString() === allSeller[i]._id.toString());
             if (!shopFound) {
