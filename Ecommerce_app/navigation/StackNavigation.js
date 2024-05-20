@@ -47,6 +47,13 @@ import ShopScreen from "../screens/ShopScreen";
 import PurchaseOrderScreen from '../screens/PurchaseOrderScreen';
 import OrderDetailScreen from '../screens/OrderDetailScreen';
 
+import AdminHomeScreen from '../screens/Admin/AdminHomeScreen';
+import AdminListScreen from '../screens/Admin/AdminListScreen';
+import CategoryManagerScreen from '../screens/Admin/CategoryManagerScreen';
+import SubcategoryManagerScreen from '../screens/Admin/SubcategoryManagerScreen';
+import SellerRegisterScreen from '../screens/Admin/SellerRegisterScreen';
+import RevenueSellerScreen from '../screens/Admin/RevenueSellerScreen';
+
 import WebViewScreen from '../screens/WebViewScreen';
 import UserInfoScreen from '../screens/UserInfoScreen';
 import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
@@ -219,6 +226,12 @@ const StackNavigation = () => {
         <Stack.Screen name="UpdatePassword" component={UpdatePasswordScreen} options={{headerTitle: 'Cập nhật mật khẩu'}}/>
         <Stack.Screen name="ExpenditureStatistics" component={ExpenditureStatisticsScreen} options={{headerTitle: 'Thống kê chi tiêu'}}/>
 
+        <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="AdminList" component={AdminListScreen} options={{headerTitle: 'Danh sách Admin'}}/>
+        <Stack.Screen name="CategoryManager" component={CategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục'}}/>
+        <Stack.Screen name="SubcategoryManager" component={SubcategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục con'}}/>
+        <Stack.Screen name="SellerRegister" component={SellerRegisterScreen} options={{headerTitle: 'Duyệt yêu cầu bán hàng'}}/>
+        <Stack.Screen name="RevenueSeller" component={RevenueSellerScreen} options={{headerTitle: 'Doanh thu của người bán'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   )

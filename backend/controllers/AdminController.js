@@ -1,8 +1,10 @@
 require("dotenv").config();
 //mongodb user model
-const Admin = require("../models/Admin");
-const User = require("../models/User");
-const ShippingUnit = require("../models/ShippingUnit");
+const Admin = require('../models/Admin')
+const User = require('../models/User')
+const ShippingUnit = require('../models/ShippingUnit')
+const Order = require('../models/Order')
+
 
 const bcrypt = require("bcrypt");
 //email handler
@@ -18,7 +20,8 @@ let transporter = nodemailer.createTransport({
 //login Admin
 exports.signin = (req, res) => {
   let { email, password } = req.body;
-  (email = email.trim()), (password = password.trim());
+  email = email.trim(),
+  password = password.trim()
 
   if (email == "" || password == "") {
     res.json({
@@ -331,19 +334,104 @@ exports.addShippingUnit = (req, res) => {
 };
 
 // Show shippingUnit
-exports.ShowShippingUnit = async (req, res) => {
+exports.ShowShippingUnit = async (req, res) => { 
+    try {
+        const shippingUnit = await ShippingUnit.find();
+        res.json({
+            status: 'SUCCESS',
+            message: 'List of shippingUnit',
+            data: shippingUnit
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'FAILED',
+            message: 'Failed to fetch categories',
+            error: error.message
+        });
+    }
+}
+
+
+// Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng 
+exports.revenueSellerByMonth = async (req, res) => {
+  let { month, year } = req.params;
+
+  if(month == "" || year == "") {
+      return res.json({
+          status: "FAILED",
+          message: "Empty credentials supplied"
+      });
+  }
+
+  const firstDayOfMonth = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed
+  const lastDayOfMonth = new Date(year, month, 0);    
+
   try {
-    const shippingUnit = await ShippingUnit.find();
-    res.json({
-      status: "SUCCESS",
-      message: "List of shippingUnit",
-      data: shippingUnit,
-    });
+      const result = await Order.aggregate([
+          {
+              $match: {
+                  status: "completed",
+                  createAt: {
+                      $gte: firstDayOfMonth,
+                      $lt: lastDayOfMonth
+                  }
+              }
+          },
+          {
+              $group: {
+                  _id: "$idShop",
+                  totalByShop: { $sum: "$totalByShop" }
+              }
+          }
+      ]);
+
+      const allSeller = await User.find({sellerRequestStatus: "SUCCESS"});
+      let result1 = [];
+
+      
+      if (!result || result.length === 0) {
+          for (let i = 0; i < allSeller.length; i++) {
+              result1.push({
+                  _id: allSeller[i]._id,
+                  shopName: allSeller[i].shopName,
+                  totalByShop: 0
+              });
+          }
+          return res.json({
+              status: "SUCCESS",
+              message: "Revenue by month",
+              data: result1
+          });
+      }
+      for (let i = 0; i < allSeller.length; i++) {
+          let shopFound = result.find(shop => shop._id.toString() === allSeller[i]._id.toString());
+          if (!shopFound) {
+              result1.push({
+                  _id: allSeller[i]._id,
+                  shopName: allSeller[i].shopName,
+                  totalByShop: 0
+              });
+          } else {
+              result1.push({
+                  _id: allSeller[i]._id,
+                  shopName: allSeller[i].shopName,
+                  totalByShop: shopFound.totalByShop
+              })
+          }
+
+
+      }
+      res.json({
+          status: "SUCCESS",
+          message: "Revenue by month",
+          data: result1
+      });
   } catch (error) {
-    res.status(500).json({
-      status: "FAILED",
-      message: "Failed to fetch categories",
-      error: error.message,
-    });
+      console.error("Error fetching revenue data:", error);
+      res.json({
+          status: "FAILED",
+          message: "Failed to fetch revenue data",
+          error: error.message
+      });
   }
 };

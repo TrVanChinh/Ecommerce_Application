@@ -83,11 +83,17 @@ const ListProducts = ({ navigation, route }) => {
       .get(`${API_BASE_URL}/seller/showShopProduct/${user._id}`)
       .then(function (response) {
         let data = response.data.data;
-        data.forEach((item) => {
-          item.price =
+        data.forEach((item) => {          
+          if (getMinMaxPrice(item.option).min==getMinMaxPrice(item.option).max){
+            item.price= getMinMaxPrice(item.option).min
+          }
+          else
+          {
+            item.price =
             getMinMaxPrice(item.option).min +
             " - " +
             getMinMaxPrice(item.option).max;
+          }
           listproducts.push(item);
         });
         setProducts(listproducts);

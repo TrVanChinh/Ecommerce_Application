@@ -30,6 +30,7 @@ const InventoryScreen = () => {
     { length: 10 },
     (_, i) => new Date().getFullYear() - i
   );
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [results, setResults] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState({ name: "" });
@@ -61,6 +62,7 @@ const InventoryScreen = () => {
   }, [year]);
 
   const getInventoryByYear = async (inputYear) => {
+    setLoading(true);
     const inventoryData = [];
     // Sử dụng Promise.all để chờ tất cả các yêu cầu lấy dữ liệu hoàn tất
     await Promise.all(
@@ -80,6 +82,7 @@ const InventoryScreen = () => {
       })
     );
     setResults(inventoryData);
+    setLoading(false);
   };
 
   const get = async (inputYear) => {
@@ -423,6 +426,11 @@ const InventoryScreen = () => {
           />
         </View>
       )}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -461,6 +469,12 @@ const styles = StyleSheet.create({
     borderColor: "lightgray",
     paddingVertical: 5,
     backgroundColor: "white",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -31,6 +31,9 @@ router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
 router.post("/admin/addShippingUnit", AdminController.addShippingUnit);
 router.get("/shippingUnit", AdminController.ShowShippingUnit);
+router.get("/admin/showAllSellerRequest", UserController.showAllSellerRequestStatus);
+//Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng 
+router.get("/admin/showRevenueSellerByMonth/:month/:year", AdminController.revenueSellerByMonth);
 
 
 //User
