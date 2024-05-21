@@ -38,7 +38,10 @@ const RegisterScreen = ({navigation}) => {
     };
   
     const handleRegister = () => {
-      if ( password ==! confirmPassword) {
+      if(password.length < 8) {
+        Alert.alert("Mật khẩu phải có ít nhất 8 ký tự")
+      }
+      else if ( password != confirmPassword) {
         Alert.alert("Mật khẩu nhập lại không trùng khớp")
       } else {
         const userInfo = {

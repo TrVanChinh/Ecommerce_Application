@@ -1,5 +1,6 @@
 //npm i react-native-vnpay-merchant
-
+//delete all node_modules
+//rd /s /q node_modules
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 

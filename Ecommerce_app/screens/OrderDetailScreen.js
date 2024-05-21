@@ -12,7 +12,6 @@ const OrderDetailScreen = ({ route }) => {
   const { order } = route.params;
   const { height, width } = Dimensions.get("window");
 
-  console.log("item", order._doc.address);
   return (
     <View
       style={{
@@ -103,8 +102,10 @@ const OrderDetailScreen = ({ route }) => {
                 địa chỉ: {order._doc.address[0].street}, {order._doc.address[0].Ward} 
               </Text>
               <Text style={{ fontSize: 15, color: "#181818" }}>
-                {order._doc.address[0].District}, {order._doc.address[0].Provinces}, {order._doc.address[0].city}
-                
+                {order._doc.address[0].District}, {order._doc.address[0].Provinces} {order._doc.address[0].city}
+              </Text>
+              <Text style={{ fontSize: 15 }}>
+                Thời gian: {order._doc.createAt} 
               </Text>
             </View>
           </View>

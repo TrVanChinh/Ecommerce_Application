@@ -18,13 +18,17 @@ exports.uploadAvatar = async (req, res) => {
           .then(async data => {
             data.avatarUrl = uploadedImageUrl
             await data.save();
+            res.json({
+                status:"SUCCESS", 
+                message: "Image uploaded successfully",
+                data: uploadedImageUrl
+            })
           }).catch(err => {
             res.json({
                 status:"FAILED", 
                 message: err
             })
         })   
-      res.json({ message: 'Image uploaded successfully' });
     } else {
       res.status(400).json({ error: 'No image uploaded' });
     }
