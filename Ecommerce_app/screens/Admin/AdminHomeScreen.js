@@ -37,14 +37,21 @@ const AdminHomeScreen = ({ navigation, route }) => {
       return true;
     };
 
+    const handleBackPress = () => {
+      const currentRoute = navigation.getState().routes[navigation.getState().index].name;
+      if (currentRoute === "AdminHome") {
+        return backAction();
+      }
+      return false;
+    };
+
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction
+      handleBackPress
     );
 
     return () => backHandler.remove();
   }, []);
-
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBar barStyle="dark-content" /> */}
@@ -67,7 +74,9 @@ const AdminHomeScreen = ({ navigation, route }) => {
         <View>
           <TouchableOpacity
             style={styles.list_items}
-            onPress={() => navigation.navigate("AdminList")}
+            onPress={() => 
+              navigation.navigate("AdminList")
+            }
           >
             <View style={styles.item}>
               <MaterialIcons

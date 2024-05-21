@@ -572,21 +572,21 @@ exports.getUser = (req, res) => {
     }
 }
 
-const formatDateString = (dateInput) => {
-    // Danh sách các định dạng có thể có
-    const formats = ['YYYY-DD-MM', 'MM-DD-YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD', 'DD/MM/YYYY', 'MM/DD/YYYY'];
+// const formatDateString = (dateInput) => {
+//     // Danh sách các định dạng có thể có
+//     const formats = ['YYYY-DD-MM', 'MM-DD-YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD', 'DD/MM/YYYY', 'MM/DD/YYYY'];
 
-    // Phân tích ngày tháng từ chuỗi đầu vào với các định dạng cho trước
-    const date = moment(dateInput, formats, true);
+//     // Phân tích ngày tháng từ chuỗi đầu vào với các định dạng cho trước
+//     const date = moment(dateInput, formats, true);
 
-    // Kiểm tra ngày tháng có hợp lệ hay không 
-    if (!date.isValid()) {
-        throw new Error('Invalid date format');
-    }
+//     // Kiểm tra ngày tháng có hợp lệ hay không 
+//     if (!date.isValid()) {
+//         throw new Error('Invalid date format');
+//     }
 
-    // Định dạng lại ngày tháng theo chuẩn YYYY-MM-DD
-    return date.format('YYYY-MM-DD');
-} 
+//     // Định dạng lại ngày tháng theo chuẩn YYYY-MM-DD
+//     return date.format('YYYY-MM-DD');
+// } 
 
 exports.updateUser = (req, res) => { 
     
