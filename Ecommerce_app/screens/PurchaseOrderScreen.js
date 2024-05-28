@@ -158,8 +158,6 @@ import {
             height: height * 0.06,
             width: width,
             flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
           }}
         >
           <Pressable 
@@ -205,15 +203,15 @@ import {
             <Text style={styles.text_order}>Đã hủy</Text>
           </Pressable>
         </View>
-        <ScrollView> 
+        <ScrollView style={{height: height * 0.85}} > 
         {  menu === 'Chờ xác nhận' ? (
           <ScrollView>
-          <View style={{ marginHorizontal: 10 }}>
+          <View style={{ marginHorizontal: 10}}>
             {ordered ? (
                 <>
                 {ordered?.map((option, index) =>
                 <View key={option._doc._id}
-                  style = {{backgroundColor: "white"}}
+                  style = {{backgroundColor: "white",marginBottom:10}}
                 >
                   <OrdersItem item={option} onPress={() => handleViewOrderDetails(option)}/>
                   <Pressable 
@@ -254,7 +252,7 @@ import {
                 <>
                 {deliveredOrder ?.map((option, index) =>
                    <View key={option._doc._id}
-                   style = {{backgroundColor: "white"}}
+                   style = {{backgroundColor: "white",marginBottom:10}}
                  >
                    <OrdersItem item={option} onPress={() => handleViewOrderDetails(option)}/>
                    <Pressable 
