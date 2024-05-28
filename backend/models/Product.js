@@ -4,14 +4,14 @@ const Schema = mongoose.Schema
 const ProductSchema = new Schema({
     name: String,
     description: String,
-    idCategory:String,
-    idCategoryShop:String,
-    idSubCategory:String,
-    idShop:String,
+    idCategory: String,
+    idCategoryShop: String,
+    idSubCategory: String,
+    idShop: String,
     sold: Number,
-    createAt: { 
-        type:Date,
-        default:Date.now
+    createAt: {
+        type: Date,
+        default: Date.now
     },
     image: [
         {
@@ -23,7 +23,7 @@ const ProductSchema = new Schema({
             imageUrl: String,
             name: String,
             price: Number,
-            quantily: Number,
+            quantity: Number,
         }
     ]
 })

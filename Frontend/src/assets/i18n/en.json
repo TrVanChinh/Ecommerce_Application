@@ -1,0 +1,9 @@
+{
+    "data":{
+        "register": "Register",
+        "login": "Login",
+        "wishlist": "Wishlist",
+        "shopping_cart": "Shopping Cart",
+        "seller":"seller"
+    }
+  }

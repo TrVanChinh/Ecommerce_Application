@@ -38,7 +38,10 @@ const RegisterScreen = ({navigation}) => {
     };
   
     const handleRegister = () => {
-      if ( password ==! confirmPassword) {
+      if(password.length < 8) {
+        Alert.alert("Mật khẩu phải có ít nhất 8 ký tự")
+      }
+      else if ( password != confirmPassword) {
         Alert.alert("Mật khẩu nhập lại không trùng khớp")
       } else {
         const userInfo = {
@@ -48,10 +51,14 @@ const RegisterScreen = ({navigation}) => {
         }
         AsyncStorage.setItem("email",email)
         axios.post(`${API_BASE_URL}/user/signup`, userInfo).then((response) => {
-          // console.log(response.data.data.userId);
-          const userId = response.data.data.userId
-          AsyncStorage.setItem("userId",userId)
-          navigation.navigate('Verify')
+          if (response.data.status === "FAILED") {
+            Alert.alert(response.data.message); 
+            console.log(response.data.message);
+          } else {
+            const userId = response.data.data.userId
+            AsyncStorage.setItem("userId",userId)
+            navigation.navigate('Verify')
+          }
         }).catch((error) => {
             Alert.alert("Registration error")
             console.log(error)

@@ -1,0 +1,97 @@
+
+
+<h1 class="text-2xl to-black">Add new product</h1>
+
+
+<form action="" [formGroup]="FormProduct"  (ngSubmit)="onSubmit()" class="container mx-auto">
+
+
+ <div >
+  <div class="flex flex-row justify-between">
+    <span class="text-xl text-black ">Name product</span>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>name product</mat-label>
+      <input type="text" matInput placeholder="name product" formControlName="name"
+      />
+    </mat-form-field>
+  
+  </div>
+
+  <div class="flex flex-row justify-between">
+    <span class="text-xl text-black mr-3 mt-2">Description</span>
+    <textarea name="description" id="description" formControlName="description" placeholder="description "
+      class="w-full  bg-gray-50 rounded-lg border border-gray-300 p-3 "
+    ></textarea>
+    <!-- <mat-form-field appearance="outline" class="w-full">
+      <mat-label>description</mat-label>
+      <input type="text" matInput placeholder="description " formControlName="description"
+      />
+    </mat-form-field> -->
+  
+  </div>
+ </div>
+
+ <div class="mt-5">
+  <span class="mr-3 text-xl text-black">Post image</span>
+  <input type="file" (change)="showPreview($event)" multiple accept="image/*">
+  <div class="flex flex-row gap-1">
+    <div *ngFor="let image of selectedImages" class="max-h-40 max-w-40 flex flex-row gap-5">
+      <img [src]="image" alt="Preview" class="object-cover rounded-lg h-full w-full gap-5">
+    </div>
+  </div>
+ </div>
+
+ <div class="mt-5">
+  <span class="mr-3 text-xl text-black">Category</span>
+  <mat-form-field appearance="fill">
+    <mat-label>Toppings</mat-label>
+    <mat-select [formControl]="toppings" (selectionChange)="onSelectionChange($event)">
+      <mat-select-trigger>
+        {{nameCategorySelect}}
+      </mat-select-trigger>
+      <ng-container *ngFor="let topping of DataCategory">
+        <ng-container *ngFor="let sub of topping.subCategory">
+          <mat-option [value]="getCombinedValue(topping._id , sub._id)">{{topping.name}} >> {{sub.name}}</mat-option>
+        </ng-container>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+
+
+ 
+  <div class="flex flex-col gap-1"  >
+    <div *ngFor="let image of selectedImages; let i = index"  class="max-h-20 max-w-20 flex flex-row" [formGroup]="OptionImg">
+      <img [src]="image" alt="Preview" class="object-cover rounded-lg h-full w-full">
+      <mat-form-field appearance="outline">
+        <mat-label>color</mat-label>
+        <input type="text" matInput placeholder="color "  formControlName="color{{i}}"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>giá</mat-label>
+        <input type="number" matInput placeholder="giá " formControlName="price{{i}}"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>số lượng</mat-label>
+        <input type="text" matInput placeholder="số lượng " formControlName="quantity{{i}}"
+        />
+      </mat-form-field>
+    </div>
+    <button> save</button>
+</div>
+  
+</form>
+  
+  
+
+  
+  
+
+  
+  
+  
+  
