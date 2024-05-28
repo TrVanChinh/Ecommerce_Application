@@ -532,7 +532,7 @@ exports.showSaleRegister = async (req, res) => {
 exports.showAllSellerRequestStatus = async (req, res) => {
     try {
         const result = await User.find({
-            sellerRequestStatus: { $in: ["pending", "SUCCESS", "rejected"] }
+            sellerRequestStatus: { $in: ["PENDING", "SUCCESS", "REJECTED"] }
           });
         res.json({
             status: 'SUCCESS',
@@ -1525,9 +1525,9 @@ exports.cancelOrder = async (req, res) => {
 //     reqq.write(requestBody);
 //     reqq.end();
 //   };
-
+ 
 exports.createPayment = async (req, res) => {
-    const { priceGlobal } = req.body;
+    const { priceGlobal } = req.body; 
     const partnerCode = "MOMO";
     const accessKey = "F8BBA842ECF85";
     const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
@@ -1536,7 +1536,7 @@ exports.createPayment = async (req, res) => {
     const orderInfo = "Thanh toán qua ATM MoMo";
     //nếu thanh toán thành công thì trả về
     const redirectUrl = "https://momo.vn/";
-    const ipnUrl = "https://www.google.com/search?q=gg+d%E1%BB%8Bch&oq=GG&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIPCAEQRRg5GIMBGLEDGIAEMg4IAhBFGCcYOxiABBiKBTIMCAMQABhDGIAEGIoFMg0IBBAAGIMBGLEDGIAEMg0IBRAAGIMBGLEDGIAEMg0IBhAAGIMBGLEDGIAEMg0IBxAAGIMBGLEDGIAEMg0ICBAAGIMBGLEDGIAEMhIICRAAGEMYgwEYsQMYgAQYigXSAQgxNzMyajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
+    const ipnUrl = "https://momo.vn/";
     const amount = priceGlobal;
     const requestType = "payWithATM";  // Changed from "captureWallet" to "payWithATM"
     const extraData = "";  // Pass empty value if your merchant does not have stores
@@ -1607,7 +1607,31 @@ exports.createPayment = async (req, res) => {
     reqq.end();
   };
   
+  exports.confirmOrder = async (req, res) => {
+    const {orderId} = req.body;
+    if (!orderId) {
+        return res.status(400).json({
+            status: "FAILED",
+            message: "Empty input fields!",
+        });
+    } else { 
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({
+                status: "FAILED",
+                message: "Order not found!",
+            });
+        } else {
+            order.status = "completed";
+            await order.save();
+            res.json({
+                status: "SUCCESS",
+                message: "Order cancelled successfully!"
+            });
+        }
+    }
 
+};
 
 //Tên: NGUYEN VAN A
 //Số thẻ: 9704 0000 0000 0018

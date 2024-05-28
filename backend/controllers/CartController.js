@@ -203,7 +203,7 @@ exports.showCart = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   const { cartId, userId } = req.body;
   try {
-    User.findOne({ _id: userId }).then((user) => {
+     User.findOne({ _id: userId }).then((user) => {
       if (!user) {
         res.json({
           status: "FAILED",
@@ -212,7 +212,7 @@ exports.removeFromCart = async (req, res) => {
         return; 
       } else {
         user.carts.pull({ _id: cartId });
-        user.save(); 
+         user.save(); 
 
         res.json({
           status: "SUCCESS",

@@ -140,7 +140,7 @@ useEffect(() => {
 
 const handleCheckboxChange = (itemId) => {
   setCart((prevData) =>
-      prevData.map((item) =>
+      prevData?.map((item) =>
         item._id === itemId ? { ...item, checked: !item.checked } : item
       )
     );
@@ -150,7 +150,7 @@ const handleSelectAll = () => {
   const newSelectAll = !selectAll;
   setSelectAll(newSelectAll);
   setCart((prevData) =>
-    prevData.map((item) => ({ ...item, checked: newSelectAll }))
+    prevData?.map((item) => ({ ...item, checked: newSelectAll }))
   );
 };
 

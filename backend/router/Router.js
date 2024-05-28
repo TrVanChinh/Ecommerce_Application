@@ -66,6 +66,7 @@ router.get("/user/getOrder/:id", UserController.getOrderData);
 router.get("/user/getOrderCompleted/:id", UserController.getOrderCompleted);
 router.get("/user/getOrderCompletedByMonth", UserController.getOrderCompletedByMonth);
 router.post("/user/getOrder/cancelOrder", UserController.cancelOrder);
+router.post("/user/getOrder/confirmOrder", UserController.confirmOrder);
 
 //payment
 router.post("/user/create-payment", UserController.createPayment);

@@ -61,11 +61,16 @@ const SearchScreen = ({ navigation, route }) => {
   };
 
   const getProductByCategory = (idCategory) => {
+    setItemYear(null);
+    setMinimumPrice(null);
+    setMaximumPrice(null);
     axios
       .get(`${API_BASE_URL}/product/category/${idCategory}`)
       .then((response) => {
         // console.log(response.data.data);
         setProduct(response.data.data);
+        getUniqueYears(response.data.data);
+        setSearchStatus(true);
       })
       .catch((error) => {
         console.log(error);
@@ -76,7 +81,7 @@ const SearchScreen = ({ navigation, route }) => {
     axios
       .get(`${API_BASE_URL}/products`)
       .then((response) => {
-        // console.log(response.data.data);
+        console.log("hdhd",response.data.data);
         setProduct(response.data.data);
       })
       .catch((error) => {
@@ -85,6 +90,9 @@ const SearchScreen = ({ navigation, route }) => {
   };
 
   const fetchData = () => {
+    setItemYear(null);
+    setMinimumPrice(null);
+    setMaximumPrice(null);
     try {
       axios
         .get(`${API_BASE_URL}/product/searchProduct`, {
@@ -99,8 +107,8 @@ const SearchScreen = ({ navigation, route }) => {
               setSearchStatus(true);
               setProduct(response.data.data);
               getUniqueYears(response.data.data);
-              // console.log(productsData)
             } else {
+              console.log("heheh")
               setSearchStatus(false);
               fetchDataProduct();
             }
@@ -193,22 +201,28 @@ const SearchScreen = ({ navigation, route }) => {
         const price = product.option[0].price;
         const atCreate = product.createAt;
         const year = getYearFromAtCreate(atCreate);
-        if (itemYear && maxPrice && minPrice) {
+        console.log("min", minPrice, "max", maxPrice, "year", itemYear);
+        
+        if ( itemYear!=null && minPrice!=null && maxPrice!=null) {
           return year === itemYear && price >= minPrice && price <= maxPrice;
-        } else if (itemYear && maxPrice) {
-          return year === itemYear && price <= maxPrice;
-        } else if (itemYear && minPrice) {
-          return year === itemYear && price >= minPrice;
-        } else if (itemYear) {
-          return year === itemYear;
-        } else if (maxPrice && minPrice) {
-          return price >= minPrice && price <= maxPrice;
-        } else if (maxPrice) {
-          return price <= maxPrice;
-        } else if (minPrice) {
-          return price >= minPrice;
+        } else if (itemYear!=null && maxPrice!=null ) {
+            return year === itemYear && price <= maxPrice;
+        } else if (itemYear!=null && minPrice!=null) {
+            return year === itemYear && price >= minPrice;
+        } else if (maxPrice!=null && minPrice!=null) {
+            return price >= minPrice && price <= maxPrice ;
+        } else if (itemYear!=null) {
+            return year === itemYear;
+        } else if (maxPrice!=null) {
+            return price <= maxPrice;
+        } else if (minPrice!=null) {
+            return price >= minPrice;
         }
+      
       });
+      setItemYear(null);
+      setMinimumPrice(null);
+      setMaximumPrice(null);
       setProduct(filteredProducts);
       setModalVisible(!isModalVisible);
     }
@@ -217,10 +231,13 @@ const SearchScreen = ({ navigation, route }) => {
   //Điều hướng sang màn hình chi tiết và gửi ID của sản phẩm
 
   const toggleModal = () => {
+    setItemYear(null);
+    setMinimumPrice(null);
+    setMaximumPrice(null);
     setModalVisible(!isModalVisible);
   };
 
-  const toggleModalCategory = () => {
+  const toggleModalCategory = () => { 
     setModalCategoryVisible(!isModalCategoryVisible);
   };
   return (
@@ -319,7 +336,7 @@ const SearchScreen = ({ navigation, route }) => {
             </Pressable>
           )}
         </View>
-        {searchStatus ? (
+        {searchStatus ? ( 
           <View style={{ flex: 1 }}>
             <FlatList
               numColumns={2}
@@ -342,7 +359,7 @@ const SearchScreen = ({ navigation, route }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ color: color.origin }}>
+              <Text style={{ color:  "black"  }}>
                 Không tìm thấy sản phẩm nào
               </Text>
             </View>
@@ -356,7 +373,7 @@ const SearchScreen = ({ navigation, route }) => {
               <View
                 style={{ flex: 1, height: 1, backgroundColor: "#D5DBCD" }}
               ></View>
-              <Text style={{ color: color.origin }}>Có thể bạn cũng thích</Text>
+              <Text style={{ color: "black" }}>Có thể bạn cũng thích</Text>
               <View
                 style={{ flex: 1, height: 1, backgroundColor: "#D5DBCD" }}
               ></View>
@@ -364,7 +381,6 @@ const SearchScreen = ({ navigation, route }) => {
             <FlatList
               numColumns={2}
               data={product}
-              key={item._id}
               renderItem={({ item }) => {
                 return (
                   <ProductItem

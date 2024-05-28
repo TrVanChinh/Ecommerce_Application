@@ -105,6 +105,43 @@ import {
       }
     };
 
+    const handleConfirmOrder = async (orderId) => {
+      try {
+        const payload = { orderId: orderId };
+        await axios.post(`${API_BASE_URL}/user/getOrder/confirmOrder`, payload).then((response) => {
+            if (response.data.status === "FAILED") {
+                alert(response.data.message); 
+                console.log(response.data.message);
+            } else {
+              //update ordered by removing canceled orders
+              setOrdered(prevOrdered => {
+                const updatedOrdered = prevOrdered.filter(order => order._doc._id !== orderId);
+                return updatedOrdered;
+              });
+
+              //Add canceled orders to cancelOrder
+              setCompletedOrder(prevCompletedOrder => {
+                const completedOrder = ordered.find(order => order._doc._id === orderId);
+                if (completedOrder) {
+                  completedOrder._doc.status = "completed";
+                  return [...prevCompletedOrder, completedOrder];
+                }
+                return prevCompletedOrder;
+              });
+              alert("Đã xác nhận hàng thành công."); 
+              setRefresh(true);
+
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            alert("Lỗi ở đây:",error)
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
     const handleViewOrderDetails = (order) => {
       navigation.navigate("OrderDetail", {order});
     }
@@ -216,9 +253,17 @@ import {
             {deliveredOrder ? (
                 <>
                 {deliveredOrder ?.map((option, index) =>
-                   <View key={option._doc._id}>
-                    <OrdersItem item={option} onPress={() => handleViewOrderDetails(option)}/>
-                  </View>
+                   <View key={option._doc._id}
+                   style = {{backgroundColor: "white"}}
+                 >
+                   <OrdersItem item={option} onPress={() => handleViewOrderDetails(option)}/>
+                   <Pressable 
+                     style={{alignSelf:"center", padding: 6, backgroundColor:'red', marginBottom:10 }}
+                     onPress={()=> handleConfirmOrder(option._doc._id)}
+                   >
+                     <Text style={{ color:'white'}}>Xác nhận đơn hàng</Text>
+                   </Pressable>
+                 </View>
               )}
               </>
               ) : (

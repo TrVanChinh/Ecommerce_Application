@@ -241,7 +241,7 @@ exports.rejectSaleRequest = async (req, res) => {
     User.findOne({ _id: userId })
       .then(async (data) => {
         if (data) {
-          data.sellerRequestStatus = "rejected";
+          data.sellerRequestStatus = "REJECTED";
           await data.save();
           //mail options
           const mailOptions = {

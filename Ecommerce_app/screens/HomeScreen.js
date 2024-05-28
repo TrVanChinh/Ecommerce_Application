@@ -122,7 +122,7 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     fetchDataProduct()
-  }, []);
+  }, [user]);
 
   const fetchDataProduct = () => {
     axios.get(`${API_BASE_URL}/products`).then((response) => {
@@ -145,35 +145,6 @@ const HomeScreen = ({navigation}) => {
   const handleSearch = () => {
     navigation.navigate("Search");
   };
-
-  const handleGetCategory = () => {
-    const id = "6619107481f85f41a2d11cd6";
-    axios.get(`${API_BASE_URL}/admin/Category/${id}`).then((response) => {
-      console.log(response.data.data)
-    })
-    .catch((error) => {
-      alert("Login Error")
-      console.log(error)
-    })
-  }
-  
-  const getSubcategory = () => {
-    const id = "661c0bcf5fddd37bdf84f83e"
-    const subCategoryId = "66235653ce23e38ed32ad59d"
-    axios.get(`${API_BASE_URL}/admin/${id}/${subCategoryId}`)
-    .then((response) => {
-      if (response.data.status === "FAILED") {
-        alert(response.data.message); 
-        console.log(response.data.message);
-      } else {
-        console.log(response.data)
-      }
-    })
-    .catch((error) => {
-      alert(" Error")
-      console.log(error)
-    })
-  }
 
   return (
     <SafeAreaView

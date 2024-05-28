@@ -48,7 +48,7 @@ const SellerRegisterScreen = () => {
       getSellerRequest();
     } else if (id == 1) {
       let arr = allSellerRequestList.filter(
-        (item) => item.sellerRequestStatus == "pending"
+        (item) => item.sellerRequestStatus == "PENDING"
       );
       setSellerByStatus(arr);
     } else if (id == 2) {
@@ -58,7 +58,7 @@ const SellerRegisterScreen = () => {
       setSellerByStatus(arr);
     } else if (id == 3) {
       let arr = allSellerRequestList.filter(
-        (item) => item.sellerRequestStatus == "REJECT"
+        (item) => item.sellerRequestStatus == "REJECTED"
       );
       setSellerByStatus(arr);
     }
@@ -284,7 +284,7 @@ const SellerRegisterScreen = () => {
                 }}
               >
                 <Text style={{ fontSize: 16, marginRight: 10 }}>
-                  {item.sellerRequestStatus == "pending"
+                  {item.sellerRequestStatus == "PENDING"
                     ? "Chờ duyệt"
                     : item.sellerRequestStatus == "SUCCESS"
                     ? "Đã chấp nhận"

@@ -29,7 +29,7 @@ exports.addProduct = async (req, res) => {
     const newProduct = new Product({
       name: name,
       description: description,
-      idCategory: idCategory,
+      idCategory: idCategory, 
       idCategoryShop: idCategoryShop,
       idSubCategory: idSubCategory,
       idShop: idShop,

@@ -214,7 +214,7 @@ const ExpenditureStatisticsScreen = ({ navigation }) => {
       />
       <View style={styles.title}>
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>Tổng số tiền:</Text>
-        <Text style={{ fontSize: 18, color: "red" }}> {totalAmount}</Text>
+        <Text style={{ fontSize: 18, color: "red" }}> {totalAmount} VNĐ</Text>
       </View>
       </View>
       
