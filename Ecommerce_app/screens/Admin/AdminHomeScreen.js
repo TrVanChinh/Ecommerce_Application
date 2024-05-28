@@ -52,6 +52,8 @@ const AdminHomeScreen = ({ navigation, route }) => {
 
     return () => backHandler.remove();
   }, []);
+
+  
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBar barStyle="dark-content" /> */}
@@ -174,6 +176,36 @@ const AdminHomeScreen = ({ navigation, route }) => {
                 color={color.origin}
               />
               <Text style={styles.menuText}>Thống kê</Text>
+            </View>
+
+            <View
+              style={{
+                alignItems: "flex-end",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <SimpleLineIcons
+                marginLeft={15}
+                name="arrow-right"
+                size={10}
+                color="#60698a"
+              />
+            </View>
+          </TouchableOpacity>
+          {/* Quản lý đơn vị vận chuyển */}
+          <TouchableOpacity
+            style={styles.list_items}
+            onPress={() => navigation.navigate("DeliverList")}
+          >
+            <View style={styles.item}>
+              <MaterialCommunityIcons
+                name="truck-delivery"
+                size={27}
+                marginLeft={10}
+                color={color.origin}
+              />
+              <Text style={styles.menuText}>Đơn vị vận chuyển</Text>
             </View>
 
             <View

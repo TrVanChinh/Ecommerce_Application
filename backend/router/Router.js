@@ -34,7 +34,8 @@ router.get("/shippingUnit", AdminController.ShowShippingUnit);
 router.get("/admin/showAllSellerRequest", UserController.showAllSellerRequestStatus);
 //Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng 
 router.get("/admin/showRevenueSellerByMonth/:month/:year", AdminController.revenueSellerByMonth);
-
+router.put("/admin/updateShippingUnit/:id", AdminController.updateShippingUnit);
+router.delete("/admin/deleteShippingUnit/:id", AdminController.deleteShippingUnit);
 
 //User
 router.get("/shop/user/:id", UserController.getUser);
