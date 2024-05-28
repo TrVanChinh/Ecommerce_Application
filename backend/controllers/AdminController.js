@@ -351,6 +351,106 @@ exports.ShowShippingUnit = async (req, res) => {
     }
 }
 
+//delete shippingUnit
+exports.deleteShippingUnit = (req, res) => {
+  let { id } = req.params;
+
+  if (!id) {
+    return res.json({
+      status: "FAILED",
+      message: "Empty Id!",
+    });
+  }
+
+  // Checking if the shipping unit exists
+  ShippingUnit.findById(id)
+    .then((result) => {
+      if (result) {
+        // Delete the shipping unit
+        ShippingUnit.deleteOne({ _id: id })
+          .then(() => {
+            res.json({
+              status: "SUCCESS",
+              message: "Shipping Unit deleted successfully",
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.json({
+              status: "FAILED",
+              message: "Error deleting shipping unit",
+            });
+          });
+      } else {
+        res.json({
+          status: "FAILED",
+          message: "Shipping Unit not found",
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        status: "FAILED",
+        message: "Error finding shipping unit",
+      });
+    });
+};
+
+
+//update shippingUnit
+exports.updateShippingUnit = async (req, res) => {
+  let { deliveryTime, name, price } = req.body;
+  let { id } = req.params;
+
+  if (!name || !deliveryTime || !price) {
+    return res.json({
+      status: "FAILED",
+      message: "Empty input fields!",
+    });
+  }
+
+  if (!id) {
+    return res.json({
+      status: "FAILED",
+      message: "Empty Id!",
+    });
+  }
+
+  // Checking if the shipping unit exists
+  ShippingUnit.findById(id)
+    .then( async (result) => {
+      if (!result) {
+        return res.json({
+          status: "FAILED",
+          message: "Shipping Unit not found!",
+        });
+      }
+
+      // Update the shipping unit
+      result.name = name;
+      result.price = price;
+      result.deliveryTime = deliveryTime;
+
+      await result.save();
+    })
+    .then((updatedResult) => {
+      res.json({
+        status: "SUCCESS",
+        message: "Shipping Unit updated successfully!",
+        data: updatedResult,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        status: "FAILED",
+        message: "Error updating shipping unit!",
+      });
+    });
+};
+
+
 
 // Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng 
 exports.revenueSellerByMonth = async (req, res) => {

@@ -29,12 +29,15 @@ router.get("/admin/showAdmin", AdminController.ShowListAdmin);
 router.get("/admin/showSaleRegister", UserController.showSaleRegister);
 router.post("/admin/approveSaleRequest", AdminController.approveSaleRequest);
 router.post("/admin/rejectSaleRequest", AdminController.rejectSaleRequest);
-router.post("/admin/addShippingUnit", AdminController.addShippingUnit);
-router.get("/shippingUnit", AdminController.ShowShippingUnit);
 router.get("/admin/showAllSellerRequest", UserController.showAllSellerRequestStatus);
 //Hiển thị thống kê danh sách seller và doanh thu của seller theo tháng 
 router.get("/admin/showRevenueSellerByMonth/:month/:year", AdminController.revenueSellerByMonth);
 
+//shippingUnit
+router.post("/admin/addShippingUnit", AdminController.addShippingUnit);
+router.put("/admin/updateShippingUnit/:id", AdminController.updateShippingUnit);
+router.delete("/admin/deleteShippingUnit/:id", AdminController.deleteShippingUnit);
+router.get("/shippingUnit", AdminController.ShowShippingUnit);
 
 //User
 router.get("/shop/user/:id", UserController.getUser);
