@@ -67,7 +67,7 @@ const DeliverListScreen = ({ navigation, route }) => {
         name: updateName,
         price: updateDeliveryFee,
       });
-      Alert.alert("Thêm danh mục thành công");
+      Alert.alert("Thêm thành công");
       getDelivery();
       closeModal();
     } catch (error) {
@@ -78,7 +78,7 @@ const DeliverListScreen = ({ navigation, route }) => {
   const deleteDelivery = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/admin/deleteShippingUnit/${id}`);
-      Alert.alert("Xóa danh mục thành công");
+      Alert.alert("Xóa thành công");
         getDelivery();
     } catch (error) {
       console.log(error);
@@ -95,7 +95,7 @@ const DeliverListScreen = ({ navigation, route }) => {
           price: updateDeliveryFee,
         }
       );
-      Alert.alert("Cập nhật danh mục thành công");
+      Alert.alert("Cập nhật thành công");
       getDelivery();
       closeModal();
     } catch (error) {
@@ -137,7 +137,7 @@ const DeliverListScreen = ({ navigation, route }) => {
             onPress={() => {
               Alert.alert(
                 "Xác nhận xóa",
-                "Bạn có chắc muốn xóa danh mục này?",
+                "Bạn có chắc muốn xóa?",
                 [
                   { text: "Hủy", style: "cancel" },
                   { text: "Xóa", onPress: () => deleteDelivery(item._id) },
@@ -204,7 +204,7 @@ const DeliverListScreen = ({ navigation, route }) => {
               style={styles.saveButton}
               onPress={() => {
                 if (!updateName || !updateDeliveryTime || !updateDeliveryFee) {
-                  Alert.alert("Thông báo", "Tên danh mục không được để trống");
+                  Alert.alert("Thông báo", "Không được để trống");
                 } else {
                   if (isAdd) {
                     newDelivery();
