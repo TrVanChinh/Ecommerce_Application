@@ -36,7 +36,6 @@ const OrderItemScreen = ({ navigation, route }) => {
     }
   };
 
-
   const calculateTotal = () => {
     let total = 0;
     order.option.map((item) => {
@@ -164,12 +163,10 @@ const OrderItemScreen = ({ navigation, route }) => {
           Thành tiền: {formatPrice(order.totalByShop)}
         </Text>
       </View>
-      {order.status === "paid" ? (
+      {order.status === "paid" || order.status === "processing" ? (
         <TouchableOpacity
           style={styles.btnStatus}
-          onPress={() =>
-              deliveredOrder()
-          }
+          onPress={() => deliveredOrder()}
         >
           <Text
             style={{
@@ -178,7 +175,9 @@ const OrderItemScreen = ({ navigation, route }) => {
               fontWeight: "bold",
             }}
           >
-            {order.status === "paid" ? "Đã giao hàng" : "Đã giao hàng"}
+            {order.status === "paid" || order.status === "processing"
+              ? "Đã giao hàng"
+              : "Đã giao hàng"}
           </Text>
         </TouchableOpacity>
       ) : null}

@@ -53,6 +53,7 @@ import CategoryManagerScreen from '../screens/Admin/CategoryManagerScreen';
 import SubcategoryManagerScreen from '../screens/Admin/SubcategoryManagerScreen';
 import SellerRegisterScreen from '../screens/Admin/SellerRegisterScreen';
 import RevenueSellerScreen from '../screens/Admin/RevenueSellerScreen';
+import DeliverListScreen from '../screens/Admin/DeliverListScreen';
 
 import WebViewScreen from '../screens/WebViewScreen';
 import UserInfoScreen from '../screens/UserInfoScreen';
@@ -232,6 +233,7 @@ const StackNavigation = () => {
         <Stack.Screen name="SubcategoryManager" component={SubcategoryManagerScreen} options={{headerTitle: 'Quản lý danh mục con'}}/>
         <Stack.Screen name="SellerRegister" component={SellerRegisterScreen} options={{headerTitle: 'Duyệt yêu cầu bán hàng'}}/>
         <Stack.Screen name="RevenueSeller" component={RevenueSellerScreen} options={{headerTitle: 'Doanh thu của người bán'}}/>
+        <Stack.Screen name="DeliverList" component={DeliverListScreen} options={{headerTitle: 'Danh sách đơn vị vận chuyển'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   )

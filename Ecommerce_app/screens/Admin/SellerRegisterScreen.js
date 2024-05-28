@@ -1,340 +1,278 @@
 import {
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
-  Image,
-  FlatList,
   TextInput,
-  Modal,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import {
-  Feather,
-  SimpleLineIcons,
-  Entypo,
-  AntDesign,
-  Ionicons,
-  FontAwesome,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
-import color from "../../components/color";
 import React, { useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native";
+import { SimpleLineIcons, Entypo } from "@expo/vector-icons";
+import { Button } from "react-native-elements";
+import color from "../../components/color";
 import { API_BASE_URL } from "../../Localhost";
-import axios, { all } from "axios";
+import axios from "axios";
+import { useUser } from "../../UserContext";
 
-const SellerRegisterScreen = () => {
-  const [allSellerRequestList, setAllSellerRequestList] = useState([]);
-  const [detail, setDetail] = useState({});
-  const [selectedId, setSelectedId] = useState(false);
-  const [sellerByStatus, setSellerByStatus] = useState([]);
+const RegisterSellerScreen = ({ navigation, route }) => {
+  const [shopName, onChangeShopName] = useState("");
+  const { updateUser, user } = useUser();
+  const [address, setAddress] = useState("");
+  const [shopDescript, setShopDescript] = useState("");
+  //   const [phone, setPhoneNumber] = useState("");
+  //   const { idUser: idUser } = route.params || {};
+  const idUser = "6621083f1a79569d6ee33dfd";
+  const [loading, setLoading] = useState(false);
+  //   const [user, setUser] = useState(null);
 
-  const [isModalVisible, setModalVisible] = useState(false);
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+  const showitems = () => {
+    console.log("items: ", otpCode);
   };
-  const statusArr = [
-    { id: 0, status: "Tất cả" },
-    { id: 1, status: "Chờ duyệt" },
-    { id: 2, status: "Đã chấp nhận" },
-    { id: 3, status: "Đã từ chối" },
-  ];
+  const [verificationCode, setVerificationCode] = useState("");
+  const [countdown, setCountdown] = useState(60);
+  const [isCountdownActive, setIsCountdownActive] = useState(false);
+  const [hashedOTP, setHashedOTP] = useState("");
 
-  const getUserByStatus = (id) => {
-    setSelectedId(id);
-    if (id == 0) {
-      getSellerRequest();
-    } else if (id == 1) {
-      let arr = allSellerRequestList.filter(
-        (item) => item.sellerRequestStatus == "PENDING"
-      );
-      setSellerByStatus(arr);
-    } else if (id == 2) {
-      let arr = allSellerRequestList.filter(
-        (item) => item.sellerRequestStatus == "SUCCESS"
-      );
-      setSellerByStatus(arr);
-    } else if (id == 3) {
-      let arr = allSellerRequestList.filter(
-        (item) => item.sellerRequestStatus == "REJECTED"
-      );
-      setSellerByStatus(arr);
+  useEffect(() => {
+    console.log("hashedOTP: ", hashedOTP);
+  }, [hashedOTP]);
+
+  useEffect(() => {
+    let timer;
+    if (isCountdownActive && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    }
+    if (countdown === 0) {
+        setIsCountdownActive(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isCountdownActive, countdown]);
+
+
+  const handleResendVerificationCode = () => {
+    // Gửi lại mã xác nhận
+    // Bắt đầu đếm ngược
+    setIsCountdownActive(true);
+    setCountdown(60);
+    sendOTPVerificationEmailSeller();
+  };
+
+  const sendRequest = async () => {
+    try {
+      if (shopName === "") {
+        alert("Chưa nhập tên cửa hàng");
+      } else if (address === "") {
+        alert("Chưa nhập địa chỉ");
+      } else {
+        setLoading(true);
+        const res = await axios.post(`${API_BASE_URL}/user/SaleRegister`, {
+          shopDescript: shopDescript,
+          shopAddress: address,
+          shopName: shopName,
+          userid: user._id,
+        });
+        setLoading(false);
+        if (res.data.status === "SUCCESS") {
+          // Hiển thị thông báo nếu cập nhật thành công
+          Alert.alert("Thông báo", "Đăng ký bán hàng thành công", [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.popToTop();
+              },
+            },
+          ]);
+        } else {
+          console.error("Dữ liệu không tồn tại sau khi cập nhật.");
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật:", error);
+      setLoading(false);
     }
   };
 
-  const acceptRequest = () => {
-    axios
-      .post(`${API_BASE_URL}/admin/approveSaleRequest`, {
-        userId: detail._id,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        getSellerRequest();
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  const sendOTPVerificationEmailSeller = async () => {
+    try {
+      // setLoading(true);
+      const res = await axios.post(
+        `${API_BASE_URL}/user/sendOTPVerificationEmailSeller`,
+        {
+            email: user.email,
+        }
+      );
+      setHashedOTP(res.data.data.hashedOTP);
+    //   console.log("otp code: ", res.data.data.otp);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật:", error);
+      // setLoading(false);
+    }
   };
 
-  const rejectRequest = () => {
-    axios
-      .post(`${API_BASE_URL}/admin/rejectSaleRequest`, {
-        userId: detail._id,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        getSellerRequest();
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  const handleOTPChange = (text) => {
+    // Loại bỏ các ký tự không phải số
+    const numericValue = text.replace(/[^0-9]/g, "");
+    if (numericValue <= 10000) {
+      setVerificationCode(numericValue);
+    } else {
+      Alert.alert("Cảnh báo", "Mã OTP chỉ chứa tối đa 4 ký tự.");
+    }
   };
 
-  const closeModal = () => {
-    setDetail({});
-    toggleModal();
-  };
-
-  useEffect(() => {
-    getSellerRequest();
-  }, []);
-
-  const getSellerRequest = () => {
-    axios
-      .get(`${API_BASE_URL}/admin/showAllSellerRequest`)
-      .then(function (response) {
-        setAllSellerRequestList(response.data.data);
-        setSellerByStatus(response.data.data);
-      })
-      .catch(function (error) {
-        console.log(error);
+  const verifyOTPSeller = async () => {
+    try {
+      // setLoading(true);
+      const res = await axios.post(`${API_BASE_URL}/user/verifyOTPSeller`, {
+        hashedOTP: hashedOTP,
+        otp: verificationCode,
       });
+      console.log("res: ", res.data);
+      if (res.data.status === "VERIFIED") {
+        sendRequest();
+        console.log("Mã OTP chính xác");
+      } else {
+        Alert.alert("Thông báo","Mã OTP không chính xác");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật:", error);
+      // setLoading(false);
+    }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          padding: 10,
-          backgroundColor: color.primary,
-        }}
-      >
-        {statusArr.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-              getUserByStatus(item.id);
-            }}
-            style={{
-              backgroundColor: selectedId == item.id ? "white" : color.primary,
-              padding: 10,
-              borderColor: selectedId == item.id ? color.origin : "gray",
-              borderWidth: selectedId == item.id ? 1 : 0,
-            }}
-          >
-            <Text
-              style={{
-                color: selectedId == item.id ? color.origin : "gray",
-              }}
-            >
-              {item.status}
+      <View style={{ flex: 8 }}>
+        <View style={styles.list_items}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ marginLeft: 10, fontSize: 16 }}>Tên cửa hàng</Text>
+            <Text style={{ color: "red" }}>*</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeShopName}
+            value={shopName}
+          />
+        </View>
+        <View style={styles.list_items}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ marginLeft: 10, fontSize: 16 }}>
+              Địa chỉ lấy hàng
             </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+            <Text style={{ color: "red" }}>*</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setAddress}
+            value={address}
+          />
+        </View>
 
-      <Modal
-        visible={isModalVisible}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={toggleModal}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: 20,
-              borderRadius: 10,
-              width: 300,
-            }}
-          >
+        <View style={styles.list_items}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ marginLeft: 10, fontSize: 16 }}>
+              Mô tả cho cửa hàng
+            </Text>
+            <Text style={{ color: "red" }}>*</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setShopDescript}
+            value={shopDescript}
+            maxLength={200}
+          />
+        </View>
+
+        <View style={styles.list_items}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ marginLeft: 10, fontSize: 16 }}>Xác thực</Text>
+            <Text style={{ color: "red" }}>*</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <TextInput
+              style={styles.inputVerify}
+              placeholder="Nhập mã OTP đã gửi qua email"
+              value={verificationCode}
+              onChangeText={handleOTPChange}
+            />
             <TouchableOpacity
-              style={{
-                marginTop: -15,
-                marginRight: -15,
-                alignSelf: "flex-end",
-              }}
-              onPress={closeModal}
+              style={[
+                styles.button,
+                isCountdownActive ? styles.disabledButton : null,
+              ]}
+              onPress={handleResendVerificationCode}
+              disabled={isCountdownActive}
             >
-              <Ionicons name="close-circle" size={25} color="lightgray" />
+              <Text style={styles.buttonText}>
+                {isCountdownActive ? `Gửi lại sau ${countdown}s` : "Gửi mã OTP"}
+              </Text>
             </TouchableOpacity>
-            <Text
-              style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
-            >
-              Người đăng ký
-            </Text>
-            <Text style={{ textAlign: "center", fontSize: 16 }}>
-              {detail.name}
-            </Text>
-            <Text style={styles.detailText}>Tên cửa hàng:</Text>
-            <Text style={styles.dataTxt}>{detail.shopName}</Text>
-            <Text style={styles.detailText}>Địa chỉ: </Text>
-            <Text style={styles.dataTxt}>{detail.shopAddress}</Text>
-            <Text style={styles.detailText}>Mô tả shop: </Text>
-            <Text style={styles.dataTxt}>{detail.shopDescript}</Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginHorizontal: 20,
-                marginTop: 10,
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 10,
-                  borderColor: "#24990c",
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  width: 100,
-                }}
-                onPress={() => {
-                  acceptRequest();
-                  Alert.alert("Thông báo", "Đã chấp nhận yêu cầu");
-                  closeModal();
-                }}
-              >
-                <Text style={{ color: "#24990c", fontWeight: "bold" }}>
-                  Chấp nhận
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 10,
-                  borderColor: "#b80404",
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  width: 100,
-                }}
-                onPress={() => {
-                  rejectRequest();
-                  Alert.alert("Thông báo", "Đã từ chối yêu cầu");
-                  closeModal();
-                }}
-              >
-                <Text style={{ color: "#b80404", fontWeight: "bold" }}>
-                  Từ chối
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
-      </Modal>
-      <FlatList
-        data={sellerByStatus}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => {
-              setDetail(item);
-              toggleModal();
-            }}
-            style={[
-              styles.list_items,
-              { marginVertical: 5, marginHorizontal: 10 },
-            ]}
-          >
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View
-                style={{
-                  alignItems: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={{ uri: item.avatarUrl }}
-                  style={{ width: 50, height: 50, borderRadius: 50 }}
-                />
-                <Text style={{ marginLeft: 10, fontSize: 16 }}>
-                  {item.name}
-                </Text>
-              </View>
-              <View
-                style={{
-                  alignItems: "flex-end",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 16, marginRight: 10 }}>
-                  {item.sellerRequestStatus == "PENDING"
-                    ? "Chờ duyệt"
-                    : item.sellerRequestStatus == "SUCCESS"
-                    ? "Đã chấp nhận"
-                    : "Đã từ chối"}
-                </Text>
-                <FontAwesome
-                  //   style={styles.iconButton}
-                  name="angle-double-right"
-                  size={25}
-                  color="#60698a"
-                />
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+      </View>
+
+      <View style={{}}>
+        <Button title="Đăng kí" color={color.origin} onPress={verifyOTPSeller} />
+      </View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 };
 
-export default SellerRegisterScreen;
+export default RegisterSellerScreen;
 
 const styles = StyleSheet.create({
   list_items: {
-    backgroundColor: "white",
-    marginBottom: 5,
+    marginVertical: 1,
+    width: "100%",
     padding: 10,
-    borderWidth: 1,
-    borderColor: "lightgray",
+    justifyContent: "space-between",
+    backgroundColor: "white",
   },
-  iconButton: {
-    width: 40,
-    height: 40,
-    // justifyContent: "center",
+  input: {
+    marginLeft: 12,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    padding: 5,
-    marginRight: 15,
-    borderColor: "#d1d1d1",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputVerify: {
+    width: "60%",
+    height: 40,
     borderWidth: 1,
-    borderRadius: 100,
+    borderColor: "gray",
+    borderRadius: 5,
+    paddingHorizontal: 10,
   },
-  detailText: {
-    fontWeight: "bold",
-    marginTop: 10,
-    fontSize: 16,
-    // textAlign: "center",
+  button: {
+    // width: "40%",
+    height: 40,
+    backgroundColor: "blue",
+    borderRadius: 5,
+    justifyContent: "center",
+    marginLeft: 20,
+    paddingHorizontal: 10,
+    alignItems: "center",
   },
-  dataTxt: {
+  buttonText: {
+    color: "white",
     fontSize: 16,
-    // textAlign: "center",
+  },
+  disabledButton: {
+    backgroundColor: "gray",
   },
 });
