@@ -68,6 +68,7 @@ router.post("/user/order", UserController.order);
 router.get("/user/getOrder/:id", UserController.getOrderData);
 router.get("/user/getOrderCompleted/:id", UserController.getOrderCompleted);
 router.get("/user/getOrderCompletedByMonth", UserController.getOrderCompletedByMonth);
+//thống kê dữ liệu 12 tháng theo năm
 router.get("/user/getOrderCompletedByYear", UserController.getOrderCompletedByYear);
 router.post("/user/getOrder/cancelOrder", UserController.cancelOrder);
 router.post("/user/getOrder/confirmOrder", UserController.confirmOrder);
@@ -146,6 +147,7 @@ router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear
 router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
 //Hàng tồn 1 sản phẩm theo tháng trong năm
 router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
-
+//Hàng tồn của tất cả sản phẩm theo tháng trong năm
+router.get("/seller/inventoryStatsForAllProductsByMonth/:shopId/:year", SellerController.inventoryStatsForAllProductsByMonth)
 
 module.exports = router;
