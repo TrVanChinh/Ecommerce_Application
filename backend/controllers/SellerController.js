@@ -104,7 +104,7 @@ exports.updateProduct = async (req, res) => {
             quantity: opt.quantity - existingOption.quantity,
           });
         }
-      }else{
+      } else {
         //generate _id
         opt._id = new mongoose.Types.ObjectId();
         newOption.push({
@@ -389,7 +389,7 @@ exports.revenueByCustomer = async (req, res) => {
   }
 };
 
-//thống kê hàng tồn theo tháng
+//thống kê hàng tồn 1 sản phẩm theo tháng
 exports.inventoryStatsByMonth = async (req, res) => {
   try {
     const { productId, year } = req.params;
@@ -503,6 +503,121 @@ exports.inventoryStatsByMonth = async (req, res) => {
     res.status(200).json({
       result: result,
     });
+  } catch (error) {
+    console.error("Error calculating inventory by month:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//Thống kê hàng tồn tất cả sản phẩm trong cửa hàng theo tháng
+exports.inventoryStatsForAllProductsByMonth = async (req, res) => {
+  try {
+    const { shopId, year } = req.params;
+    if (isNaN(year)) {
+      return res.status(400).json({ error: "Năm phải là số." });
+    }
+
+    const result = [];
+
+    // Lấy tất cả sản phẩm của cửa hàng
+    const products = await Product.find({ idShop: shopId });
+    for (let i = 1; i <= 12; i++) {
+      // Kiểm tra tháng i năm year có vượt quá thời gian hiện tại không
+      if (year == new Date().getFullYear() && i > new Date().getMonth() + 1) {
+        result.push({
+          month: i,
+          stock: null,
+          totalSoldInMonth: null,
+          totalImportInMonth: null,
+        });
+      } else {
+        const firstDayOfMonth = new Date(year, i - 1, 1);
+        const lastDayOfMonth = new Date(year, i, 0);
+
+        let totalSold = 0;
+        let totalImport = 0;
+        let totalImportInMonth = 0;
+        let totalSoldInMonth = 0;
+        for (const product of products) {
+          const orders = await Order.find({
+            status: "completed",
+            "option.idProduct": product._id,
+            createAt: {
+              $gte: new Date(product.createAt),
+              $lte: lastDayOfMonth,
+            },
+          });
+          orders.forEach((order) => {
+            order.option.forEach((opt) => {
+              if (opt.idProduct == product._id) {
+                totalSold += opt.quantity;
+              }
+            });
+          });
+
+          const inventory = await Inventory.find({
+            idProduct: product._id,
+            createAt: {
+              $gte: new Date(product.createAt),
+              $lte: lastDayOfMonth,
+            },
+          });
+          inventory.forEach((inv) => {
+            inv.option.forEach((opt) => {
+              totalImport += opt.quantity;
+            });
+          });
+
+          const totalSoldInMonthResult = await Order.aggregate([
+            {
+              $match: {
+                status: "completed", // Chỉ lấy đơn hàng đã hoàn thành
+                createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }, // Trong khoảng thời gian từ ngày đầu tiên đến ngày cuối của tháng
+              },
+            },
+            {
+              $unwind: "$option", // Mở rộng mảng option thành các tài liệu riêng lẻ
+            },
+            {
+              $match: {
+                "option.idProduct": product._id, // Chỉ lấy option có idProduct phù hợp với productId đã cho
+              },
+            },
+            {
+              $group: {
+                _id: null, // Nhóm tất cả các tài liệu lại với nhau
+                totalQuantity: { $sum: "$option.quantity" }, // Tính tổng số lượng từ các tài liệu đã nhóm lại
+              },
+            },
+          ]);
+
+          // Lấy kết quả tổng số lượng sản phẩm đã bán trong tháng
+          totalSoldInMonth =
+            totalSoldInMonthResult.length > 0
+              ? totalSoldInMonthResult[0].totalQuantity
+              : 0;
+
+          const totalImportInMonthResult = await Inventory.find({
+            idProduct: product._id,
+            createAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+          });
+          totalImportInMonth = 0;
+          totalImportInMonthResult.forEach((inv) => {
+            inv.option.forEach((opt) => {
+              totalImportInMonth += opt.quantity;
+            });
+          });
+        }
+
+        result.push({
+          month: i,
+          stock: totalImport - totalSold,
+          totalSoldInMonth: totalSoldInMonth,
+          totalImportInMonth: totalImportInMonth,
+        });
+      }
+    }
+    res.status(200).json({ result: result });
   } catch (error) {
     console.error("Error calculating inventory by month:", error);
     res.status(500).json({ message: "Internal server error" });

@@ -142,6 +142,7 @@ router.get("/seller/revenueByYear/:shopId/:year", SellerController.revenueByYear
 router.get("/seller/revenueByCustomer/:shopId/:month/:year", SellerController.revenueByCustomer)
 //Hàng tồn 1 sản phẩm theo tháng trong năm
 router.get("/seller/inventoryStatsByMonth/:productId/:year", SellerController.inventoryStatsByMonth)
-
+//Hàng tồn của tất cả sản phẩm theo tháng trong năm
+router.get("/seller/inventoryStatsForAllProductsByMonth/:shopId/:year", SellerController.inventoryStatsForAllProductsByMonth)
 
 module.exports = router;
