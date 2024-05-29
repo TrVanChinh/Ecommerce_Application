@@ -82,7 +82,7 @@ const RegisterScreen = ({navigation}) => {
         <Text style={{  paddingBottom: 40, fontSize:30, fontWeight:'bold' , alignSelf:'center' }}>Đăng ký tài khoản</Text>
         <KeyboardAvoidingView behavior="padding" >
           <Input
-            placeholder="Tên"
+            placeholder="Tên" 
             onChangeText={setName}
             value={name}
             leftIcon={<FontAwesome5 name="user" size={24} color="#857E7C" />}

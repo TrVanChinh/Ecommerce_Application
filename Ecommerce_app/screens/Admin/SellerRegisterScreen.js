@@ -1,278 +1,290 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
-  TextInput,
   Alert,
+  Image,
   ActivityIndicator,
+  FlatList,
+  Modal,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
-import { SimpleLineIcons, Entypo } from "@expo/vector-icons";
-import { Button } from "react-native-elements";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import axios from "axios";
 import color from "../../components/color";
 import { API_BASE_URL } from "../../Localhost";
-import axios from "axios";
-import { useUser } from "../../UserContext";
 
-const RegisterSellerScreen = ({ navigation, route }) => {
-  const [shopName, onChangeShopName] = useState("");
-  const { updateUser, user } = useUser();
-  const [address, setAddress] = useState("");
-  const [shopDescript, setShopDescript] = useState("");
-  //   const [phone, setPhoneNumber] = useState("");
-  //   const { idUser: idUser } = route.params || {};
-  const idUser = "6621083f1a79569d6ee33dfd";
+const SellerRegisterScreen = () => {
+  const [allSellerRequestList, setAllSellerRequestList] = useState([]);
+  const [detail, setDetail] = useState({});
+  const [selectedId, setSelectedId] = useState(0);
+  const [sellerByStatus, setSellerByStatus] = useState([]);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  //   const [user, setUser] = useState(null);
-
-  const showitems = () => {
-    console.log("items: ", otpCode);
-  };
-  const [verificationCode, setVerificationCode] = useState("");
-  const [countdown, setCountdown] = useState(60);
-  const [isCountdownActive, setIsCountdownActive] = useState(false);
-  const [hashedOTP, setHashedOTP] = useState("");
 
   useEffect(() => {
-    console.log("hashedOTP: ", hashedOTP);
-  }, [hashedOTP]);
+    getSellerRequest();
+  }, []);
 
-  useEffect(() => {
-    let timer;
-    if (isCountdownActive && countdown > 0) {
-      timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-    }
-    if (countdown === 0) {
-        setIsCountdownActive(false);
-    }
-    return () => clearTimeout(timer);
-  }, [isCountdownActive, countdown]);
+  const toggleModal = () => setModalVisible(!isModalVisible);
 
+  const statusArr = [
+    { id: 0, status: "Tất cả" },
+    { id: 1, status: "Chờ duyệt" },
+    { id: 2, status: "Đã chấp nhận" },
+    { id: 3, status: "Đã từ chối" },
+  ];
 
-  const handleResendVerificationCode = () => {
-    // Gửi lại mã xác nhận
-    // Bắt đầu đếm ngược
-    setIsCountdownActive(true);
-    setCountdown(60);
-    sendOTPVerificationEmailSeller();
+  const getUserByStatus = (id) => {
+    setSelectedId(id);
+    const statusMap = {
+      0: allSellerRequestList,
+      1: allSellerRequestList.filter(
+        (item) => item.sellerRequestStatus === "PENDING"
+      ),
+      2: allSellerRequestList.filter(
+        (item) => item.sellerRequestStatus === "SUCCESS"
+      ),
+      3: allSellerRequestList.filter(
+        (item) => item.sellerRequestStatus === "REJECTED"
+      ),
+    };
+    setSellerByStatus(statusMap[id]);
   };
 
-  const sendRequest = async () => {
-    try {
-      if (shopName === "") {
-        alert("Chưa nhập tên cửa hàng");
-      } else if (address === "") {
-        alert("Chưa nhập địa chỉ");
-      } else {
-        setLoading(true);
-        const res = await axios.post(`${API_BASE_URL}/user/SaleRegister`, {
-          shopDescript: shopDescript,
-          shopAddress: address,
-          shopName: shopName,
-          userid: user._id,
-        });
-        setLoading(false);
-        if (res.data.status === "SUCCESS") {
-          // Hiển thị thông báo nếu cập nhật thành công
-          Alert.alert("Thông báo", "Đăng ký bán hàng thành công", [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.popToTop();
-              },
-            },
-          ]);
-        } else {
-          console.error("Dữ liệu không tồn tại sau khi cập nhật.");
-          setLoading(false);
-        }
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      setLoading(false);
-    }
+  const handleRequest = async (url) => {
+    setLoading(true);
+    await axios
+      .post(url, { userId: detail._id })
+      .then(() => {
+        getSellerRequest();
+        setSelectedId(0);
+      })
+      .catch(console.log);
+    setLoading(false);
+    toggleModal();
   };
 
-  const sendOTPVerificationEmailSeller = async () => {
-    try {
-      // setLoading(true);
-      const res = await axios.post(
-        `${API_BASE_URL}/user/sendOTPVerificationEmailSeller`,
+  const acceptRequest = () =>
+    handleRequest(`${API_BASE_URL}/admin/approveSaleRequest`);
+  const rejectRequest = () =>
+    handleRequest(`${API_BASE_URL}/admin/rejectSaleRequest`);
+
+  const getSellerRequest = () => {
+    axios
+      .get(`${API_BASE_URL}/admin/showAllSellerRequest`)
+      .then((response) => {
+        setAllSellerRequestList(response.data.data);
+        setSellerByStatus(response.data.data);
+      })
+      .catch(console.log);
+  };
+
+  const renderStatusButton = (item) => (
+    <TouchableOpacity
+      key={item.id}
+      onPress={() => getUserByStatus(item.id)}
+      style={[
+        styles.statusButton,
         {
-            email: user.email,
-        }
-      );
-      setHashedOTP(res.data.data.hashedOTP);
-    //   console.log("otp code: ", res.data.data.otp);
-    } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      // setLoading(false);
-    }
-  };
+          backgroundColor: selectedId === item.id ? "white" : color.primary,
+          borderColor: selectedId === item.id ? color.origin : "gray",
+          borderWidth: selectedId === item.id ? 1 : 0,
+        },
+      ]}
+    >
+      <Text style={{ color: selectedId === item.id ? color.origin : "gray" }}>
+        {item.status}
+      </Text>
+    </TouchableOpacity>
+  );
 
-  const handleOTPChange = (text) => {
-    // Loại bỏ các ký tự không phải số
-    const numericValue = text.replace(/[^0-9]/g, "");
-    if (numericValue <= 10000) {
-      setVerificationCode(numericValue);
-    } else {
-      Alert.alert("Cảnh báo", "Mã OTP chỉ chứa tối đa 4 ký tự.");
-    }
-  };
-
-  const verifyOTPSeller = async () => {
-    try {
-      // setLoading(true);
-      const res = await axios.post(`${API_BASE_URL}/user/verifyOTPSeller`, {
-        hashedOTP: hashedOTP,
-        otp: verificationCode,
-      });
-      console.log("res: ", res.data);
-      if (res.data.status === "VERIFIED") {
-        sendRequest();
-        console.log("Mã OTP chính xác");
-      } else {
-        Alert.alert("Thông báo","Mã OTP không chính xác");
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      // setLoading(false);
-    }
-  };
+  const renderSellerItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setDetail(item);
+        toggleModal();
+      }}
+      style={styles.listItem}
+    >
+      <View style={styles.itemContent}>
+        <View style={styles.itemLeft}>
+          <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
+          <Text style={styles.itemName}>{item.name}</Text>
+        </View>
+        <View style={styles.itemRight}>
+          <Text style={styles.itemStatus}>
+            {item.sellerRequestStatus === "PENDING"
+              ? "Chờ duyệt"
+              : item.sellerRequestStatus === "SUCCESS"
+              ? "Đã chấp nhận"
+              : "Đã từ chối"}
+          </Text>
+          <FontAwesome name="angle-double-right" size={25} color="#60698a" />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 8 }}>
-        <View style={styles.list_items}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ marginLeft: 10, fontSize: 16 }}>Tên cửa hàng</Text>
-            <Text style={{ color: "red" }}>*</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeShopName}
-            value={shopName}
-          />
-        </View>
-        <View style={styles.list_items}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ marginLeft: 10, fontSize: 16 }}>
-              Địa chỉ lấy hàng
-            </Text>
-            <Text style={{ color: "red" }}>*</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={setAddress}
-            value={address}
-          />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.statusContainer}>
+        {statusArr.map(renderStatusButton)}
+      </View>
 
-        <View style={styles.list_items}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ marginLeft: 10, fontSize: 16 }}>
-              Mô tả cho cửa hàng
-            </Text>
-            <Text style={{ color: "red" }}>*</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={setShopDescript}
-            value={shopDescript}
-            maxLength={200}
-          />
-        </View>
-
-        <View style={styles.list_items}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ marginLeft: 10, fontSize: 16 }}>Xác thực</Text>
-            <Text style={{ color: "red" }}>*</Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <TextInput
-              style={styles.inputVerify}
-              placeholder="Nhập mã OTP đã gửi qua email"
-              value={verificationCode}
-              onChangeText={handleOTPChange}
-            />
-            <TouchableOpacity
-              style={[
-                styles.button,
-                isCountdownActive ? styles.disabledButton : null,
-              ]}
-              onPress={handleResendVerificationCode}
-              disabled={isCountdownActive}
-            >
-              <Text style={styles.buttonText}>
-                {isCountdownActive ? `Gửi lại sau ${countdown}s` : "Gửi mã OTP"}
-              </Text>
+      <Modal
+        visible={isModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={toggleModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.modalClose} onPress={toggleModal}>
+              <Ionicons name="close-circle" size={25} color="lightgray" />
             </TouchableOpacity>
+            <Text style={styles.modalTitle}>Người đăng ký</Text>
+            <Text style={styles.modalName}>{detail.name}</Text>
+            {["Tên cửa hàng", "Địa chỉ", "Mô tả shop"].map((field, index) => (
+              <View key={index}>
+                <Text style={styles.detailText}>{field}:</Text>
+                <Text style={styles.dataText}>
+                  {detail[["shopName", "shopAddress", "shopDescript"][index]]}
+                </Text>
+              </View>
+            ))}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.modalButton,
+                  styles.acceptButton,
+                  detail.sellerRequestStatus === "SUCCESS" &&
+                    styles.disabledButton,
+                ]}
+                onPress={() => {
+                  if (detail.sellerRequestStatus !== "SUCCESS") {
+                    acceptRequest();
+                    // toggleModal();
+                  }
+                }}
+                disabled={detail.sellerRequestStatus === "SUCCESS"}
+              >
+                <Text
+                  style={[
+                    styles.acceptText,
+                    detail.sellerRequestStatus === "SUCCESS" &&
+                      styles.disabledText,
+                  ]}
+                >
+                  Chấp nhận
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modalButton,
+                  styles.rejectButton,
+                  detail.sellerRequestStatus === "REJECTED" &&
+                    styles.disabledButton,
+                ]}
+                onPress={() => {
+                  if (detail.sellerRequestStatus !== "REJECTED") {
+                    rejectRequest();
+                    // toggleModal();
+                  }
+                }}
+                disabled={detail.sellerRequestStatus === "REJECTED"}
+              >
+                <Text
+                  style={[
+                    styles.rejectText,
+                    detail.sellerRequestStatus === "REJECTED" &&
+                      styles.disabledText,
+                  ]}
+                >
+                  Từ chối
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+      </Modal>
 
-      <View style={{}}>
-        <Button title="Đăng kí" color={color.origin} onPress={verifyOTPSeller} />
-      </View>
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
+      <FlatList data={sellerByStatus} renderItem={renderSellerItem} />
     </View>
   );
 };
 
-export default RegisterSellerScreen;
+export default SellerRegisterScreen;
 
 const styles = StyleSheet.create({
-  list_items: {
-    marginVertical: 1,
-    width: "100%",
-    padding: 10,
+  container: { flex: 1 },
+  statusContainer: {
+    flexDirection: "row",
     justifyContent: "space-between",
+    padding: 10,
+    backgroundColor: color.primary,
+  },
+  statusButton: { padding: 10 },
+  listItem: {
     backgroundColor: "white",
+    marginVertical: 5,
+    marginHorizontal: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "lightgray",
   },
-  input: {
-    marginLeft: 12,
+  itemContent: { flexDirection: "row", justifyContent: "space-between" },
+  itemLeft: { flexDirection: "row", alignItems: "center" },
+  avatar: { width: 50, height: 50, borderRadius: 50 },
+  itemName: { marginLeft: 10, fontSize: 16 },
+  itemRight: { flexDirection: "row", alignItems: "center" },
+  itemStatus: { fontSize: 16, marginRight: 10 },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+  },
+  modalClose: { marginTop: -15, marginRight: -15, alignSelf: "flex-end" },
+  modalTitle: { fontSize: 20, fontWeight: "bold", textAlign: "center" },
+  modalName: { textAlign: "center", fontSize: 16 },
+  detailText: { fontWeight: "bold", marginTop: 10, fontSize: 16 },
+  dataText: { fontSize: 16 },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 10,
+  },
+  modalButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: 5,
+    width: 100,
+  },
+  acceptButton: { borderColor: "#24990c", borderWidth: 1 },
+  rejectButton: { borderColor: "#b80404", borderWidth: 1 },
+  acceptText: { color: "#24990c", fontWeight: "bold" },
+  rejectText: { color: "#b80404", fontWeight: "bold" },
+  disabledButton: { backgroundColor: "lightgray", borderColor: "darkgray" },
+  disabledText: { color: "darkgray" },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255, 255, 255, 0.7)",
     justifyContent: "center",
     alignItems: "center",
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  inputVerify: {
-    width: "60%",
-    height: 40,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  button: {
-    // width: "40%",
-    height: 40,
-    backgroundColor: "blue",
-    borderRadius: 5,
-    justifyContent: "center",
-    marginLeft: 20,
-    paddingHorizontal: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-  },
-  disabledButton: {
-    backgroundColor: "gray",
   },
 });

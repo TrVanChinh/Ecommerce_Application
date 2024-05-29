@@ -1389,6 +1389,147 @@ exports.getOrderCompletedByMonth = async (req, res) => {
     }
 };
 
+exports.getOrderCompletedByYear = async (req, res) => {
+    try {
+        const { id, year } = req.body;
+
+        if (!id || !year) {
+            return res.status(400).json({
+                status: "FAILED",
+                message: "Empty input fields!",
+            });
+        } else {
+            const startOfYear = moment().year(year).startOf('year').toDate();
+            const endOfYear = moment().year(year).endOf('year').toDate();
+            
+            const orderData = await Order.find({
+                idUser: id,
+                status: "completed",
+                createAt: { $gte: startOfYear, $lte: endOfYear }
+            });
+
+            if (orderData) { 
+                let total = 0;
+                let januaryData = [];
+                let februaryData = [];
+                let marchData = [];
+                let aprilData = []
+                let mayData = []
+                let juneData = []
+                let julyData = []
+                let augustData = []
+                let septemberData = []
+                let octoberData = []
+                let novemberData = []
+                let decemberData = []
+
+                const orderDataWithDetails = await Promise.all(orderData.map(async (item) => {
+                    const details = await Promise.all(item.option.map(async (option) => { 
+                        const productId = option.idProduct;
+                        const optionId = option.idOption;
+                        const price = option.price;
+                        const quantity = option.quantity;
+                        const stock = option.stock;
+
+                        const product = await Product.findById(productId);
+                        if (!product) {
+                            res.json({
+                                status: "FAILED",
+                                message: "Product not found!"
+                            });
+                            return;
+                        } else {
+                            const OptionOfProduct = product.option.id(optionId);
+                            if (!OptionOfProduct) {
+                                res.json({
+                                    status: "FAILED",
+                                    message: "Option not found for this product!"
+                                });
+                                return;
+                            } else {
+                                const nameProduct = product.name;
+                                const nameOption = OptionOfProduct.name;
+                                const imageUrl = OptionOfProduct.imageUrl;
+
+                                return {
+                                    productId: productId,
+                                    optionId: optionId,
+                                    nameProduct: nameProduct,
+                                    nameOption: nameOption,
+                                    imageUrl: imageUrl,
+                                    price: price,
+                                    quantity: quantity,
+                                    stock: stock,
+                                };
+                            }
+                        }
+                    }));
+                    total += item.totalByShop;
+                    return {
+                        ...item._doc,
+                        option: details
+                    };
+
+                }));
+                orderDataWithDetails.forEach(data => { 
+                    const month = moment(data.createAt).month(); 
+                    switch (month + 1) {
+                        case 1:
+                            januaryData.push(data);
+                            break;
+                        case 2:
+                            februaryData.push(data);
+                            break;
+                        case 3:
+                            marchData.push(data);
+                            break;
+                        case 4:
+                            aprilData.push(data);
+                            break;
+                        case 5:
+                            mayData.push(data);
+                            break;
+                        case 6:
+                            juneData.push(data);
+                            break;
+                        case 7:
+                            julyData.push(data);
+                            break;
+                        case 8:
+                            augustData.push(data);
+                            break;
+                        case 9:
+                            septemberData.push(data);
+                            break;
+                        case 10:
+                            octoberData.push(data);
+                            break;
+                        case 11:
+                            novemberData.push(data);
+                            break;
+                        case 12:
+                            decemberData.push(data);
+                            break;
+                    }
+                })
+
+                res.json({
+                    status: "SUCCESS",
+                    data: {
+                        januaryData, februaryData, marchData, aprilData, mayData, juneData, julyData, augustData, septemberData, octoberData,novemberData,decemberData
+                    },
+                    totalAmount: total,
+                });
+            }
+        }
+        
+    } catch (err) {
+        return res.status(500).json({
+            status: "FAILED",
+            message: err.message,
+        });
+    }
+};
 
 exports.cancelOrder = async (req, res) => {
     const {orderId} = req.body;

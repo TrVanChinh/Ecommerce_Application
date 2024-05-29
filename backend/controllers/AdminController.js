@@ -237,7 +237,7 @@ exports.rejectSaleRequest = async (req, res) => {
       status: "FAILED",
       message: "Empty credentials supplied",
     });
-  } else {
+  } else { 
     User.findOne({ _id: userId })
       .then(async (data) => {
         if (data) {
