@@ -1,4 +1,5 @@
-<div class="flex justify-center flex-col items-center mt-10">
+<div class="container mx-auto flex justify-center flex-col items-center mt-10">
+  <div class="border-b border-gray-300 w-full mb-10 "></div>
   <h1 class="login">Welcome, Please Sign In!</h1>
 
   <div class="border-b border-gray-300 w-full mb-10 mt-5"></div>
@@ -6,19 +7,27 @@
   <form
     class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
     action=""
+    *ngIf="LoginForm"
     [formGroup]="LoginForm"
     (ngSubmit)="onSubmit()"
   >
-    <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
-      <input
-        type="text"
-        matInput
-        placeholder="email"
-        name="email"
-        formControlName="email"
-      />
-    </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input
+      type="text"
+      matInput
+      placeholder="email"
+      name="email"
+      formControlName="email"
+    />
+    <mat-error *ngIf="LoginForm.get('email')?.errors?.['required']">
+      Email is required
+    </mat-error>
+    <mat-error *ngIf="LoginForm.get('email')?.errors?.['email']">
+      Vui lòng nhập đúng định dạng email
+    </mat-error>
+  </mat-form-field>
+  
 
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
@@ -28,8 +37,18 @@
         placeholder="password"
         formControlName="password"
       />
-    </mat-form-field>
 
-    <button mat-flat-button class="bg-green-300">Login</button>
+      <mat-error *ngIf="LoginForm.get('password')?.errors?.['required']">
+        password is required
+      </mat-error>
+      <mat-error *ngIf="LoginForm.get('password')?.errors?.['minlength']">
+        Password must be at least 6 characters long
+      </mat-error>
+      
+    </mat-form-field>
+      <div class="flex justify-start">
+        <p class="cursor-pointer decoration-inherit hover:text-green-500" routerLink="/reset">Quên mật khẩu</p>
+      </div>
+    <button mat-flat-button class="bg-green-300" [disabled]="LoginForm.invalid">Login</button>
   </form>
 </div>

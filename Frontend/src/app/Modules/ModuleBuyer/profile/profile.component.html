@@ -1,0 +1,127 @@
+<div class="container mx-auto">
+  <div class="border-b border-gray-300 my-10"></div>
+
+  <div class="grid grid-cols-12 gap-5">
+    <div class="col-span-2 h-10">
+     <div>
+        <app-nav-user></app-nav-user>
+      </div>
+    </div>
+    <div class="col-span-10 shadow-md p-10">
+      <div>
+        <div>
+          <h1>Hồ sơ của tôi</h1>
+          <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+          <div class="border-b border-gray-300 my-5"></div>
+        </div>
+        <form class="flex flex-row justify-between w-full"
+        [formGroup]="FormProfile"
+        (ngSubmit)="onSubmit()"
+        >
+         
+            <div class="flex flex-row justify-between items-center gap-20 w-full" >
+              <div class="ml-20" *ngIf="dataprofile">
+                <div class="flex flex-row items-center gap-3">
+                  <p>Name</p>
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Name</mat-label>
+                    <input matInput placeholder="Name" value="{{dataprofile.name}}" formControlName="name" />
+                  </mat-form-field>
+                </div>
+                <div class="flex flex-row items-center gap-3">
+                  <p>Email</p>
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>email</mat-label>
+                    <input matInput placeholder="email" formControlName="email" />
+                  </mat-form-field>
+                </div>
+                <div class="flex flex-row items-center gap-3">
+                  <p >Ngày sinh</p>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày sinh</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="dateOfBirth">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                
+                
+              </div>
+              <div class="mr-20">
+                <div class="mt-5">
+                  <span class="mr-3 text-xl text-black">Chọn ảnh</span>
+                  <input
+                    type="file"
+                    (change)="showPreview($event)"
+                    multiple
+                    accept="image/*"
+                  />
+                  <div class="flex flex-row gap-1" *ngIf="selectedImages.length > 0; else showIMG">
+                    <div *ngFor="let image of selectedImages" class="max-h-40 max-w-40 flex flex-row gap-5">
+                      <img [src]="image" alt="Preview" class="object-cover h-full w-full gap-5 rounded-full" />
+                    </div>
+                  </div>
+                  <ng-template #showIMG >
+                    <img *ngIf="dataprofile" [src]="dataprofile.avatarUrl" alt="Preview" 
+                    class="object-cover h-[200px] w-[200px] gap-5 rounded-full" />
+                  </ng-template>
+                  
+                </div>
+              </div>
+            </div>
+  
+           <button class=" w-[100px] h-[50px] mt-20 bg-red-500 text-white">Cập nhật</button>
+          
+        </form>
+      </div>
+      <div class="border-b border-gray-300 my-5"></div>
+      <div>
+        <div class="flex flex-row justify-between items-center">
+          <h1>Địa chỉ của tôi</h1>
+          <button
+            class="p-5 bg-red-500 text-white rounded-sm"
+            (click)="openAddressDialog()"
+          >
+            Thêm địa chỉ mới
+          </button>
+        </div>
+        <div class="border-b border-gray-300 my-5"></div>
+        <div>
+          <div class="">
+            <div *ngIf="dataAddress">
+              <div>
+                <div *ngFor="let dataAddress of dataAddress">
+                  <div class="flex flex-row justify-between items-center gap-5">
+                    <div>
+                      <div class="flex flex-row items-center text-xl">
+                        <div class="text-xl mr-1">{{ dataAddress.name }}</div>
+                        <div class="mt-1 text-xl">
+                          | {{ dataAddress.mobileNo }}
+                        </div>
+                      </div>
+                      <div class="mt-1 text-xl">
+                        Số:{{ dataAddress.street }},{{ dataAddress.Ward }},{{
+                          dataAddress.District
+                        }},{{ dataAddress.city }}
+                      </div>
+                    </div>
+                    <div>
+                      <button
+                        class="px-7 py-3 text-white bg-blue-400"
+                        (click)="DeleteAddress(dataAddress._id)"
+                      >
+                        Xoá địa chỉ
+                      </button>
+                    </div>
+                  </div>
+                  <div class="border-b border-gray-300 my-5"></div>
+                </div>
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

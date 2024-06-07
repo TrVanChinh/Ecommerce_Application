@@ -1,0 +1,38 @@
+<div class="container mx-auto">
+  <div class="mt-10 z-0">
+    <swiper
+      [loop]="true"
+      [autoHeight]="true"
+      [allowTouchMove]="false"
+      [autoplay]="{ delay: 3000, disableOnInteraction: false }"
+      [pagination]="{ clickable: true }"
+      [navigation]="true"
+    >
+      <ng-template data-swiper-autoplay="3000" swiperSlide>
+        <img
+          class="h-[600px] w-full cursor-pointer"
+          src="https://product.hstatic.net/1000340975/product/j_63bc3a5013454752a4e21db96fab6fe3.jpg"
+          alt=""
+        />
+      </ng-template>
+
+      <ng-template data-swiper-autoplay="3000" class="swiper-slide" swiperSlide>
+        <img
+          class="h-[600px] w-full cursor-pointer"
+          src="https://product.hstatic.net/1000388764/product/ha_4_-_19_30659659cd194d75848501867d6a2457_master.jpg"
+          alt=""
+        />
+      </ng-template>
+
+      <ng-template data-swiper-autoplay="3000" swiperSlide>
+        <img
+          class="h-[600px] w-full cursor-pointer"
+          src="https://auto365.vn/uploads/images/product/DVD/icar/icar-elliview-u5-premium/1.jpg"
+          alt=""
+        />
+      </ng-template>
+    </swiper>
+  </div>
+
+  
+</div>

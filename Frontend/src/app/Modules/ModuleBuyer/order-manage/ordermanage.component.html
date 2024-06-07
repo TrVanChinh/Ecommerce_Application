@@ -1,0 +1,136 @@
+<div class="container mx-auto">
+    <div class="border-b border-gray-300 my-10"></div>
+  
+    <div class="grid grid-cols-12 gap-5">
+      <div class="col-span-2 h-10 ">
+        <div>
+          <app-nav-user></app-nav-user>
+        </div>
+      </div>
+      <div class="col-span-10 shadow-md p-10">
+        <div>
+          <h1>Đơn hàng của tôi</h1>
+          <div class="border-b border-gray-300 my-10"></div>
+        </div>
+        <div>
+            
+            <mat-tab-group animationDuration="0ms">
+                <mat-tab label="Đơn đã đặt">
+                   <div *ngFor="let data of dataOrdered" class="mt-10">
+                        <div *ngFor="let option of data.option" class="shadow-sm">
+                           <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-row gap-5 justify-start">
+                                <img [src]="option.imageUrl" alt="" class="h-12 w-12 mt-2">
+                                <div>
+                                    <p class="text-xl text-black">{{option.nameProduct}}</p>
+                                    <p>Phân loại hàng: {{option.nameOption}}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-row gap-10">
+                                <p>{{option.price | number:'1.0-0'}}đ</p>    
+                                <p>x{{option.quantity }}</p>    
+                                <button class="px-7 py-3 text-white bg-red-400" (click)="CancleOrder(data._doc._id)">Huỷ</button>
+                            </div> 
+                           </div>
+                           <div class="border-b border-gray-300 my-10"></div>
+                        </div>
+                        
+                   </div>
+                </mat-tab>
+                <mat-tab label="Đơn đang giao">
+                    <div *ngFor="let data of DeliveringOrder" class="mt-10">
+                        <div *ngFor="let option of data.option" class="shadow-sm">
+                           <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-row gap-5 justify-start">
+                                <img [src]="option.imageUrl" alt="" class="h-12 w-12 mt-2">
+                                <div>
+                                    <p class="text-xl text-black">{{option.nameProduct}}</p>
+                                    <p>Phân loại hàng: {{option.nameOption}}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-row gap-10">
+                                <p>{{option.price | number:'1.0-0'}}đ</p>    
+                                <p>x{{option.quantity }}</p>    
+                                <button class="px-7 py-3 text-white bg-red-400" (click)="CancleOrder(data._doc._id)">Huỷ</button>
+                            </div> 
+                           </div>
+                           <div class="border-b border-gray-300 my-10"></div>
+                        </div>
+                        
+                   </div>
+                </mat-tab>
+                <mat-tab label="Đơn đã giao">
+                    <div *ngFor="let data of DeliveredOrder" class="mt-10">
+                        <div *ngFor="let option of data.option" class="shadow-sm">
+                           <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-row gap-5 justify-start">
+                                <img [src]="option.imageUrl" alt="" class="h-12 w-12 mt-2">
+                                <div>
+                                    <p class="text-xl text-black">{{option.nameProduct}}</p>
+                                    <p>Phân loại hàng: {{option.nameOption}}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-row gap-10">
+                                <p>{{option.price | number:'1.0-0'}}đ</p>    
+                                <p>x{{option.quantity }}</p>    
+                                <button class="px-7 py-3 text-white bg-red-400" (click)="confirm(data._doc._id)">Xác nhận</button>
+                            </div> 
+                           </div>
+                           <div class="border-b border-gray-300 my-10"></div>
+                        </div>
+                        
+                   </div>
+                </mat-tab>
+
+                <mat-tab label="Đơn hoàn thành">
+                    <div *ngFor="let data of CompletedOrder" class="mt-10">
+                        <div *ngFor="let option of data.option" class="shadow-sm">
+                           <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-row gap-5 justify-start">
+                                <img [src]="option.imageUrl" alt="" class="h-12 w-12 mt-2">
+                                <div>
+                                    <p class="text-xl text-black">{{option.nameProduct}}</p>
+                                    <p>Phân loại hàng: {{option.nameOption}}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-row gap-10">
+                                <p>{{option.price | number:'1.0-0'}}đ</p>    
+                                <p>x{{option.quantity }}</p>    
+                                
+                            </div> 
+                           </div>
+                           <div class="border-b border-gray-300 my-10"></div>
+                        </div>
+                        
+                   </div>
+                </mat-tab>
+                <mat-tab label="Đơn đã huỷ">
+                    <div *ngFor="let data of cancelOrder" class="mt-10">
+                        <div *ngFor="let option of data.option" class="shadow-sm">
+                           <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-row gap-5 justify-start">
+                                <img [src]="option.imageUrl" alt="" class="h-12 w-12 mt-2">
+                                <div>
+                                    <p class="text-xl text-black">{{option.nameProduct}}</p>
+                                    <p>Phân loại hàng: {{option.nameOption}}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-row gap-10">
+                                <p>{{option.price | number:'1.0-0'}}đ</p>    
+                                <p>x{{option.quantity }}</p>    
+                               
+                            </div> 
+                           </div>
+                           <div class="border-b border-gray-300 my-10"></div>
+                        </div>
+                        
+                   </div>
+                </mat-tab>
+
+            </mat-tab-group>
+        </div>
+     
+      </div>
+    </div>
+  </div>
+  

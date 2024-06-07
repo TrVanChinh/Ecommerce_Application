@@ -1,0 +1,11 @@
+<div class="rounded-full flex justify-center" *ngIf="dataprofile; else loading">
+  <img [src]="dataprofile" alt="Preview" class="object-cover h-[50px] w-[50px] gap-5 rounded-full" />
+</div>
+<ng-template #loading>
+  <div class="object-cover h-[50px] w-[50px] gap-5 rounded-full bg-gray-200 animate-pulse"></div>
+</ng-template>
+<mat-list role="list" class="[&>*]:cursor-pointer">
+  <mat-list-item role="listitem" routerLink="/profile">Tài khoản của tôi</mat-list-item>
+  <mat-list-item role="listitem" routerLink="/ordermanage">Đơn mua</mat-list-item>
+  <mat-list-item role="listitem" routerLink="/statistical">Thống kê</mat-list-item>
+</mat-list>

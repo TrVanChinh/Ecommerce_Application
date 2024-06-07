@@ -13,19 +13,50 @@
       <ul *ngSwitchCase="'default'" class="flex flex-row gap-6 pt-2 text-sm cursor-pointer">
         <li  routerLink="/signin" class="hover:text-cyan-500">{{ 'data.register' | translate }}</li>
         <li  routerLink="/login" class="hover:text-cyan-500">{{ 'data.login' | translate }}</li>
-        <li class="hover:text-cyan-500">{{ 'data.wishlist' | translate }}</li>
-        <li class="hover:text-cyan-500">{{ 'data.shopping_cart' | translate }}</li>
+        <li class="hover:text-cyan-500">{{ 'data.wishlist' | translate }} (0)</li>
+        <!-- <li class="hover:text-cyan-500" >{{ 'data.shopping_cart' | translate }}</li> -->
+        <li class="relative hover:text-cyan-500">
+          <span >{{ 'data.shopping_cart' | translate }}</span>
+          <mat-icon class="absolute top-0 " matBadge="{{cartlength}}" matBadgeColor="warn">add_shopping_cart</mat-icon>
+            
+        </li>
       </ul>
 
       <ul *ngSwitchCase="'user'" class="flex flex-row gap-6 pt-2 text-sm cursor-pointer">
-        <li class="hover:text-cyan-500" (click)="sellerAccount()">{{ 'data.seller' | translate }}</li>
-        <li class="hover:text-cyan-500">{{ 'data.shopping_cart' | translate }}</li>
         <li  mat-button [matMenuTriggerFor]="menu">
           {{nameUser}}
         </li>
+        <li class="hover:text-cyan-500" (click)="sellerAccount()">{{ 'data.seller' | translate }}</li>
+        <li class="relative hover:text-cyan-500" (mouseenter)="showCart()" (mouseleave)="hideCart()">
+          <span>{{ 'data.shopping_cart' | translate }}</span>
+          <mat-icon class="absolute top-0 " matBadge="{{cartlength}}" matBadgeColor="warn">add_shopping_cart</mat-icon>
+          <div *ngIf="showCartItems"  class="absolute top-full right-0 z-10 bg-white border-[1px] border-slate-500 p-2 w-[300px]">
+            <ng-container *ngIf="dataCart.length > 0; else emptyCart">
+              <div *ngFor="let data of dataCart; let i=index" class="border-b-2 border-black grid grid-cols-4 gap-3 p-2">
+                <div class="col-span-1">
+                  <img src="{{data.option.imageUrl}}" alt="">
+                </div>
+                <div class="col-span-2">
+                  <p>Name: {{data.option.name}}</p>
+                  <p>Giá: {{data.option.price}}</p>
+                  <p>Số lượng: {{data.quantity}}</p>
+                </div>
+                <div class="mr-1">
+                  <button class="text-black p-3 bg-orange-300" (click)="RemoveCart(data._id)">remove</button>
+                </div>
+              </div>
+              <button routerLink="/cartUser" class="p-2 bg-blue-400 text-black  boder rounded-sm">GO TO CART</button>
+            </ng-container>
+            <ng-template #emptyCart>
+              <div class="text-center">Không có dữ liệu giỏ hàng.</div>
+            </ng-template>
+          </div>
+        </li>
+      
+       
         
           <mat-menu #menu="matMenu">
-            <button mat-menu-item>Profile</button>
+            <button mat-menu-item routerLink="/profile">Profile</button>
             <button mat-menu-item (click)="logout()">Logout</button>
           </mat-menu>
 
@@ -34,7 +65,7 @@
     </div>
   </div>
   <div class="border-b border-gray-300"></div>
-
+  
   <div class="flex flex-row justify-between mt-10 mb-4">
     <a href=""
       ><img
@@ -51,6 +82,6 @@
     </mat-form-field>
   </div>
   <div class="border-b border-gray-300"></div>
-
+  <app-list-category></app-list-category>
   
 </header>

@@ -1,2 +1,55 @@
-<p>product-list works!</p>
-<button routerLink="/product/create">create</button>
+<div class="flex flex-row justify-between items-center"> 
+    <h1 class="text-5xl to-black">List product</h1>
+
+    <button mat-stroked-button class="bg-red-500" routerLink="/product/create">create</button>
+</div>
+
+<br>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+  </ng-container>
+
+  <!-- Description Column -->
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let product">{{ product.description }}</td>
+  </ng-container>
+
+  <!-- Image Column -->
+  <ng-container matColumnDef="image">
+    <th mat-header-cell *matHeaderCellDef>Image</th>
+    <td mat-cell *matCellDef="let product">
+      <img [src]="product.image[0]?.url" alt="Product Image" width="100" height="100">
+    </td>
+  </ng-container>
+
+  <!-- Price Column -->
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef>Price</th>
+    <td mat-cell *matCellDef="let product">{{ product.option[0].price }}</td>
+  </ng-container>
+
+  <!-- Quantity Column -->
+  <ng-container matColumnDef="quantity">
+    <th mat-header-cell *matHeaderCellDef>Quantity</th>
+    <td mat-cell *matCellDef="let product">{{ product.option[0].quantity }}</td>
+  </ng-container>
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>action</th>
+    <td mat-cell *matCellDef="let data">
+        <button mat-icon-button >
+        <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button  (click)="DeleteProduct(data._id)">
+        <mat-icon>delete</mat-icon>
+        </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

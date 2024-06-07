@@ -1747,6 +1747,87 @@ exports.createPayment = async (req, res) => {
     reqq.write(requestBody);
     reqq.end();
   };
+
+  exports.createPaymentweb = async (req, res) => {
+    const { priceGlobal } = req.body; 
+    const partnerCode = "MOMO";
+    const accessKey = "F8BBA842ECF85";
+    const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+    const requestId = partnerCode + new Date().getTime() + "id";
+    const orderId = new Date().getTime() + ":0123456778";
+    const orderInfo = "Thanh toán qua ATM MoMo";
+    //nếu thanh toán thành công thì trả về
+    const redirectUrl = "http://localhost:4200/";
+    const ipnUrl = "https://momo.vn/";
+    const amount = priceGlobal;
+    const requestType = "payWithATM";  // Changed from "captureWallet" to "payWithATM"
+    const extraData = "";  // Pass empty value if your merchant does not have stores
+  
+    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+
+    const crypto = require("crypto");
+    const signature = crypto.createHmac("sha256", secretKey)
+                            .update(rawSignature)
+                            .digest("hex");
+  
+    const requestBody = JSON.stringify({
+      partnerCode: partnerCode,
+      accessKey: accessKey,
+      requestId: requestId,
+      amount: amount,
+      orderId: orderId,
+      orderInfo: orderInfo,
+      redirectUrl: redirectUrl,
+      ipnUrl: ipnUrl,
+      extraData: extraData,
+      requestType: requestType,
+      signature: signature,
+      lang: "en",
+    });
+  
+    const https = require("https");
+    const options = {
+      hostname: "test-payment.momo.vn",
+      port: 443,
+      path: "/v2/gateway/api/create",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(requestBody),
+      },
+    };
+
+    const reqq = https.request(options, (resMom) => {
+      console.log(`Status: ${resMom.statusCode}`);
+      resMom.setEncoding("utf8");
+      resMom.on('data', (body) => {
+        try {
+            let data = JSON.parse(body);
+            console.log("Data received:", data);
+            if (data && data.payUrl) {
+                res.json({ payUrl: data.payUrl });
+            } else {
+                console.error("No payUrl received:", data);
+                res.status(500).json({ error: 'No payUrl received, check logs for details.' });
+            }
+        } catch (error) {
+            console.error("Error parsing response:", error);
+            res.status(500).json({ error: 'Error parsing response from MoMo.' });
+        }
+    });
+      resMom.on("end", () => {
+        console.log("No more data in response.");
+      });
+    });
+  
+    reqq.on("error", (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+
+    console.log("Sending....");
+    reqq.write(requestBody);
+    reqq.end();
+  };
   
   exports.confirmOrder = async (req, res) => {
     const {orderId} = req.body;

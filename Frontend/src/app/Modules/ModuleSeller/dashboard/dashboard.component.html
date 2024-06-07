@@ -1,0 +1,37 @@
+<div class="flex flex-row justify-between gap-10">
+   <div class="w-[800px]">
+      <h1>Thống kê tiền lời theo tháng</h1>
+      <label for="year">Select Year:</label>
+      <select id="year" [(ngModel)]="selectedYear" (change)="onDateChange()">
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+
+    
+    <div >
+      <canvas baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
+      </canvas>
+    </div>
+   </div>
+      <div>
+        <app-report-year></app-report-year>
+      </div>
+</div>
+
+
+<div class="flex justify-between gap-10">
+  <div class="w-[800px] h-[500px]" >
+    <app-report-inventory></app-report-inventory>
+  </div>
+
+  <div class="w-[800px] h-[500px]" >
+    <app-revenue-by-customer></app-revenue-by-customer>
+  </div>
+  <div>
+   
+  </div>
+</div>

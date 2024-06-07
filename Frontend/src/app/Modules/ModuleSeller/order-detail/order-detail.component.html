@@ -1,0 +1,151 @@
+<div >
+    <div class="flex flex-col justify-start ">
+        <h1 class="text-red-400">Chi tiết đơn hàng</h1>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table class="w-full text-sm text-left  text-gray-500 ">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                  <tr>
+                      <th scope="col" class="px-6 py-3">
+                          Mã đơn hàng
+                      </th>
+                     
+                      <th scope="col" class="px-6 py-3">
+                         Tên người đặt
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Số điện thoại
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Trạng thái
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Ngày đặt hàng
+                      </th>
+                  </tr>
+              </thead>
+              <tbody *ngFor="let data of orderData">
+                  <tr class="odd:bg-white ">
+                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                          {{data.id}}
+                      </th>
+                      <td class="px-6 py-4">
+                          {{data.address[0].name}}
+                      </td>   
+                      <td class="px-6 py-4">
+                          {{data.address[0].mobileNo}}
+                      </td>
+                      <td class="px-6 py-4">
+                          {{data.status}}
+                      </td>
+                      <td class="px-6 py-4">
+                        {{data.createAt | date}}
+                    </td>
+                  </tr>
+              
+                 
+              </tbody>
+          </table>
+        </div>
+    </div>
+
+    <div class="flex flex-col justify-start mt-20 ">
+      <h1 class="text-red-400">Thông tin giao hàng</h1>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left  text-gray-500 ">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Người nhận hàng 
+                    </th>
+                   
+                    <th scope="col" class="px-6 py-3">
+                       Số điện thoại
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Địa chỉ nhận
+                    </th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let data of orderData">
+                <tr class="odd:bg-white ">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                        {{data.address[0].name}}
+                    </th>
+                    <td class="px-6 py-4">
+                        {{data.address[0].mobileNo}}
+                    </td>   
+                    <td class="px-6 py-4">
+                     số: {{data.address[0].street}}, {{data.address[0].Ward}}, {{data.address[0].District}}, {{data.address[0].city}}
+                  </td> 
+                
+                </tr>
+            
+               
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-start mt-20 ">
+      <h1 class="text-red-400">Thông tin Sản phẩm</h1>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left  text-gray-500 ">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Tên sản phẩm
+                    </th>
+                   
+                    <th scope="col" class="px-6 py-3">
+                       Loại
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                      Giá
+                   </th>
+                    <th scope="col" class="px-6 py-3">
+                        Số lượng
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                      Vận chuyển
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    Thành tiền
+                </th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let data of orderData">
+                <tr class="odd:bg-white "  *ngFor="let option of data.option">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                       <div class="flex flex-row gap-5 justify-between items-center">
+                            <p>{{option.productName}}</p>
+                            <img [src]="option.imageUrl" alt="" class="w-10 h-10">
+                       </div>
+                    </th>
+                    <td class="px-6 py-4">
+                      {{option.optionName}}
+                    </td> 
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                      {{option.price | number:'1.0-0'}}
+                  </th>
+                  <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                    {{option.quantity}}
+                </th>
+                  <td class="px-6 py-4">
+                    {{data.nameShippingUnit}}: {{data.shippingCost | number:'1.0-0'}}đ
+                  </td>   
+                  <th scope="row" class="px-6 py-4 font-medium text-red-900 whitespace-nowrap ">
+                    {{option.quantity * option.price + data.shippingCost | number:'1.0-0'}}đ
+                </th>   
+                
+                </tr>
+            
+               
+            </tbody>
+          
+        </table>
+      </div>
+    </div>
+
+    <button (click)="changeStatusOrder()" 
+    class="font-medium px-10 py-5 bg-red-500 float-right mt-10 mr-10 cursor-pointer">Giao hàng</button>
+</div>

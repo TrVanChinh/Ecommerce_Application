@@ -1,0 +1,254 @@
+<div>
+    <div>
+        <h1>Quản lý đơn hàng</h1>
+    </div>
+
+    <div class="w-full h-full">
+        <mat-tab-group animationDuration="0ms" class="flex gap-10" >
+            <mat-tab label="Đã đặt">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left  text-gray-500 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Mã đơn hàng
+                                </th>
+                               
+                                <th scope="col" class="px-6 py-3">
+                                   Tên người đặt
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Số điện thoại
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Trạng thái
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody  >
+                            <tr class="odd:bg-white " *ngFor=" let data of dataProcessing">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                    {{data._id}}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{data.address[0].name}}
+                                </td>   
+                                <td class="px-6 py-4">
+                                    {{data.address[0].mobileNo}}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{data.status}}
+                                </td>
+                                <td class="px-6 py-4 flex gap-5">
+                                    <a (click)="changeStatusOrder(data._id)" 
+                                    class="font-medium text-green-600 hover:underline cursor-pointer">Giao hàng</a>
+                                    <a [routerLink]="['/Order', data._id]" class="font-medium text-blue-600 hover:underline">Chi tiết</a>
+                
+                                </td>
+                            </tr>
+                        
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab label="Đã thanh toán">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left  text-gray-500 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Mã đơn hàng
+                                </th>
+                               
+                                <th scope="col" class="px-6 py-3">
+                                   Tên người đặt
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Số điện thoại
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Trạng thái
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="odd:bg-white " *ngFor=" let data of dataPaid">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                    {{data._id}}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{data.address[0].name}}
+                                </td>   
+                                <td class="px-6 py-4">
+                                    {{data.address[0].mobileNo}}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{data.status}}
+                                </td>
+                                <td class="px-6 py-4 flex gap-5">
+                                    <a class="font-medium text-green-600 hover:underline" (click)="changeStatusOrder(data._id)">Giao hàng</a>
+                                    <a [routerLink]="['/Order', data._id]" class="font-medium text-blue-600 hover:underline">Chi tiết</a>
+                
+                                </td>
+                            </tr>
+                        
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab label="Đã giao"><div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left  text-gray-500 ">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Mã đơn hàng
+                            </th>
+                           
+                            <th scope="col" class="px-6 py-3">
+                               Tên người đặt
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Số điện thoại
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Trạng thái
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr class="odd:bg-white " *ngFor=" let data of delivered">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                {{data._id}}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{data.address[0].name}}
+                            </td>   
+                            <td class="px-6 py-4">
+                                {{data.address[0].mobileNo}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{data.status}}
+                            </td>
+                            <td class="px-6 py-4 flex gap-5">
+                                <a  class="font-medium text-green-600 hover:underline">Giao hàng</a>
+                                <a [routerLink]="['/Order', data._id]" class="font-medium text-blue-600 hover:underline">Chi tiết</a>
+            
+                            </td>
+                        </tr>
+                    
+                       
+                    </tbody>
+                </table>
+            </div></mat-tab>
+            <mat-tab label="Hoàn thành">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left  text-gray-500 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Mã đơn hàng
+                                </th>
+                               
+                                <th scope="col" class="px-6 py-3">
+                                   Tên người đặt
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Số điện thoại
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Trạng thái
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="odd:bg-white " *ngFor=" let data of dataComplete">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                    {{data._id}}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{data.address[0].name}}
+                                </td>   
+                                <td class="px-6 py-4">
+                                    {{data.address[0].mobileNo}}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{data.status}}
+                                </td>
+                                <td class="px-6 py-4 flex gap-5">
+                                    <a href="#" class="font-medium text-green-600 hover:underline">Giao hàng</a>
+                                    <a [routerLink]="['/Order', data._id]" class="font-medium text-blue-600 hover:underline">Chi tiết</a>
+                
+                                </td>
+                            </tr>
+                        
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab label="Đã huỷ">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left  text-gray-500 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Mã đơn hàng
+                                </th>
+                               
+                                <th scope="col" class="px-6 py-3">
+                                   Tên người đặt
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Số điện thoại
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Trạng thái
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="odd:bg-white " *ngFor=" let data of dataCancel">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                    {{data._id}}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{data.address[0].name}}
+                                </td>   
+                                <td class="px-6 py-4">
+                                    {{data.address[0].mobileNo}}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{data.status}}
+                                </td>
+                                <td class="px-6 py-4 flex gap-5">
+                                    <a href="#" class="font-medium text-green-600 hover:underline">Giao hàng</a>
+                                    <a [routerLink]="['/Order', data._id]" class="font-medium text-blue-600 hover:underline">Chi tiết</a>
+                
+                                </td>
+                            </tr>
+                        
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </mat-tab>
+          </mat-tab-group>
+    </div>
+</div>

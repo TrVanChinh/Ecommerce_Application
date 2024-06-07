@@ -1,0 +1,116 @@
+<div class="container mx-auto">
+  <div class="border-b border-gray-300 my-10"></div>
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-2 w-full">
+          <h1>Menu</h1>
+          <div class="border-b border-gray-300"></div>   
+          <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
+            <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+                <span [ngClass]="{ 'text-red-600': node.active }"  class="nodename " (click)="ProductbySubCategory(node.id)"> 
+                  <mat-icon>minimize</mat-icon>
+                  {{node.name}}
+                </span>
+            </mat-tree-node>
+            
+            <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                <div class="mat-tree-node">
+                  <button mat-icon-button matTreeNodeToggle
+                          [attr.aria-label]="'Toggle ' + node.name">
+                    <mat-icon class="mat-icon-rtl-mirror">
+                      {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                  </button>
+                  <span [ngClass]="{ 'text-red-600': node.active }" class="nodename text-xl" (click)="ProductbyCategory(node.id,node.name)" >{{node.name}}</span>
+                </div>
+                <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
+                    role="group">
+                  <ng-container matTreeNodeOutlet></ng-container>
+              </div>
+            </mat-nested-tree-node>
+          </mat-tree>
+          
+        </div>
+    
+        <div class="col-span-10 w-full">
+          <h1>List Product</h1>
+          <div class="border-b border-gray-300 mb-3"></div>   
+
+          <div class=" flex flex-row gap-10">
+            <div class="flex flex-row gap-2">
+              <span class="mt-2 text-xl">Sort by </span>
+              <div>           
+                <select 
+                [formControl]="toppings"
+                id="toppings"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-[200px] p-2.5"
+                (change)="sortProducts($event)"
+              >
+                <option value="Position" selected>Position</option>
+                <option value="AtoZ">Name: A to Z</option>
+                <option value="ZtoA">Name: Z to A</option>
+                <option value="LowtoHigh">Price: Low to High</option>
+                <option value="HightoLow">Price: High to Low</option>
+              </select>
+              
+
+              </div>
+
+            </div>
+
+            <div class="flex flex-row gap-2">
+              <span class="mt-2 text-xl">Display</span>
+              <div>           
+                <select 
+                  [formControl]="selectedNumber"
+                  id="countries" 
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-[70px] p-2.5"
+                  (click)="selectNumber($event)"
+              >
+                  <option value="3">3</option>
+                  <option value="6" selected>6</option>
+                  <option value="9">9</option>
+
+              </select>
+
+              </div>
+
+            </div>
+          </div>
+
+          <div class="border-b border-gray-300 my-5"></div>   
+          <div  class="grid grid-cols-4 gap-5">
+            <div *ngFor="let data of dataproductbyid">
+              <div class="shadow-md cursor-pointer" >
+                <img
+                  (click)="productdetail(data._id)"
+                  src="{{ data.image[0].url }}"
+                  alt=""
+                  class="w-full h-[300px]"
+                />
+                <p class="line-clamp-1 mt-1 pl-1 text-xl text-black">
+                  {{ data.name }}
+                </p>
+                <div>
+                  <p class="text-red-400 text-xl pl-1">
+                    {{ data.option[0].price  | number:'1.0-0' }}đ 
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-1 justify-between w-full">
+                  <button
+                    (click)="addCart(data)"
+                    class="bg-blue-400 text-white px-7 py-5 hover:bg-blue-500"
+                  >
+                    ADD TO CART
+                  </button>
+                  <button class="text-black px-7 py-5 hover:bg-slate-400">
+                    Wishlist
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+       
+        </div>
+      </div>
+     
+</div>

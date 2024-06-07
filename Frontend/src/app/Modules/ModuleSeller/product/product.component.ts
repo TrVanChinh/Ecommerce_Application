@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ImageOption } from 'src/app/Core/Models/ImgOption.model';
+import { FormBuilder, FormControl, FormGroup, FormArray } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from 'src/app/Core/Service/category.service';
 import { ProductService } from 'src/app/Core/Service/product.service';
 
@@ -10,27 +10,29 @@ import { ProductService } from 'src/app/Core/Service/product.service';
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent implements OnInit {
-  OptionImg: FormGroup;
   FormProduct!: FormGroup;
   URLImg: string[] = [];
   selectedImages: string[] = [];
+  selectedImagesOption: string[] = [];
+  selectedImage: string = ''; 
   DataCategory: any;
   categoryID: string = '';
   subcategoryID: string = '';
 
   toppings = new FormControl();
   nameCategorySelect: string = '';
+
   constructor(
     private productSevice: ProductService,
     private categoryService: CategoryService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toast:ToastrService
   ) {
-    this.OptionImg = this.fb.group({});
     this.FormProduct = this.fb.group({
       name: '',
       description: '',
       image: [''],
-      option: this.OptionImg,
+      options: this.fb.array([]),
     });
   }
 
@@ -40,9 +42,37 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  get options(): FormArray {
+    return this.FormProduct.get('options') as FormArray;
+  }
+
+  addOption(): void {
+    this.options.push(this.fb.group({
+      imageUrl: '',
+      name: '',
+      price: '',
+      quantity: '',
+      
+    }));
+  }
+
+  removeOption(index: number): void {
+    this.options.removeAt(index);
+  }
+  
   getCombinedValue(categoryId: string, subcategoryId: string): string {
     return categoryId + ' ' + subcategoryId;
   }
+ 
+
+  selectedOptionImageIndex: number[] = [];
+
+  // Modify onOptionClick to accept index
+  onOptionClick(imageIndex: number): void {
+    this.selectedOptionImageIndex.push(imageIndex);
+    console.log(this.selectedOptionImageIndex)
+  }
+  
   onSelectionChange(event: any): void {
     const selectedId = this.toppings.value;
     const [categoryId, subcategoryId] = selectedId.split(' ');
@@ -62,7 +92,6 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  // ----------- optiom
   showPreview(event: any) {
     const files: FileList = event.target.files;
     if (files && files.length > 0) {
@@ -70,35 +99,31 @@ export class ProductComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.selectedImages.push(e.target?.result as string);
-          const newIndex = this.selectedImages.length - 1;
-          // mỗi ảnh sẽ có add them 1 formcontrols
-          this.addFormControls(newIndex);
         };
         reader.readAsDataURL(files[i]);
       }
     }
   }
 
-  addFormControls(index: number) {
-    this.OptionImg.addControl(`color${index}`, new FormControl(''));
-    this.OptionImg.addControl(`price${index}`, new FormControl(''));
-    this.OptionImg.addControl(`quantity${index}`, new FormControl(''));
-  }
-
   async onSubmit() {
     await this.processImg();
 
-    const dataoptions: ImageOption[] = this.URLImg.map((image, index) => ({
-      imageUrl: image,
-      color: this.OptionImg.value[`color${index}`],
-      price: this.OptionImg.value[`price${index}`],
-      quantity: this.OptionImg.value[`quantity${index}`],
-    }));
     const idShop = localStorage.getItem('userId');
     const newImages = this.URLImg.map((url) => ({ url }));
-    console.log(this.categoryID)
-    console.log(this.subcategoryID)
-    
+     // Sắp xếp lại mảng newImages theo selectedOptionImageIndex
+     const selectedImages = this.selectedOptionImageIndex.map(index => {
+      if (index >= 0 && index < this.URLImg.length) {
+        return this.URLImg[index];
+      }
+      return null;
+    });
+    const optionsWithImages = this.FormProduct.value.options.map((option: any, index: number) => {
+      if (index < selectedImages.length) {
+        option.imageUrl = selectedImages[index];
+      }
+      return option;
+    });
+    console.log(selectedImages)
     const dataProduct = {
       name: this.FormProduct.value.name,
       description: this.FormProduct.value.description,
@@ -107,16 +132,19 @@ export class ProductComponent implements OnInit {
       idSubCategory: this.subcategoryID,
       idShop: idShop,
       image: newImages,
-      option: dataoptions,
+      option: optionsWithImages,
     };
+
     this.productSevice.addProduct(dataProduct).subscribe((res) => {
       console.log(res);
+      this.toast.success('Add product to successfully!')
+
     });
 
-    console.log(dataProduct)
+    console.log(dataProduct);
   }
 
-  //sử lý hình ảnh
+  // Process images
   async processImg() {
     const imageFiles: File[] = this.selectedImages.map((image) =>
       this.dataURItoFile(image, 'image.png')

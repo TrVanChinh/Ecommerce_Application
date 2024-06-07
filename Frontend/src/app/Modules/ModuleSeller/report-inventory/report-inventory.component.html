@@ -1,0 +1,14 @@
+<div>
+  <div>
+    <h1>Thống kê hàng tồn theo tháng</h1>
+  </div>
+    <select [(ngModel)]="selectedProduct" (change)="onProductChange()">
+      <option *ngFor="let product of products" [value]="product._id">{{ product.name }}</option>
+    </select>
+    <canvas baseChart
+     [datasets]="barChartData"
+      [labels]="barChartLabels"
+       [options]="barChartOptions"
+        [legend]="barChartLegend"
+         [chartType]="barChartType"></canvas>
+  </div>

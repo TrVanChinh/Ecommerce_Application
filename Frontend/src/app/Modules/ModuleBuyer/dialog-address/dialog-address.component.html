@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Thêm địa chỉ</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Tỉnh/Thành phố</mat-label>
+    <mat-select [(ngModel)]="data.province" (selectionChange)="onProvinceChange($event.value)" [compareWith]="compareProvinces">
+      <mat-option *ngFor="let province of dataProvince" [value]="province">{{province.ProvinceName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Quận/Huyện</mat-label>
+    <mat-select [(ngModel)]="data.district" (selectionChange)="onDistrictChange($event.value)" [compareWith]="compareDistrict">
+      <mat-option *ngFor="let district of dataDistricts" [value]="district">{{district.DistrictName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Phường/Xã</mat-label>
+    <mat-select [(ngModel)]="data.ward" [compareWith]="compareWards">
+      <mat-option *ngFor="let ward of dataWards" [value]="ward">{{ward.WardName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Số nhà</mat-label>
+    <input matInput [(ngModel)]="data.sonha">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Tên</mat-label>
+    <input matInput [(ngModel)]="data.name">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Số điện thoại</mat-label>
+    <input matInput [(ngModel)]="data.phone">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Huỷ</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Lưu</button>
+</div>

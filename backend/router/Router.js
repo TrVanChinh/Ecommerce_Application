@@ -69,12 +69,14 @@ router.get("/user/getOrder/:id", UserController.getOrderData);
 router.get("/user/getOrderCompleted/:id", UserController.getOrderCompleted);
 router.get("/user/getOrderCompletedByMonth", UserController.getOrderCompletedByMonth);
 //thống kê dữ liệu 12 tháng theo năm
-router.get("/user/getOrderCompletedByYear", UserController.getOrderCompletedByYear);
+router.post("/user/getOrderCompletedByYear", UserController.getOrderCompletedByYear);
 router.post("/user/getOrder/cancelOrder", UserController.cancelOrder);
 router.post("/user/getOrder/confirmOrder", UserController.confirmOrder);
 
 //payment
 router.post("/user/create-payment", UserController.createPayment);
+router.post("/user/create-payment-web", UserController.createPaymentweb);
+
 
 
 //category
@@ -131,6 +133,8 @@ router.get("/order/showOrderDetail/:id", OrderController.showOrderDetail)
 router.post("/product/addCart", CartController.addProductToCart)
 router.get("/Cart/:userId", CartController.showCart)
 router.post("/cart/removeFromCart", CartController.removeFromCart)
+router.post("/cart/removeFromCart-web", CartController.removeFromCartweb)
+
 router.post("/cart/increaseQuantity", CartController.increaseQuantity)
 router.post("/cart/decrementQuantity", CartController.decrementQuantity)
 

@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>Chọn địa chỉ</h1>
+<div mat-dialog-content>
+  <div *ngFor="let address of addresses; let last = last" class="flex flex-col gap-5">
+    <div class="flex flex-row justify-between items-center border-b border-gray-300 pb-5" [ngClass]="{'border-b-0': last}">
+      <div class="flex-grow">
+        <div class="text-xl">{{ address.name }} | {{ address.mobileNo }}</div>
+        <div class="text-xl">
+          {{ address.street }}, {{ address.Ward }}, {{ address.District }},
+          {{ address.city }}
+        </div>
+      </div>
+      <div>
+        <button class="px-6 py-4 bg-red-500 text-white" (click)="selectAddress(address)">chọn</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Hủy</button>
+</div>
