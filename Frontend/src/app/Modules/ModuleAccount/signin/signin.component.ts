@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserAccountService } from 'src/app/Core/Service/user-account.service';
 
@@ -14,13 +14,14 @@ export class SigninComponent implements OnInit {
   userid: string|null = "";
   Verify: boolean = false;
   inputVerify:string ="";
+  
   constructor(private userService:UserAccountService, private fb:FormBuilder, private router:Router) { }
 
   ngOnInit(): void {
     this.signInForm = this.fb.group({
-      username: '',
-      password: '',
-      email: '',
+      username: ['',[Validators.required]],
+      password: ['',[Validators.required,Validators.minLength(6)]],
+      email: ['',[Validators.required,Validators.email]],
     });
     this.userid = localStorage.getItem('userId');
     if(this.userid){

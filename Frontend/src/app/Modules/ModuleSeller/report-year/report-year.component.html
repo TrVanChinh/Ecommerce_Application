@@ -1,0 +1,21 @@
+<div>
+  <div>
+    <h1>Thống kê doanh thu theo tháng</h1>
+  </div>
+    <label for="year">Select Year:</label>
+    <select id="year" [(ngModel)]="selectedYear" (change)="onDateChange()">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+    
+  </div>
+  
+  <div style="display: block;" class="w-[600px] h-[500px]">
+    <canvas baseChart
+            [datasets]="barChartData"
+            [labels]="barChartLabels"
+            [options]="barChartOptions"
+            [legend]="barChartLegend"
+            [chartType]="barChartType">
+    </canvas>
+  </div>
+  

@@ -1,0 +1,170 @@
+<div class="container mx-auto">
+  <div class="border-b border-gray-300 my-10"></div>
+  <div class="flex justify-center items-center mb-5">
+    <p class="text-4xl">Checkout</p>
+  </div>
+  <div class="border-b border-gray-300 my-10"></div>
+  <div class="shadow-md px-10">
+    <h1 class="text-red-500">Địa chỉ nhận hàng</h1>
+    <div class="flex flex-row justify-between">
+      <div *ngIf="dataAddress">
+        <div >
+          <div class="flex flex-row justify-start items-center gap-3">
+            <div class="text-xl">{{ dataAddress.name }}</div>
+            <div class="mt-1 text-xl">| {{ dataAddress.mobileNo }}</div>
+            <div class="mt-1 text-xl">
+              số:{{ dataAddress.street }},{{ dataAddress.Ward }},{{
+                dataAddress.District
+              }},{{ dataAddress.city }}
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <div>
+        <div>
+          <button class="text-blue-400" (click)="openAddressDialog()">Thay đổi</button>
+        </div>
+      </div>
+      <div class="border-b border-gray-300 my-5"></div>
+    </div>
+    <div class="border-b border-gray-300 my-10 mb-10"></div>
+  </div>
+
+  <table
+    mat-table
+    [dataSource]="cartData"
+    class="mat-elevation-z8 w-full pb-10"
+  >
+    <!-- Product Column -->
+    <ng-container matColumnDef="Product">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        class="text-xl text-black"
+        [style.width.%]="50"
+      >
+        Product
+      </th>
+      <td mat-cell *matCellDef="let product" [style.width.%]="50">
+      <div class="flex flex-row items-center gap-2">
+        <p> {{ product.option.name }}</p>
+        <img class="w-12 h-10" [src]="product.option.imageUrl" alt="">
+        <p>{{ product.product.name }}</p>
+
+      </div>
+      </td>
+    </ng-container>
+
+    <!-- Price Column -->
+    <ng-container matColumnDef="price">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        class="text-xl text-black"
+        [style.width.%]="10"
+      >
+        Price
+      </th>
+      <td mat-cell *matCellDef="let product" [style.width.%]="10">
+        {{ product.option.price | number : "1.0-0" }}
+      </td>
+    </ng-container>
+
+    <!-- Quantity Column -->
+    <ng-container matColumnDef="quantity">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        class="text-xl text-black"
+        [style.width.%]="10"
+      >
+        Quantity
+      </th>
+      <td mat-cell *matCellDef="let product" [style.width.%]="10">
+        {{ product.quantity }}
+      </td>
+    </ng-container>
+
+    <!-- Total Column -->
+    <ng-container matColumnDef="total">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        class="text-xl text-black"
+        [style.width.%]="10"
+      >
+        Total
+      </th>
+      <td mat-cell *matCellDef="let data" [style.width.%]="10">
+        <button mat-icon-button>
+          <span>{{
+            data.quantity * data.option.price | number : "1.0-0"
+          }}</span>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Shipping Unit Column -->
+    <ng-container matColumnDef="shippingunit">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        class="text-xl text-black"
+        [style.width.%]="20"
+      >
+        Shipping Unit
+      </th>
+      <td mat-cell *matCellDef="let data" [style.width.%]="20">
+        <button mat-icon-button>1231</button>
+      </td>
+    </ng-container>
+
+    <!-- Các hàng và cột -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+
+
+  <div class="mt-10 shadow-md p-2">
+    <div class="flex flex-row justify-between items-center">
+      <h1>Phương thức thanh toán</h1>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Phương thức thanh toán</mat-label>
+          <mat-select (selectionChange)="onSelectionChange($event)">
+            <mat-option value="cod">Thanh toán khi nhận hàng</mat-option>
+            <mat-option value="online">Thanh toán online</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="border-b border-gray-300 my-10 mb-10"></div>
+
+    <div class="flex flex-row justify-between items-center">
+      <h1>Đơn vị vận chuyển</h1>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Đơn vị vận chuyển</mat-label>
+          <mat-select (selectionChange)="onSelectionChangeShiper($event)" [formControl]="shipperControl">
+            <mat-option *ngFor="let data of dataShiper" [value]="data">{{data.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    
+    
+    <div class="border-b border-gray-300 my-10 mb-10"></div>
+    <div class="flex flex-col items-end">
+      <p>Tổng tiền hàng: {{ getTotalPrice() | number }}</p>
+      <p>Phí vận chuyển: {{ToalShippingUnit}}</p>
+      <p>Tổng thanh toán: {{ getTotalPrice() + ToalShippingUnit | number }}</p>
+    </div>
+    <div class="border-b border-gray-300 my-10 mb-10"></div>
+    <div class="flex justify-end">
+      <button (click)="order()" class="px-10 py-5 bg-red-500 text-white">Thanh toán</button>
+    </div>
+  </div>
+    
+</div>

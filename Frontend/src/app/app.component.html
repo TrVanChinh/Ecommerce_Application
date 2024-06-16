@@ -12,7 +12,7 @@
     </mat-toolbar>
     <mat-sidenav-container class="h-[calc(100vh-4rem)]" >
         <mat-sidenav  #sidenav opened mode="side" class="w-64">
-            <app-appcustomsidenav (myEvent)="handleEvent($event)"></app-appcustomsidenav>
+            <app-appcustomsidenav (myEvent)="LogOut($event)"></app-appcustomsidenav>
         </mat-sidenav>
         <mat-sidenav-content class="p-6">
             <router-outlet></router-outlet>

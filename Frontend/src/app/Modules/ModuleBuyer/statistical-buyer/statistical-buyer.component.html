@@ -1,0 +1,31 @@
+<div class="container mx-auto">
+    <div class="border-b border-gray-300 my-10"></div>
+  
+    <div class="grid grid-cols-12 gap-5">
+      <div class="col-span-2 h-10">
+        <div class="rounded-full flex justify-center">
+          
+        </div>
+        <div>
+          <app-nav-user></app-nav-user>
+        </div>
+      </div>
+      <div class="col-span-10 shadow-md p-10">
+            <h1>Thống kê tiền đã mua hàng tháng</h1>
+          <div class="border-b border-gray-300 my-5"></div>
+          <div style="display: block">
+            <canvas baseChart
+                    [datasets]="barChartData"
+                    [labels]="barChartLabels"
+                    [options]="barChartOptions"
+                    [legend]="barChartLegend"
+                    [chartType]="barChartType"
+                    [plugins]="barChartPlugins">
+            </canvas>
+          </div>
+          
+        </div>
+      </div>
+</div>
+
+  

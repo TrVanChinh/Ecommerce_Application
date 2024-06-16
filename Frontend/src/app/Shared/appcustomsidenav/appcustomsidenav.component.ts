@@ -15,20 +15,20 @@ export class AppcustomsidenavComponent implements OnInit {
     },
     {
       icon: 'Product',
-      label: 'product',
+      label: 'Quản lý sản phẩm',
       route: '/product',
       isActive: false 
     },
     {
       icon: 'analytics',
-      label: 'Category',
-      route: '/Category',
+      label: 'Quản lý đơn hàng',
+      route: '/Order',
       isActive: false 
     },
     {
       icon: 'comment',
-      label: 'Admin',
-      route: '/addAdmin',
+      label: 'Quản lý hồ sơ',
+      route: '/profile-seller',
       isActive: false 
     }
     ,

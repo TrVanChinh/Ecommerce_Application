@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserAccountService } from 'src/app/Core/Service/user-account.service';
 
@@ -14,8 +14,8 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
      this.LoginForm = this.fb.group({
-      email:'',
-      password: '',
+      email:['',[Validators.required, Validators.email]],
+      password: ['',[Validators.required, Validators.minLength(6)]],
     });
   }
   
@@ -27,8 +27,6 @@ export class LoginComponent implements OnInit {
 
     }
     this.userLogin.Login(data).subscribe(data=>{
-      console.log(data.data[0].role)
-
       if(data.data[0].role === 'seller'){
         this.router.navigate(['/homeseller'])
       }else{

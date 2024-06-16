@@ -1,0 +1,54 @@
+<div class="container mx-auto">
+    <div class="border-b border-gray-300 my-10"></div>   
+    <h1>producr details</h1>
+    <div class="grid grid-cols-5 gap-10" *ngIf="productDetail">
+        <div class="col-span-2">
+            <img [src]="selectedImageUrl || productDetail.image[0].url" alt="" class="w-full h-[600px]">
+
+            <div class="flex gap-4 mt-5">
+                <ng-container *ngFor="let img of productDetail.image ; let i = index">
+                    <div>
+                        <img src="{{img.url}}" alt="" class="h-32 w-32" >
+                    </div>
+                </ng-container>
+            </div>
+            
+        </div>
+
+        <div class="col-span-3  ">
+            <p class="text-4xl ">{{productDetail.name}}</p>
+            
+            <div class="border-b border-gray-300 my-10"></div>
+            <p class="text-xl">{{productDetail.description}}</p>
+            <p class="text-xl ">Giá: {{productOption.price}}đ - {{productOption.price + 100000}}đ</p>
+            <p class="text-xl ">Số lượng: {{productOption.quantity}} sản phẩm có sẵn</p>
+
+            <div class="flex flex-row gap-5">
+                <ng-container *ngFor="let data of productDetail.option; let i = index">
+                  <div 
+                    class="flex flex-row justify-center items-end border mb-10 p-2 cursor-pointer"
+                    [ngClass]="{'border-black': selectedIndex !== i, 'border-blue-500': selectedIndex === i, 'text-black': selectedIndex !== i, 'text-blue-500': selectedIndex === i}"
+                    (click)="selectImage(data.imageUrl, i)"
+                  >
+                    <img [src]="data.imageUrl" alt="" class="h-10 w-10">
+                    <p>{{data.name}}</p>
+                  </div>
+                </ng-container>
+              </div>
+              
+            <div>
+                <div class="mb-3 flex flex-row gap-2">    
+                    <button (click)="handleQuantity('min')" class="px-5 py-3 bg-slate-400 text-2xl">-</button>
+                    <input class="pl-5" type="text" value="{{productQuantity}}">
+                    <button (click)="handleQuantity('plus')" class="px-5 py-3 bg-slate-400 text-2xl">+</button>
+                </div>   
+                <button *ngIf="!removeCart" class="bg-blue-400 text-white px-7 py-5 hover:bg-blue-500" (click)="addCart(productDetail)">
+                    ADD TO CART
+                </button>
+                <button *ngIf="removeCart" class="bg-blue-400 text-white px-7 py-5 hover:bg-blue-500">
+                    REMOVE CART
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

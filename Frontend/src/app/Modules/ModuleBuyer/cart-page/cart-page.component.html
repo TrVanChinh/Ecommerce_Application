@@ -1,0 +1,89 @@
+<div class="container mx-auto items-center">
+    <div class="border-b border-gray-300 my-10"></div>
+   <div class="flex justify-center items-center">
+    <p class="text-4xl">Shopping cart</p>
+   </div>
+
+   <div class="border-b border-gray-300 mt-10"></div>
+    <table mat-table [dataSource]="cartData" class="mat-elevation-z8 w-full pb-10">
+      <!-- Name Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">Select</th>
+        <td mat-cell *matCellDef="let product">
+          <mat-checkbox (change)="toggleSelection(product)" [checked]="isSelected(product)"></mat-checkbox>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">Name</th>
+        <td mat-cell *matCellDef="let product">{{ product.option.name }}</td>
+      </ng-container>
+    
+    
+      <!-- Image Column -->
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">Image</th>
+        <td mat-cell *matCellDef="let product">
+          <img [src]="product.option.imageUrl" alt="Product Image" width="100" height="100">
+        </td>
+      </ng-container>
+    
+      <!-- Price Column -->
+      <ng-container matColumnDef="price" >
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">Price</th>
+        <td mat-cell *matCellDef="let product">{{ product.option.price | number:'1.0-0'}}</td>
+      </ng-container>
+    
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">Quantity</th>
+        
+        <td mat-cell *matCellDef="let product" >
+            <button (click)="handleQuantity('min',product._id)" class="px-5 py-1 border border-black text-2xl mr-2">-</button>
+                {{ product.quantity }}
+            <button (click)="handleQuantity('plus',product._id)" class="px-5 py-1 border border-black text-2xl ml-2">+</button>
+        </td>
+      </ng-container>
+      
+    
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">total</th>
+        <td mat-cell *matCellDef="let data">
+            <button mat-icon-button >
+            <span>{{data.quantity * data.option.price | number:'1.0-0'}}</span>
+            </button>
+        </td>
+      </ng-container>
+    
+
+      <ng-container matColumnDef="remove">
+        <th mat-header-cell *matHeaderCellDef class="text-xl text-black">remove</th>
+        <td mat-cell *matCellDef="let data">
+            <button mat-icon-button (click)="deleteCart(data._id)" >
+            <mat-icon >delete</mat-icon>
+            </button>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    
+    </table>
+    
+
+    <div class="border-b border-gray-300 mt-10"></div>
+
+    <div class="float-right w-[400px] h-[200px] bg-[#f9f9f9] p-10 shadow-md">
+        <div>
+            <div class="flex justify-between">
+                <p>Total payment products ({{lenghCartselect}} product): </p>
+                <p>{{Total | number:'1.0-0'}}đ</p>
+            </div>
+            <div class="border-b border-gray-300 mt-5"></div>
+            <button (click)="checkout()" class="px-10 py-3 bg-blue-400 text-white float-right">
+                Checkout
+            </button>
+        </div>
+    </div>
+</div>

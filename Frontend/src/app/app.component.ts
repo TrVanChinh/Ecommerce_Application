@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserAccountService } from './Core/Service/user-account.service';
 
 @Component({
@@ -11,7 +11,7 @@ export class AppComponent  implements OnInit{
 
   hideHeaderFooter: boolean = false;
 
-  constructor(private authService:UserAccountService, private router:Router) {}
+  constructor(private authService:UserAccountService, private router:Router ) {}
 
   ngOnInit() {
     if(localStorage.getItem('role') === 'seller'){
@@ -25,13 +25,10 @@ export class AppComponent  implements OnInit{
     })
   }
 
-  handleEvent(event: string) {
+  LogOut(event: string) {
     if(event){
       this.hideHeaderFooter = false;
-      localStorage.removeItem("role");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("nameUser");
-      // this.router.navigate(["/login"])
+      this.authService.logout()
     }
   }
  

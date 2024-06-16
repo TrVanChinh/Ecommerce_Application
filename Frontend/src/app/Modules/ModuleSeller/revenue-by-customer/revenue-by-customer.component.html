@@ -1,0 +1,21 @@
+<div>
+    <h1>Thống kê doanh thu của từng khách hàng</h1>
+    <div class="mb-4">
+      <label for="year">Chọn năm: </label>
+      <select id="year" [(ngModel)]="selectedYear" (change)="getdata()">
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+      <label for="month">Chọn tháng: </label>
+      <select id="month" [(ngModel)]="selectedMonth" (change)="getdata()">
+        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+      </select>
+    </div>
+    <canvas baseChart
+            [datasets]="barChartData"
+            [labels]="barChartLabels"
+            [options]="barChartOptions"
+            [legend]="barChartLegend"
+            [chartType]="barChartType">
+    </canvas>
+  </div>
+  

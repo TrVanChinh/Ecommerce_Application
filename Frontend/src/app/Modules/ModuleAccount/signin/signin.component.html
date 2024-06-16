@@ -1,4 +1,6 @@
 <div *ngIf="!Verify" class="container mx-auto mt-10 flex flex-col justify-center items-center">
+  <div class="border-b border-gray-300 w-full mb-10 "></div>
+
   <h1 class="register">Register</h1>
 
   <div class="border-b border-gray-300 w-full mb-10 mt-5">
@@ -22,6 +24,9 @@
         placeholder="Enter user name"
         formControlName="username"
       />
+      <mat-error *ngIf="signInForm.get('username')?.errors?.['required']">
+        username is required
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -33,6 +38,12 @@
         name="Email"
         formControlName="email"
       />
+      <mat-error *ngIf="signInForm.get('email')?.errors?.['required']">
+        email is required
+      </mat-error>
+      <mat-error *ngIf="signInForm.get('email')?.errors?.['email']">
+        Vui lòng nhập đúng định dạng email
+      </mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
@@ -42,8 +53,14 @@
         placeholder="Password"
         formControlName="password"
       />
+      <mat-error *ngIf="signInForm.get('password')?.errors?.['required']">
+        password is required
+      </mat-error>
+      <mat-error *ngIf="signInForm.get('password')?.errors?.['minlength']">
+        Password must be at least 6 characters long
+      </mat-error>
     </mat-form-field>
-    <button mat-flat-button class="bg-green-300">Register</button>
+    <button mat-flat-button class="bg-green-300" [disabled]="signInForm.invalid">Register</button>
     <span class="mt-5" href="">Do you have an account <a routerLink="/login" 
       class="text-cyan-500 underline">yet</a>?
     </span>

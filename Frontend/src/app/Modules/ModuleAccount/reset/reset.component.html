@@ -1,0 +1,93 @@
+<div class="container mx-auto flex justify-center flex-col items-center">
+  <div class="border-b border-gray-300 w-full my-10"></div>
+  <h1 class="login">Đặt lại mật khẩu</h1>
+
+  <div class="border-b border-gray-300 w-full mb-10 mt-5"></div>
+  <h2>Your Personal Details</h2>
+  <div *ngIf="!showReset">
+    <form
+      class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
+      *ngIf="!showOtp"
+      (ngSubmit)="onSubmit()"
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="email"
+          [formControl]="ResetForm"
+        />
+        <mat-error *ngIf="ResetForm.errors?.['required']">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="ResetForm.errors?.['email']">
+          Vui lòng nhập đúng định dạng email
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        class="bg-green-300"
+        [disabled]="ResetForm.invalid"
+      >
+        Gửi
+      </button>
+    </form>
+
+    <form
+      class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
+      *ngIf="showOtp"
+      (ngSubmit)="onSubmitOTP()"
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>OTP</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="email"
+          [formControl]="OTPform"
+        />
+        <mat-error *ngIf="OTPform.errors?.['required']">
+          OTP is required
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        class="bg-green-300"
+        [disabled]="OTPform.invalid"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+  <div *ngIf="showReset">
+    <form
+    
+      class="flex flex-col justify-center text-center w-[600px] p-20 border border-gray-300 shadow-2xl"
+      (ngSubmit)="onSubmitReset()"
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>new password</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="password"
+          [formControl]="ResetPassword"
+        />
+        <mat-error *ngIf="ResetPassword.errors?.['required']">
+            password is required
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        class="bg-green-300"
+        [disabled]="ResetPassword.invalid"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

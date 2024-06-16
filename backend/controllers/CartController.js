@@ -226,6 +226,29 @@ exports.removeFromCart = async (req, res) => {
   }
 };
 
+exports.removeFromCartweb = async (req, res) => {
+  const { cartId, userId } = req.body;
+
+  if (!userId || !cartId) {
+    return res.status(400).json({ message: "Invalid request. Missing userId or cartId." });
+  }
+
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    
+    user.carts.pull({ _id: cartId });
+    await user.save();
+
+    return res.json({ status: "SUCCESS", message: "Remove product from cart successfully." });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 //Increase the quantity of products in the shopping cart
 exports.increaseQuantity = async (req, res) => {
   let { cartId, userId } = req.body;
